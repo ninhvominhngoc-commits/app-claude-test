@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Sorbonne Copilot</title>
+  <meta name="theme-color" content="#1f3a68" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/icon.svg" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="stylesheet" href="/vendor/katex/katex.min.css" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header>
+    <h1>🎓 Sorbonne Copilot</h1>
+    <span id="today" class="muted"></span>
+  </header>
+
+  <nav id="tabs">
+    <button data-tab="home" class="active">🏠 Hôm nay</button>
+    <button data-tab="verify">🔎 Kiểm chứng</button>
+    <button data-tab="agenda">📅 Lịch & thi</button>
+    <button data-tab="study">🧠 Học</button>
+    <button data-tab="cards">🃏 Ôn tập</button>
+    <button data-tab="settings">⚙️ Cài đặt</button>
+  </nav>
+
+  <main>
+    <!-- HÔM NAY -->
+    <section id="tab-home" class="tab active">
+      <div id="verdict" class="card verdict">Chưa có bản tin hôm nay.</div>
+      <div class="row">
+        <button id="runDigest" class="primary">⚡ Tạo bản tin ngay</button>
+        <button id="syncMail">📬 Đọc mail mới</button>
+      </div>
+      <p id="homeHint" class="muted small"></p>
+      <div id="digest" class="card md"></div>
+      <h3>Sắp tới (14 ngày)</h3>
+      <div id="homeUpcoming"></div>
+      <details>
+        <summary>Bản tin các ngày trước</summary>
+        <div id="digestHistory"></div>
+      </details>
+    </section>
+
+    <!-- KIỂM CHỨNG -->
+    <section id="tab-verify" class="tab">
+      <div class="card">
+        <p>Dán nội dung mail / tin tức, hoặc gửi ảnh chụp màn hình (mail, story Instagram, bài Facebook…). App sẽ research trên web, mạng xã hội để kiểm tra đúng/sai, bổ sung thông tin và tự thêm hạn nộp/ngày thi vào lịch.</p>
+        <textarea id="verifyText" rows="6" placeholder="Dán nội dung ở đây…"></textarea>
+        <input id="verifyFiles" type="file" multiple accept="image/*,application/pdf,text/plain" />
+        <div class="row">
+          <select id="verifyLang"><option value="vi">Trả lời tiếng Việt</option><option value="fr">Réponse en français</option></select>
+          <button id="verifyBtn" class="primary">🔎 Kiểm chứng</button>
+        </div>
+      </div>
+      <div id="verifyResult"></div>
+      <details>
+        <summary>Lịch sử kiểm chứng</summary>
+        <div id="verifyHistory"></div>
+      </details>
+    </section>
+
+    <!-- AGENDA -->
+    <section id="tab-agenda" class="tab">
+      <div class="row">
+        <a class="button" href="/agenda.ics" download>📥 Xuất sang lịch điện thoại (.ics)</a>
+        <button id="planBtn">🗺️ Lập kế hoạch ôn thi</button>
+      </div>
+      <div id="plan" class="card md hidden"></div>
+      <div id="agendaList"></div>
+      <details class="card">
+        <summary>➕ Thêm thủ công</summary>
+        <form id="agendaForm" class="grid">
+          <select name="type"><option value="exam">Thi</option><option value="deadline">Hạn nộp</option><option value="event">Sự kiện</option><option value="closure">Đóng cửa / blocus</option><option value="holiday">Nghỉ lễ</option></select>
+          <input name="title" placeholder="Tiêu đề" required />
+          <input name="date" type="date" />
+          <input name="time" type="time" />
+          <input name="course" placeholder="Môn (UE)" />
+          <input name="location" placeholder="Địa điểm / nền tảng" />
+          <input name="to_submit" placeholder="Cần nộp gì" />
+          <textarea name="exam_content" placeholder="Nội dung thi (chương, phần…)"></textarea>
+          <button class="primary">Thêm</button>
+        </form>
+      </details>
+    </section>
+
+    <!-- HỌC -->
+    <section id="tab-study" class="tab">
+      <div class="study-layout">
+        <aside>
+          <div id="courseList"></div>
+          <details class="card" id="newCourseBox">
+            <summary>➕ Thêm tài liệu</summary>
+            <form id="courseForm">
+              <input name="title" placeholder="Tên môn / chương (vd: Électrocinétique ch.2)" required />
+              <textarea name="examContent" placeholder="Nội dung thi (nếu biết)"></textarea>
+              <input name="files" type="file" multiple accept="application/pdf,image/*,.txt,.md" required />
+              <p class="muted small">PDF, ảnh, .txt/.md. PowerPoint/Word → "Xuất ra PDF" trước.</p>
+              <button class="primary">Tải lên</button>
+            </form>
+          </details>
+        </aside>
+        <div id="chatPane" class="hidden">
+          <div class="chat-head">
+            <strong id="courseTitle"></strong>
+            <div class="row">
+              <label class="toggle"><input type="checkbox" id="viToggle" /> 🇻🇳 Tui không hiểu tiếng Pháp</label>
+              <button id="mkCards" title="Tạo flashcards từ tài liệu">🃏 Tạo flashcards</button>
+              <button id="resetChat" title="Bắt đầu buổi học mới">↺</button>
+            </div>
+          </div>
+          <div id="examEdit" class="small muted"></div>
+          <div id="chatLog"></div>
+          <div class="quick row">
+            <button data-q="Commence le cours depuis le début : quelles sont les grandes idées de ce document ? Explique la première.">🚀 Bắt đầu học</button>
+            <button data-q="Je n'ai pas compris. Réexplique avec une autre analogie, plus simple.">🤯 Chưa hiểu</button>
+            <button data-q="Pourquoi c'est comme ça, physiquement ? Va au fond des choses.">🔬 Bản chất?</button>
+            <button data-q="Donne-moi un exercice type examen sur ce qu'on vient de voir, sans la correction.">📝 Bài tập</button>
+            <button data-q="Fais-moi un quiz rapide de 5 questions sur tout ce qu'on a vu.">⚡ Quiz</button>
+          </div>
+          <form id="chatForm">
+            <label class="toggle small"><input type="checkbox" id="feynmanMode" /> 🗣️ Đây là phần tui tự giải thích lại (chấm điểm Feynman)</label>
+            <div class="row">
+              <textarea id="chatInput" rows="2" placeholder="Hỏi bằng tiếng Pháp (sai ngữ pháp sẽ được sửa nhẹ nhàng 😉)…"></textarea>
+              <button class="primary" id="sendBtn">➤</button>
+            </div>
+          </form>
+        </div>
+        <div id="studyEmpty" class="card muted">Chọn hoặc thêm một tài liệu để bắt đầu học theo phương pháp Feynman.</div>
+      </div>
+    </section>
+
+    <!-- ÔN TẬP -->
+    <section id="tab-cards" class="tab">
+      <div id="decks" class="row wrap"></div>
+      <div id="reviewBox" class="card flash hidden">
+        <div class="muted small" id="reviewMeta"></div>
+        <div id="cardFront" class="md big"></div>
+        <div id="cardBack" class="md hidden"></div>
+        <div class="row" id="revealRow"><button id="revealBtn" class="primary">Xem đáp án</button></div>
+        <div class="row hidden" id="gradeRow">
+          <button data-g="0" class="bad">😵 Quên</button>
+          <button data-g="3">😬 Khó</button>
+          <button data-g="4" class="good">🙂 Ổn</button>
+          <button data-g="5" class="good">😎 Dễ</button>
+        </div>
+      </div>
+      <div id="reviewDone" class="card muted">Chọn một bộ thẻ để ôn.</div>
+    </section>
+
+    <!-- CÀI ĐẶT -->
+    <section id="tab-settings" class="tab">
+      <form id="settingsForm" class="card grid">
+        <label>Hồ sơ sinh viên<textarea name="studentProfile" rows="3"></textarea></label>
+        <label>Nguồn cần theo dõi (mỗi dòng 1 nguồn — thêm tài khoản Instagram/Facebook cụ thể, vd: @tên_tài_khoản)<textarea name="watchSources" rows="7"></textarea></label>
+        <label>Từ khoá lọc mail (mỗi dòng 1 từ; để trống = đọc tất cả)<textarea name="mailFilters" rows="4"></textarea></label>
+        <label>Các môn học (mỗi dòng 1 môn)<textarea name="courses" rows="4"></textarea></label>
+        <label>Ngôn ngữ bản tin
+          <select name="digestLang"><option value="vi">Tiếng Việt</option><option value="fr">Français</option></select></label>
+        <button class="primary">Lưu</button>
+      </form>
+      <div id="sysStatus" class="card small"></div>
+    </section>
+  </main>
+
+  <div id="toast" class="hidden"></div>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

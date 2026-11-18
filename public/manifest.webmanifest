@@ -1,0 +1,9 @@
+{
+  "name": "Sorbonne Copilot",
+  "short_name": "Copilot",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f6fa",
+  "theme_color": "#1f3a68",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
