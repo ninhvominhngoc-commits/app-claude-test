@@ -16,7 +16,9 @@ export const DEFAULT_SETTINGS = {
   watchSources: [
     "sorbonne-universite.fr (actualités, page 'campus Pierre et Marie Curie')",
     "sciences.sorbonne-universite.fr",
-    "Comptes Instagram / Facebook / X officiels de Sorbonne Université et de la Faculté des Sciences et Ingénierie",
+    "Instagram @sorbonne_univ (compte officiel de Sorbonne Université)",
+    "Instagram @sorbonne_sciences_vieetudiante (vie étudiante, Faculté des Sciences et Ingénierie)",
+    "Autres comptes Facebook / X officiels de Sorbonne Université et de la Faculté des Sciences et Ingénierie",
     "Syndicats et collectifs étudiants de Jussieu (assemblées générales, appels au blocage)",
     "Préfecture de police de Paris (parcours des manifestations déclarées)",
     "RATP (stations Jussieu, lignes 7 et 10)",
