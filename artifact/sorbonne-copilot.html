@@ -277,6 +277,15 @@ details > summary { cursor: pointer; font-weight: 600; padding: 4px 0; }
   <section id="v-inbox" class="stack" hidden>
     <h2>Kiểm tra thông tin</h2>
     <p class="small muted">Gửi ảnh chụp mail, story Instagram, bài Facebook, hoặc dán nội dung. App tóm tắt, tìm ngày thi/hạn nộp để lưu vào lịch, và chỉ ra chỗ nào cần kiểm chứng.</p>
+    <div class="sheet stack" id="mailBox">
+      <div class="row"><strong class="grow">📬 Mail trường (qua Gmail)</strong>
+        <select id="mailDays" style="width:auto" aria-label="Khoảng thời gian"><option value="3">3 ngày</option><option value="7" selected>7 ngày</option><option value="30">30 ngày</option></select>
+        <button class="primary" id="mailGo">Đọc mail mới</button></div>
+      <div class="small muted" id="mailStatus">App đọc các mail gửi tới địa chỉ @etu.sorbonne-universite.fr đã được chuyển sang Gmail, tóm tắt và tìm ngày thi, hạn nộp.</div>
+      <div id="mailEvents" class="stack"></div>
+      <div id="mailList" class="stack"></div>
+    </div>
+    <h3>Ảnh chụp hoặc nội dung khác</h3>
     <div class="sheet stack">
       <textarea id="inText" rows="5" placeholder="Dán nội dung mail / tin tức / kết quả briefing…"></textarea>
       <input id="inFiles" type="file" multiple accept="image/*">
@@ -341,7 +350,7 @@ function typeset(el) { if (window.MathJax?.typesetPromise) window.MathJax.typese
 function setMd(el, text) { el.innerHTML = md(text); typeset(el); }
 
 // ---------- lưu trữ (db riêng tư theo người dùng) ----------
-const state = { agenda: [], courses: [], decks: {}, chats: {}, cur: null, persist: false };
+const state = { agenda: [], courses: [], decks: {}, chats: {}, mail: { seen: [], recent: [] }, cur: null, persist: false };
 let base = null; // collection data/users/<id>
 const writeQueue = new Map();
 function save(docId, data) {
@@ -357,6 +366,7 @@ function save(docId, data) {
 const saveAgenda = () => save("agenda", { items: state.agenda });
 const saveCourses = () => save("courses", { list: state.courses });
 const saveDeck = (id) => save("deck-" + id, { cards: state.decks[id] || [] });
+const saveMail = () => save("mail", state.mail);
 const saveChat = (id) => save("chat-" + id, state.chats[id] || { turns: [] });
 function showNotice(msg) { const n = $("#globalNotice"); n.textContent = msg; n.hidden = !msg; }
 
@@ -375,6 +385,7 @@ async function loadData() {
       else if (d.id === "courses") state.courses = v.list || [];
       else if (d.id.startsWith("deck-")) state.decks[d.id.slice(5)] = v.cards || [];
       else if (d.id.startsWith("chat-")) state.chats[d.id.slice(5)] = v;
+      else if (d.id === "mail") state.mail = { seen: v.seen || [], recent: v.recent || [] };
     }
     state.persist = true;
     showNotice("");
@@ -495,7 +506,10 @@ Commence par UNE ligne : 🏫 CẦN lên trường / 🏠 KHÔNG cần lên trư
 Puis sections courtes : 🏫 Campus · 📣 Blocus / biểu tình · 🚇 Giao thông · 📅 Sắp tới · ✅ Việc hôm nay · 🔗 Nguồn. Date chaque info, sépare officiel et rumeur.
 
 Mon agenda (14 jours) :
-${agendaText(upcoming(14))}`;
+${agendaText(upcoming(14))}
+
+Mails récents de l'université (résumés) :
+${state.mail.recent.slice(0, 8).map((m) => `- ${String(m.date).slice(0, 10)} · ${m.subject} : ${m.resume}`).join("\n") || "(aucun)"}`;
 }
 async function copyText(text, label) {
   try { await navigator.clipboard.writeText(text); toast(`📋 Đã chép ${label}. Mở Claude, dán vào và bật Tìm kiếm web.`, 5000); }
@@ -573,6 +587,96 @@ ${text || "(voir images)"}`, { images: files.length ? files : undefined, cache: 
     $("#inText").value = ""; $("#inFiles").value = "";
   } catch (err) { out.innerHTML = `<div class="sheet small" style="color:var(--bad)">${esc(sampleErr(err))}</div>`; }
   finally { e.target.disabled = false; }
+});
+
+// ---------- Mail trường (qua kết nối Gmail) ----------
+const MAIL_Q = (days) => `(to:etu.sorbonne-universite.fr OR cc:etu.sorbonne-universite.fr OR from:sorbonne-universite.fr) newer_than:${days}d`;
+function mcpErr(e) {
+  return ({
+    needs_reauth: "Kết nối Gmail đã hết hạn. Vào claude.ai → Cài đặt → Connectors → Gmail để kết nối lại.",
+    server_not_connected: "Chưa kết nối Gmail. Vào claude.ai → Cài đặt → Connectors → Gmail → Connect.",
+    server_not_found: "Chưa kết nối Gmail. Vào claude.ai → Cài đặt → Connectors → Gmail → Connect.",
+    approval_required: "Trang cần bạn cho phép đọc Gmail. Mở app trên claude.ai rồi bấm Cho phép.",
+    consent_required: "Trang cần bạn cho phép đọc Gmail. Bấm lại nút và chọn Cho phép.",
+    not_granted: "Bạn đã từ chối quyền đọc Gmail. Tải lại trang để được hỏi lại.",
+    blocked_by_policy: "Tài khoản của bạn không cho trang này đọc Gmail.",
+    server_unavailable: "Gmail đang không phản hồi. Thử lại sau ít phút.",
+    upstream_error: "Gmail đang không phản hồi. Thử lại sau ít phút.",
+    rate_limited: "Đọc mail quá nhiều lần liền. Đợi một chút rồi thử lại.",
+  })[e?.code] || "Không đọc được Gmail" + (e?.code ? ` (${e.code})` : "") + ".";
+}
+const IMP = { haute: ["t-exam", "Quan trọng"], moyenne: ["t-deadline", "Nên đọc"], basse: ["t-other", "Thông tin"] };
+function renderMail() {
+  $("#mailList").innerHTML = state.mail.recent.map((m) => {
+    const imp = IMP[m.importance] || IMP.basse;
+    return `<div class="item"><div class="head"><span class="pill ${imp[0]}">${imp[1]}</span><span class="title">${esc(m.subject || "(không tiêu đề)")}</span><span class="when mono">${esc(String(m.date).slice(0, 10))}</span></div>
+      <div class="kv muted">${esc(m.from)}</div>
+      <div class="kv">${esc(m.resume)}</div>
+      ${m.action ? `<div class="kv"><b>👉 Cần làm:</b> ${esc(m.action)}</div>` : ""}
+      ${m.url ? `<div><a class="small" href="${esc(m.url)}" target="_blank" rel="noopener" style="color:var(--accent)">Mở trong Gmail ↗</a></div>` : ""}</div>`;
+  }).join("");
+}
+$("#mailGo").addEventListener("click", async (e) => {
+  const btn = e.currentTarget, status = $("#mailStatus");
+  const mcp = await window.claude?.use?.("mcp");
+  const sample = await getSample();
+  if (!mcp || !sample) { status.textContent = "Mở app trên claude.ai (đã đăng nhập) để đọc mail."; return; }
+  btn.disabled = true; $("#mailEvents").innerHTML = "";
+  let phase = "gmail";
+  try {
+    status.textContent = "Đang tìm mail của trường…";
+    const days = +$("#mailDays").value || 7;
+    const r = await mcp.callTool("Gmail", "search_threads", { query: MAIL_Q(days), pageSize: 25, view: "THREAD_VIEW_SUMMARY" });
+    const threads = Array.isArray(r?.payload?.threads) ? r.payload.threads : [];
+    const seen = new Set(state.mail.seen);
+    const keyOf = (t) => `${t.id}:${t.messageCount || 1}`;
+    const fresh = threads.filter((t) => t?.id && !seen.has(keyOf(t))).slice(0, 10);
+    if (!fresh.length) { status.textContent = `Không có mail mới của trường trong ${days} ngày qua. (Mail cũ đã đọc nằm ở dưới.)`; return; }
+    const mails = [];
+    for (let i = 0; i < fresh.length; i++) {
+      status.textContent = `Đang đọc mail ${i + 1}/${fresh.length}…`;
+      const t = fresh[i];
+      try {
+        const th = await mcp.callTool("Gmail", "get_thread", { threadId: t.id, messageFormat: "PLAIN_TEXT" });
+        const msgs = Array.isArray(th?.payload?.messages) ? th.payload.messages : [];
+        const last = msgs.slice(-3), lm = last[last.length - 1] || {};
+        let body = last.map((m) => `De : ${m.sender || ""} — ${m.date || ""}\n${m.plaintextBody || m.snippet || ""}`).join("\n---\n");
+        if (body.length > 7000) body = body.slice(0, 7000) + "\n[… mail tronqué …]";
+        const att = last.flatMap((m) => (Array.isArray(m.attachments) ? m.attachments : []).map((a) => a?.filename || a?.name || a?.title).filter(Boolean));
+        mails.push({ id: t.id, key: keyOf(t), subject: lm.subject || msgs[0]?.subject || "", from: lm.sender || "", date: lm.date || "", url: th?.payload?.viewUrl || t.viewUrl || "", body, att });
+      } catch (err) { if (["needs_reauth", "server_not_connected", "not_granted", "approval_required", "blocked_by_policy"].includes(err?.code)) throw err; }
+    }
+    if (!mails.length) { status.textContent = "Không đọc được nội dung mail nào, thử lại sau."; return; }
+    status.textContent = "Claude đang tóm tắt…";
+    phase = "claude";
+    const res = await sample.json(`Tu aides un·e étudiant·e vietnamien·ne de L1 EEA à Sorbonne Université (campus Pierre et Marie Curie). Date du jour : ${todayISO()}.
+Voici ${mails.length} mails universitaires, chacun avec un numéro [ref]. Pour chacun : résumé clair en vietnamien (2-4 phrases), importance, action concrète attendue. Puis extrais TOUS les examens, rendus, fermetures, blocages, vacances et événements (dates relatives → dates absolues ; n'invente rien).
+Réponds UNIQUEMENT avec un JSON :
+{"mails": [{"ref": 0, "resume_vi": "...", "importance": "haute|moyenne|basse", "action_vi": "action concrète ou ''"}],
+ "events": [{"type": "exam|deadline|event|closure|holiday|other", "title": "...", "date": "AAAA-MM-JJ ou ''", "time": "HH:MM ou ''", "course": "", "location": "", "to_submit": "ce qu'il faut rendre et où", "exam_content": "chapitres au programme", "details": "", "presence": "oui|non|inconnu"}]}
+
+${mails.map((m, i) => `[ref:${i}] Objet : ${m.subject}\nDe : ${m.from}\nDate : ${m.date}\nPièces jointes : ${m.att.join(", ") || "aucune"}\n\n${m.body}`).join("\n\n=====\n\n")}`, { cache: false });
+    const sums = Array.isArray(res?.mails) ? res.mails : [];
+    const added = [];
+    mails.forEach((m, i) => {
+      const s = sums.find((x) => +x?.ref === i) || {};
+      added.push({ id: m.id, subject: m.subject, from: m.from, date: m.date, url: m.url, resume: s.resume_vi || "", importance: s.importance || "basse", action: s.action_vi || "" });
+    });
+    state.mail.recent = [...added, ...state.mail.recent.filter((x) => !added.some((a) => a.id === x.id))].slice(0, 40);
+    state.mail.seen = [...state.mail.seen, ...mails.map((m) => m.key)].slice(-600);
+    saveMail(); renderMail();
+    const evs = Array.isArray(res?.events) ? res.events.filter((x) => x?.title) : [];
+    status.textContent = `✅ Đã đọc ${mails.length} mail mới.` + (evs.length ? ` Tìm thấy ${evs.length} mốc thời gian:` : "");
+    if (evs.length) {
+      $("#mailEvents").innerHTML = evs.map((ev, i) => `<label class="check"><input type="checkbox" data-mev="${i}" checked> ${esc(TYPE[ev.type] || "•")} ${esc(ev.date || "?")} ${esc(ev.time || "")} — ${esc(ev.title)}</label>`).join("") + `<button class="primary" id="mailAddEvs">Thêm vào lịch</button>`;
+      $("#mailAddEvs").addEventListener("click", (ev2) => {
+        const chosen = $$("[data-mev]").filter((c) => c.checked).map((c) => evs[+c.dataset.mev]);
+        const n = mergeEvents(chosen, "mail"); renderAll(); toast(`📅 Đã thêm ${n} mốc vào lịch`); ev2.currentTarget.disabled = true;
+      });
+    }
+  } catch (err) {
+    status.textContent = "⚠️ " + (phase === "claude" ? sampleErr(err) : mcpErr(err));
+  } finally { btn.disabled = false; }
 });
 
 // ---------- Tài liệu (PDF → chữ, ảnh scan → Claude đọc) ----------
@@ -850,7 +954,7 @@ function show(v) {
 }
 $$("nav.tabs button").forEach((b) => b.addEventListener("click", () => show(b.dataset.v)));
 window.addEventListener("hashchange", () => show(location.hash.slice(1)));
-function renderAll() { renderHome(); renderAgenda(); renderCourses(); if (!rv.card) renderDecks(); }
+function renderAll() { renderHome(); renderAgenda(); renderCourses(); renderMail(); if (!rv.card) renderDecks(); }
 show(location.hash.slice(1) || "home");
 renderAll();
 loadData();
