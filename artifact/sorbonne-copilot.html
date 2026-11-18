@@ -1,0 +1,858 @@
+<title>Sorbonne Copilot</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: app một cột kiểu điện thoại, thanh tab cố định ở đáy, nội dung là các "phiếu" giấy trên nền bảng đen-xanh Jussieu */
+:root {
+  --bg: #eef1f6;
+  --paper: #ffffff;
+  --ink: #17213a;
+  --muted: #5d6882;
+  --line: #d9dfea;
+  --accent: #23408e;      /* bleu Sorbonne */
+  --accent-ink: #ffffff;
+  --chalk: #f3b63f;       /* vàng phấn */
+  --soft: #e5ebf8;
+  --go: #1f8a5b; --go-bg: #e3f4ec;
+  --warn: #b86e00; --warn-bg: #fff3dc;
+  --bad: #c2372d; --bad-bg: #fde9e7;
+  --font: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --r: 14px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1422; --paper: #182033; --ink: #e7ebf5; --muted: #9aa5c0; --line: #2a3550;
+  --accent: #8eaaf5; --accent-ink: #0f1422; --chalk: #f3b63f; --soft: #1f2a44;
+  --go: #5fd19c; --go-bg: #12301f; --warn: #f0b552; --warn-bg: #33270f; --bad: #ff8a80; --bad-bg: #3a1714;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0f1422; --paper: #182033; --ink: #e7ebf5; --muted: #9aa5c0; --line: #2a3550;
+  --accent: #8eaaf5; --accent-ink: #0f1422; --chalk: #f3b63f; --soft: #1f2a44;
+  --go: #5fd19c; --go-bg: #12301f; --warn: #f0b552; --warn-bg: #33270f; --bad: #ff8a80; --bad-bg: #3a1714;
+  color-scheme: dark; }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.55 var(--font); }
+.app { max-width: 760px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 12px 110px; }
+header.top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-block: 6px 10px; }
+.brand { font-weight: 800; font-size: 1.2rem; letter-spacing: -0.01em; }
+.brand b { color: var(--accent); }
+.date { color: var(--muted); font-size: .85rem; }
+h2 { font-size: 1.35rem; font-weight: 800; margin: 8px 0 4px; text-wrap: balance; letter-spacing: -0.01em; }
+h3 { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 22px 0 8px; }
+p { margin: 6px 0; }
+.muted { color: var(--muted); } .small { font-size: .84rem; } .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.sheet { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; }
+.stack { display: grid; gap: 10px; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.row > .grow { flex: 1; min-width: 0; }
+button, .btn { font: inherit; font-weight: 600; cursor: pointer; border-radius: 12px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); padding: 9px 14px; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+button:hover, .btn:hover { border-color: var(--accent); }
+button:focus-visible, .btn:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button:disabled { opacity: .5; cursor: default; }
+.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.chip { font-size: .82rem; padding: 6px 11px; border-radius: 999px; font-weight: 500; }
+.ghost { border-color: transparent; background: transparent; padding: 6px 8px; }
+input, textarea, select { font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; width: 100%; }
+textarea { resize: vertical; }
+label.check { display: inline-flex; align-items: center; gap: 8px; font-size: .9rem; cursor: pointer; }
+label.check input { width: auto; accent-color: var(--accent); }
+
+/* tab bar */
+nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; background: var(--paper); border-top: 1px solid var(--line);
+  display: flex; justify-content: center; padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+nav.tabs .in { display: grid; grid-template-columns: repeat(5, 1fr); width: 100%; max-width: 760px; }
+nav.tabs button { border: 0; border-radius: 0; background: none; flex-direction: column; gap: 2px; padding: 9px 2px 10px; font-size: .72rem; font-weight: 600; color: var(--muted); }
+nav.tabs button svg { width: 22px; height: 22px; }
+nav.tabs button[aria-current="page"] { color: var(--accent); }
+nav.tabs button[aria-current="page"] svg { stroke-width: 2.3; }
+.badge { background: var(--bad); color: #fff; border-radius: 999px; font-size: .65rem; padding: 0 5px; margin-left: 2px; font-weight: 700; }
+
+/* today */
+.verdict { border-radius: var(--r); padding: 16px; display: grid; gap: 6px; border: 1px solid var(--line); background: var(--soft); }
+.stat { display: flex; align-items: baseline; gap: 8px; }
+.stat .n { font-size: 2rem; font-weight: 800; color: var(--accent); font-variant-numeric: tabular-nums; line-height: 1; }
+
+/* agenda items */
+.item { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 11px 13px; display: grid; gap: 3px; }
+.item .head { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.item .title { font-weight: 700; min-width: 0; overflow-wrap: anywhere; }
+.pill { font-size: .72rem; font-weight: 700; border-radius: 999px; padding: 1px 8px; white-space: nowrap; }
+.t-exam { background: var(--bad-bg); color: var(--bad); }
+.t-deadline { background: var(--warn-bg); color: var(--warn); }
+.t-closure { background: var(--warn-bg); color: var(--warn); }
+.t-holiday { background: var(--go-bg); color: var(--go); }
+.t-event, .t-other { background: var(--soft); color: var(--accent); }
+.when { margin-left: auto; font-size: .8rem; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.soon { color: var(--bad); font-weight: 700; }
+.item.done { opacity: .5; }
+.kv { font-size: .86rem; } .kv b { font-weight: 600; }
+
+/* study */
+.courses { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.course { flex: 0 0 auto; max-width: 240px; text-align: left; flex-direction: column; align-items: flex-start; gap: 0; }
+.course[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.course span { font-weight: 500; font-size: .75rem; color: var(--muted); }
+.chat { display: flex; flex-direction: column; gap: 10px; margin: 10px 0; }
+.msg { border-radius: 16px; padding: 10px 14px; max-width: 94%; min-width: 0; overflow-wrap: anywhere; }
+.msg.user { align-self: flex-end; background: var(--accent); color: var(--accent-ink); white-space: pre-wrap; border-bottom-right-radius: 4px; }
+.msg.assistant { align-self: flex-start; background: var(--paper); border: 1px solid var(--line); border-bottom-left-radius: 4px; }
+.msg.fix { align-self: flex-end; background: var(--warn-bg); border: 1px dashed var(--warn); color: var(--ink); font-size: .9rem; }
+.msg.fix ul { margin: 4px 0; padding-left: 18px; } .msg.fix li { margin: 6px 0; }
+.msg.fix s { color: var(--bad); }
+.composer { position: sticky; bottom: calc(64px + env(safe-area-inset-bottom, 0px)); background: var(--bg); padding-block: 8px; display: grid; gap: 6px; }
+.quick { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+.quick button { flex: 0 0 auto; }
+.md :is(h1,h2,h3,h4) { font-size: 1rem; text-transform: none; letter-spacing: 0; color: var(--ink); margin: 10px 0 4px; }
+.md p { margin: 5px 0; } .md ul, .md ol { padding-left: 20px; margin: 4px 0; }
+.md pre { overflow-x: auto; background: var(--soft); border-radius: 8px; padding: 8px; font-family: var(--mono); font-size: .85rem; }
+.md code { font-family: var(--mono); font-size: .88em; background: var(--soft); border-radius: 4px; padding: 0 4px; }
+.md table { display: block; overflow-x: auto; border-collapse: collapse; } .md td, .md th { border: 1px solid var(--line); padding: 4px 8px; }
+.md a { color: var(--accent); }
+.md blockquote { border-left: 3px solid var(--chalk); margin: 6px 0; padding: 2px 10px; color: var(--muted); }
+mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+.thinking { display: inline-flex; gap: 8px; align-items: center; color: var(--muted); font-size: .88rem; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--chalk); animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .25; } }
+@media (prefers-reduced-motion: reduce) { .dot { animation: none; } }
+
+/* flashcards */
+.decks { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.deck { flex-direction: column; align-items: flex-start; text-align: left; gap: 2px; }
+.deck .n { font-size: 1.4rem; font-weight: 800; color: var(--accent); font-variant-numeric: tabular-nums; }
+.card-face { min-height: 150px; display: grid; place-items: center; text-align: center; font-size: 1.1rem; font-weight: 600; padding: 18px; }
+.answer { border-top: 1px dashed var(--line); padding-top: 12px; }
+.mnemo { background: var(--warn-bg); border-radius: 10px; padding: 8px 12px; margin-top: 8px; font-size: .92rem; }
+.grades { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.grades button { justify-content: center; flex-direction: column; gap: 0; font-size: .85rem; }
+.grades button span { font-size: .7rem; font-weight: 500; color: var(--muted); }
+
+.notice { border-radius: 12px; padding: 10px 12px; font-size: .88rem; background: var(--warn-bg); color: var(--ink); border: 1px solid var(--warn); }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(80px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 12px; z-index: 30; max-width: calc(100vw - 32px); font-size: .9rem; }
+.dropzone { border: 2px dashed var(--line); border-radius: var(--r); padding: 14px; text-align: center; color: var(--muted); }
+.progress { height: 6px; background: var(--soft); border-radius: 999px; overflow: hidden; } .progress i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .3s; }
+.copybox { font-family: var(--mono); font-size: .78rem; max-height: 120px; }
+details > summary { cursor: pointer; font-weight: 600; padding: 4px 0; }
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">Sorbonne <b>Copilot</b></div>
+    <div class="date" id="today"></div>
+  </header>
+  <div id="globalNotice" class="notice" hidden></div>
+
+  <!-- HÔM NAY -->
+  <section id="v-home" class="stack">
+    <h2>Hôm nay</h2>
+    <div class="verdict" id="homeVerdict">
+      <div style="font-weight:700">🏫 Hôm nay có cần lên trường không?</div>
+      <p class="small">App không tự lên mạng được. Bấm nút dưới: app chép sẵn câu lệnh (kèm lịch của bạn), rồi bạn dán vào Claude và bật <b>Tìm kiếm web</b>. Claude sẽ tìm tin blocus, biểu tình, giao thông, Instagram @sorbonne_univ và @sorbonne_sciences_vieetudiante.</p>
+      <div class="row">
+        <button class="primary" id="copyBriefing">📋 Chép lệnh briefing</button>
+        <a class="btn" href="https://claude.ai/new" target="_blank" rel="noopener">Mở Claude ↗</a>
+      </div>
+      <p class="small muted">Có kết quả rồi thì dán nó vào tab <b>Kiểm tra</b> để app lưu ngày thi và hạn nộp vào lịch.</p>
+    </div>
+    <div class="row">
+      <div class="sheet grow stat"><span class="n" id="dueCount">0</span><span class="small">thẻ cần ôn hôm nay</span></div>
+      <div class="sheet grow stat"><span class="n" id="soonCount">0</span><span class="small">mốc trong 14 ngày tới</span></div>
+    </div>
+    <h3>Sắp tới</h3>
+    <div class="stack" id="homeAgenda"></div>
+  </section>
+
+  <!-- HỌC -->
+  <section id="v-study" class="stack" hidden>
+    <h2>Học với gia sư</h2>
+    <div class="courses" id="courseBar"></div>
+    <details class="sheet" id="addCourse">
+      <summary>➕ Thêm tài liệu (slide, giáo trình)</summary>
+      <div class="stack" style="margin-top:10px">
+        <input id="cTitle" placeholder="Tên môn / chương, vd: Électrocinétique – ch.2">
+        <textarea id="cExam" rows="2" placeholder="Nội dung thi của môn này (nếu biết)"></textarea>
+        <div class="dropzone small">PDF, ảnh chụp slide, hoặc file .txt<br><input id="cFiles" type="file" multiple accept="application/pdf,image/*,.txt,.md" style="margin-top:8px"></div>
+        <div class="progress" hidden id="cProg"><i></i></div>
+        <div class="small muted" id="cStatus"></div>
+        <button class="primary" id="cAdd">Tải lên</button>
+      </div>
+    </details>
+    <div id="studyEmpty" class="sheet muted small">Chưa có tài liệu. Thêm một file PDF để bắt đầu học kiểu Feynman: gia sư giảng bằng ví dụ vui, rồi bắt bạn giải thích lại.</div>
+
+    <div id="studyPane" hidden>
+      <div class="sheet stack">
+        <div class="row">
+          <strong class="grow" id="curTitle"></strong>
+          <button class="chip" id="mkCards">🃏 Tạo flashcards</button>
+          <button class="chip ghost" id="resetChat" title="Buổi học mới">↺ Buổi mới</button>
+        </div>
+        <div class="small muted" id="curInfo"></div>
+        <div class="row small">
+          <span>Học trang</span>
+          <input id="pFrom" type="number" min="1" style="width:76px" aria-label="Từ trang">
+          <span>→</span>
+          <input id="pTo" type="number" min="1" style="width:76px" aria-label="Đến trang">
+          <button class="chip ghost" id="editExam">🎯 Sửa nội dung thi</button>
+        </div>
+        <div id="examEditBox" hidden class="row">
+          <textarea id="examInput" rows="2" class="grow"></textarea>
+          <button class="chip primary" id="saveExam">Lưu</button>
+        </div>
+        <div id="resetConfirm" hidden class="row notice">
+          <span class="grow">Xoá cuộc trò chuyện này để bắt đầu buổi mới? Flashcards vẫn giữ.</span>
+          <button class="chip" id="resetYes">Xoá</button><button class="chip ghost" id="resetNo">Thôi</button>
+        </div>
+      </div>
+      <div class="chat" id="chat"></div>
+      <div class="composer">
+        <div class="quick" id="quick">
+          <button class="chip" data-q="Commence le cours depuis le début de ces pages : quelles sont les grandes idées ? Explique la première.">🚀 Bắt đầu</button>
+          <button class="chip" data-q="Je n'ai pas compris. Réexplique avec une autre analogie, plus simple.">🤯 Chưa hiểu</button>
+          <button class="chip" data-q="Pourquoi c'est comme ça, physiquement ? Va au fond des choses.">🔬 Bản chất?</button>
+          <button class="chip" data-q="Donne-moi un exercice type examen sur ce qu'on vient de voir, sans la correction.">📝 Bài tập</button>
+          <button class="chip" data-q="Fais-moi un quiz rapide de 5 questions sur ce qu'on a vu.">⚡ Quiz</button>
+        </div>
+        <div class="row small">
+          <label class="check"><input type="checkbox" id="viMode"> 🇻🇳 Tui không hiểu tiếng Pháp</label>
+          <label class="check"><input type="checkbox" id="feynMode"> 🗣️ Tui tự giải thích lại (chấm điểm)</label>
+        </div>
+        <div class="row">
+          <textarea id="chatIn" class="grow" rows="2" placeholder="Hỏi bằng tiếng Pháp, sai ngữ pháp sẽ được sửa 😉"></textarea>
+          <button class="primary" id="send" aria-label="Gửi">➤</button>
+          <button id="stop" hidden aria-label="Dừng">■</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÔN TẬP -->
+  <section id="v-cards" class="stack" hidden>
+    <h2>Ôn tập</h2>
+    <p class="small muted">Lặp lại ngắt quãng: thẻ nhớ tốt sẽ quay lại sau 1, 4, 10… ngày; thẻ quên sẽ quay lại ngay.</p>
+    <div class="decks" id="decks"></div>
+    <div id="review" class="sheet stack" hidden>
+      <div class="row small muted"><span class="grow" id="rvMeta"></span><button class="chip ghost" id="rvExit">Thoát</button></div>
+      <div class="card-face md" id="rvFront"></div>
+      <div class="answer md" id="rvBack" hidden></div>
+      <button class="primary" id="rvShow" style="justify-content:center">Xem đáp án</button>
+      <div class="grades" id="rvGrades" hidden>
+        <button data-g="0">😵 Quên<span>ngay lại</span></button>
+        <button data-g="3">😬 Khó<span>ngắn</span></button>
+        <button data-g="4">🙂 Ổn<span>vừa</span></button>
+        <button data-g="5">😎 Dễ<span>dài</span></button>
+      </div>
+    </div>
+    <div id="rvDone" class="sheet muted small" hidden>🎉 Hết thẻ cần ôn trong bộ này. Mai quay lại nhé!</div>
+  </section>
+
+  <!-- LỊCH -->
+  <section id="v-agenda" class="stack" hidden>
+    <h2>Lịch thi & hạn nộp</h2>
+    <div class="row">
+      <button id="planBtn">🗺️ Kế hoạch ôn thi</button>
+      <button id="addToggle">➕ Thêm thủ công</button>
+    </div>
+    <div id="planOut" class="sheet md" hidden></div>
+    <form id="addForm" class="sheet stack" hidden>
+      <div class="row">
+        <select id="aType" style="width:auto"><option value="exam">📝 Thi</option><option value="deadline">📤 Hạn nộp</option><option value="event">📌 Sự kiện</option><option value="closure">🚧 Đóng cửa / blocus</option><option value="holiday">🌴 Nghỉ</option></select>
+        <input id="aDate" type="date" style="width:auto">
+        <input id="aTime" type="time" style="width:auto">
+      </div>
+      <input id="aTitle" placeholder="Tiêu đề" required>
+      <input id="aCourse" placeholder="Môn (UE)">
+      <input id="aSubmit" placeholder="Cần nộp gì / nộp ở đâu">
+      <textarea id="aExam" rows="2" placeholder="Nội dung thi"></textarea>
+      <button class="primary" type="submit">Thêm</button>
+    </form>
+    <div class="stack" id="agendaList"></div>
+  </section>
+
+  <!-- KIỂM TRA -->
+  <section id="v-inbox" class="stack" hidden>
+    <h2>Kiểm tra thông tin</h2>
+    <p class="small muted">Gửi ảnh chụp mail, story Instagram, bài Facebook, hoặc dán nội dung. App tóm tắt, tìm ngày thi/hạn nộp để lưu vào lịch, và chỉ ra chỗ nào cần kiểm chứng.</p>
+    <div class="sheet stack">
+      <textarea id="inText" rows="5" placeholder="Dán nội dung mail / tin tức / kết quả briefing…"></textarea>
+      <input id="inFiles" type="file" multiple accept="image/*">
+      <div class="row">
+        <button class="primary" id="inGo">🔎 Phân tích</button>
+        <span class="small muted" id="inImgNote"></span>
+      </div>
+    </div>
+    <div id="inOut" class="stack"></div>
+  </section>
+</div>
+
+<nav class="tabs" aria-label="Điều hướng">
+  <div class="in">
+    <button data-v="home" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>Hôm nay</button>
+    <button data-v="study"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l10-3 10 3-10 3z"/><path d="M6 8v6c0 1.7 2.7 3 6 3s6-1.3 6-3V8"/></svg>Học</button>
+    <button data-v="cards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="14" height="14" rx="2"/><path d="M7 3h12a2 2 0 0 1 2 2v12"/></svg><span>Ôn tập<span class="badge" id="navDue" hidden></span></span></button>
+    <button data-v="agenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Lịch</button>
+    <button data-v="inbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.5-4.5"/></svg>Kiểm tra</button>
+  </div>
+</nav>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+window.MathJax = { tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] }, svg: { fontCache: "global" }, startup: { typeset: false } };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js" async></script>
+<script>
+(() => {
+"use strict";
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => [...document.querySelectorAll(s)];
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const uid8 = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+
+// ---------- ngày giờ (Paris) ----------
+const todayISO = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Paris" }).format(new Date());
+const addDays = (iso, n) => { const d = new Date(iso + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+const diffDays = (iso) => Math.round((new Date(iso + "T12:00:00Z") - new Date(todayISO() + "T12:00:00Z")) / 86400000);
+const whenLabel = (iso) => { if (!iso) return "chưa rõ ngày"; const d = diffDays(iso); return d === 0 ? "hôm nay" : d === 1 ? "ngày mai" : d < 0 ? `${-d} ngày trước` : `còn ${d} ngày`; };
+$("#today").textContent = new Date().toLocaleDateString("vi-VN", { weekday: "long", day: "numeric", month: "long", timeZone: "Europe/Paris" });
+
+function toast(msg, ms = 3200) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => (t.hidden = true), ms); }
+
+// ---------- Markdown + công thức ----------
+function md(text) {
+  const maths = [];
+  const keep = (tex, display) => `@@M${maths.push({ tex, display }) - 1}@@`;
+  const src = String(text || "")
+    .replace(/\$\$([\s\S]+?)\$\$/g, (_, t) => keep(t, true))
+    .replace(/\\\[([\s\S]+?)\\\]/g, (_, t) => keep(t, true))
+    .replace(/\\\((.+?)\\\)/g, (_, t) => keep(t, false))
+    .replace(/(^|[^\\$\w])\$([^\s$](?:[^$\n]*?[^\s$])?)\$/g, (_, pre, t) => pre + keep(t, false));
+  const raw = window.marked ? window.marked.parse(src) : esc(src).replace(/\n/g, "<br>");
+  const clean = window.DOMPurify ? window.DOMPurify.sanitize(raw) : esc(src);
+  return clean.replace(/@@M(\d+)@@/g, (_, i) => { const m = maths[+i]; return m.display ? `\\[${esc(m.tex)}\\]` : `\\(${esc(m.tex)}\\)`; })
+    .replace(/<a /g, '<a target="_blank" rel="noopener" ');
+}
+function typeset(el) { if (window.MathJax?.typesetPromise) window.MathJax.typesetPromise([el]).catch(() => {}); }
+function setMd(el, text) { el.innerHTML = md(text); typeset(el); }
+
+// ---------- lưu trữ (db riêng tư theo người dùng) ----------
+const state = { agenda: [], courses: [], decks: {}, chats: {}, cur: null, persist: false };
+let base = null; // collection data/users/<id>
+const writeQueue = new Map();
+function save(docId, data) {
+  if (!base) return Promise.resolve();
+  const prev = writeQueue.get(docId) || Promise.resolve();
+  const next = prev.then(() => base.doc(docId).set(data)).catch((e) => {
+    if (e?.code === "quota_exceeded") showNotice("Bộ nhớ của app đã đầy. Hãy xoá bớt tài liệu cũ.");
+    else console.warn("save", docId, e);
+  });
+  writeQueue.set(docId, next);
+  return next;
+}
+const saveAgenda = () => save("agenda", { items: state.agenda });
+const saveCourses = () => save("courses", { list: state.courses });
+const saveDeck = (id) => save("deck-" + id, { cards: state.decks[id] || [] });
+const saveChat = (id) => save("chat-" + id, state.chats[id] || { turns: [] });
+function showNotice(msg) { const n = $("#globalNotice"); n.textContent = msg; n.hidden = !msg; }
+
+async function loadData() {
+  const timer = setTimeout(() => showNotice("Đang chờ kết nối dữ liệu…"), 10000);
+  try {
+    const db = await window.claude?.use?.("db");
+    const user = await window.claude?.use?.("user");
+    const id = user ? await user.id() : null;
+    if (!db || !id) { showNotice("Bạn cần đăng nhập claude.ai để app lưu được dữ liệu. Hiện dữ liệu chỉ giữ tới khi đóng trang."); return; }
+    base = db.collection("data/users/" + id);
+    const snap = await base.get();
+    for (const d of snap.docs) {
+      const v = d.data();
+      if (d.id === "agenda") state.agenda = v.items || [];
+      else if (d.id === "courses") state.courses = v.list || [];
+      else if (d.id.startsWith("deck-")) state.decks[d.id.slice(5)] = v.cards || [];
+      else if (d.id.startsWith("chat-")) state.chats[d.id.slice(5)] = v;
+    }
+    state.persist = true;
+    showNotice("");
+  } catch (e) {
+    console.warn(e);
+    showNotice("Không đọc được dữ liệu đã lưu. Thử tải lại trang sau.");
+  } finally { clearTimeout(timer); renderAll(); }
+}
+async function loadCourseText(c) {
+  if (c._pages) return c._pages;
+  const pages = [];
+  if (base) for (let i = 0; i < (c.chunks || 0); i++) {
+    const s = await base.doc(`text-${c.id}-${i}`).get();
+    if (s.exists) pages.push(...(s.data().pages || []));
+  }
+  c._pages = pages;
+  return pages;
+}
+
+// ---------- Claude (dùng lượt trong gói của bạn) ----------
+let samplePromise = null;
+const getSample = () => (samplePromise ||= (window.claude?.use?.("sample") ?? Promise.resolve(null)));
+function sampleErr(e) {
+  const c = e?.code;
+  if (c === "not_granted") return "Bạn chưa cho phép trang dùng Claude. Tải lại trang và bấm Cho phép.";
+  if (c === "rate_limited") return "Đã chạm giới hạn dùng Claude của gói. Đợi một lúc rồi thử lại.";
+  if (c === "invalid_json") return "Claude trả lời sai định dạng, bấm thử lại nhé.";
+  if (c === "refused") return "Claude từ chối yêu cầu này.";
+  if (c === "prompt_too_large") return "Tài liệu quá dài cho một lần hỏi. Chọn khoảng trang nhỏ hơn.";
+  if (c === "session_expired") return "Phiên đăng nhập hết hạn. Tải lại trang.";
+  if (c === "images_unavailable" || c === "image_rejected") return "Không gửi được ảnh này cho Claude.";
+  return "Có lỗi khi hỏi Claude" + (c ? ` (${c})` : "") + ".";
+}
+
+// ---------- Lịch ----------
+const TYPE = { exam: "📝 Thi", deadline: "📤 Hạn nộp", event: "📌 Sự kiện", closure: "🚧 Đóng cửa", holiday: "🌴 Nghỉ", other: "• Khác" };
+const norm = (s) => (s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+function mergeEvents(events, source) {
+  let added = 0;
+  for (const e of events || []) {
+    if (!e?.title) continue;
+    const date = /^\d{4}-\d{2}-\d{2}$/.test(e.date || "") ? e.date : "";
+    const dup = state.agenda.find((a) => a.date === date && norm(a.title) === norm(e.title));
+    if (dup) { for (const k of ["time", "course", "location", "to_submit", "exam_content", "details"]) if (!dup[k] && e[k]) dup[k] = e[k]; continue; }
+    state.agenda.push({ id: uid8(), type: TYPE[e.type] ? e.type : "other", title: e.title, date, time: e.time || "", course: e.course || "", location: e.location || "",
+      to_submit: e.to_submit || "", exam_content: e.exam_content || "", details: e.details || "", presence: e.presence || "", source, done: false });
+    added++;
+  }
+  state.agenda.sort((a, b) => (a.date || "9999").localeCompare(b.date || "9999"));
+  saveAgenda();
+  return added;
+}
+function itemHtml(a, actions) {
+  const d = a.date ? diffDays(a.date) : null;
+  return `<div class="item ${a.done ? "done" : ""}" data-id="${esc(a.id)}">
+    <div class="head"><span class="pill t-${esc(a.type)}">${TYPE[a.type] || "•"}</span><span class="title">${esc(a.title)}</span>
+      <span class="when mono ${d !== null && d >= 0 && d <= 3 ? "soon" : ""}">${esc(a.date ? a.date.slice(8, 10) + "/" + a.date.slice(5, 7) : "")} ${esc(a.time)} · ${whenLabel(a.date)}</span></div>
+    ${a.course ? `<div class="kv">📚 ${esc(a.course)}</div>` : ""}
+    ${a.location ? `<div class="kv">📍 ${esc(a.location)}</div>` : ""}
+    ${a.to_submit ? `<div class="kv"><b>📤 Cần nộp:</b> ${esc(a.to_submit)}</div>` : ""}
+    ${a.exam_content ? `<div class="kv"><b>🎯 Nội dung thi:</b> ${esc(a.exam_content)}</div>` : ""}
+    ${a.presence === "oui" ? `<div class="kv">🏫 Phải có mặt ở trường</div>` : ""}
+    ${a.details ? `<div class="kv muted">${esc(a.details)}</div>` : ""}
+    ${actions ? `<div class="row"><button class="chip" data-act="done">${a.done ? "↩ Bỏ đánh dấu" : "✓ Xong"}</button><button class="chip ghost" data-act="del">Xoá</button></div>` : ""}
+  </div>`;
+}
+function upcoming(days) { const t = todayISO(), end = addDays(t, days); return state.agenda.filter((a) => !a.done && (!a.date || (a.date >= t && a.date <= end))); }
+function agendaText(items) {
+  return items.length ? items.map((a) => `- [${a.type}] ${a.date || "?"} ${a.time} — ${a.title}${a.course ? " — " + a.course : ""}${a.to_submit ? " — à rendre: " + a.to_submit : ""}${a.exam_content ? " — programme: " + a.exam_content : ""}`).join("\n") : "(agenda vide)";
+}
+function renderAgenda() {
+  const t = todayISO();
+  const future = state.agenda.filter((a) => !a.date || a.date >= t);
+  const past = state.agenda.filter((a) => a.date && a.date < t);
+  $("#agendaList").innerHTML = (future.map((a) => itemHtml(a, true)).join("") || `<div class="sheet muted small">Lịch còn trống. Dán mail của trường vào tab <b>Kiểm tra</b> để app tự lấy ngày thi và hạn nộp.</div>`)
+    + (past.length ? `<details class="sheet"><summary>Đã qua (${past.length})</summary><div class="stack" style="margin-top:8px">${past.map((a) => itemHtml(a, true)).join("")}</div></details>` : "");
+}
+$("#agendaList").addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-act]"); if (!b) return;
+  const id = b.closest(".item").dataset.id;
+  const i = state.agenda.findIndex((a) => a.id === id); if (i < 0) return;
+  if (b.dataset.act === "del") state.agenda.splice(i, 1); else state.agenda[i].done = !state.agenda[i].done;
+  saveAgenda(); renderAll();
+});
+$("#addToggle").addEventListener("click", () => ($("#addForm").hidden = !$("#addForm").hidden));
+$("#addForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  mergeEvents([{ type: $("#aType").value, title: $("#aTitle").value.trim(), date: $("#aDate").value, time: $("#aTime").value, course: $("#aCourse").value, to_submit: $("#aSubmit").value, exam_content: $("#aExam").value }], "manuel");
+  e.target.reset(); $("#addForm").hidden = true; renderAll(); toast("Đã thêm vào lịch");
+});
+$("#planBtn").addEventListener("click", async (e) => {
+  const sample = await getSample(); if (!sample) return toast("Trang này cần chạy trên claude.ai để dùng Claude.");
+  const out = $("#planOut"); out.hidden = false; out.innerHTML = `<span class="thinking"><span class="dot"></span>Đang lập kế hoạch…</span>`;
+  e.target.disabled = true;
+  const courses = state.courses.map((c) => `- ${c.title}${c.examContent ? " — programme: " + c.examContent : ""} (${(state.decks[c.id] || []).length} flashcards)`).join("\n") || "(aucun)";
+  try {
+    await sample(`Tu es un coach de révision pour un·e étudiant·e vietnamien·ne en L1 EEA à Sorbonne Université. Réponds en vietnamien (garde les noms des matières en français).
+Date du jour : ${todayISO()}.
+Échéances :\n${agendaText(state.agenda.filter((a) => !a.done && (!a.date || a.date >= todayISO())))}
+Cours importés :\n${courses}
+Fais un plan de révision réaliste jusqu'au dernier examen : sessions de 25-50 min, répétition espacée (J+1, J+3, J+7), priorités selon les dates et ce qui est au programme. Markdown court, tableau par semaine, ton motivant et un peu drôle.`, { onText: ({ text }) => (out.innerHTML = md(text)), cache: false });
+    typeset(out);
+  } catch (err) { out.innerHTML = (err.text ? md(err.text) : "") + `<p class="small" style="color:var(--bad)">${esc(sampleErr(err))}</p>`; }
+  finally { e.target.disabled = false; }
+});
+
+// ---------- Hôm nay ----------
+function briefingPrompt() {
+  return `Briefing du ${todayISO()} — utilise la recherche web.
+Je suis étudiant·e en L1 EEA à Sorbonne Université, campus Pierre et Marie Curie (Jussieu, Paris 5e), surtout à distance. Réponds en vietnamien (noms officiels en français entre parenthèses).
+Cherche les infos d'aujourd'hui et d'hier :
+1. État du campus Jussieu : ouvert / fermé / blocus / filtrage, bâtiments accessibles, cours et examens maintenus ou passés à distance.
+2. Mobilisations : AG, appels au blocage, manifestations (parcours déclarés à la Préfecture de police, horaires, passage près de Jussieu).
+3. Transports : métro Jussieu (lignes 7 et 10), grèves RATP.
+4. Calendrier : vacances, jours fériés, examens.
+Sources prioritaires : sorbonne-universite.fr, sciences.sorbonne-universite.fr, Instagram @sorbonne_univ et @sorbonne_sciences_vieetudiante, syndicats étudiants, presse (Le Parisien, Le Monde, France Info). Si Instagram n'est pas accessible, dis-le.
+Commence par UNE ligne : 🏫 CẦN lên trường / 🏠 KHÔNG cần lên trường / ⚖️ Một phần / ❓ Chưa chắc.
+Puis sections courtes : 🏫 Campus · 📣 Blocus / biểu tình · 🚇 Giao thông · 📅 Sắp tới · ✅ Việc hôm nay · 🔗 Nguồn. Date chaque info, sépare officiel et rumeur.
+
+Mon agenda (14 jours) :
+${agendaText(upcoming(14))}`;
+}
+async function copyText(text, label) {
+  try { await navigator.clipboard.writeText(text); toast(`📋 Đã chép ${label}. Mở Claude, dán vào và bật Tìm kiếm web.`, 5000); }
+  catch { showCopyFallback(text); }
+}
+function showCopyFallback(text) {
+  const box = document.createElement("div");
+  box.className = "sheet stack";
+  box.innerHTML = `<div class="small">Không tự chép được. Bấm vào ô dưới, chọn tất cả rồi sao chép:</div><textarea class="copybox" rows="5" readonly></textarea>`;
+  box.querySelector("textarea").value = text;
+  const host = document.querySelector("section:not([hidden])");
+  host.appendChild(box);
+  const ta = box.querySelector("textarea"); ta.focus(); ta.select();
+}
+$("#copyBriefing").addEventListener("click", () => copyText(briefingPrompt(), "lệnh briefing"));
+function dueCards(deckId) { const t = todayISO(); return (state.decks[deckId] || []).filter((c) => c.due <= t); }
+function totalDue() { return Object.keys(state.decks).reduce((n, k) => n + dueCards(k).length, 0); }
+function renderHome() {
+  const up = upcoming(14);
+  $("#dueCount").textContent = totalDue();
+  $("#soonCount").textContent = up.length;
+  $("#homeAgenda").innerHTML = up.map((a) => itemHtml(a, false)).join("") || `<div class="sheet muted small">Chưa có mốc nào trong 14 ngày tới.</div>`;
+  const n = totalDue(); $("#navDue").hidden = !n; $("#navDue").textContent = n;
+}
+
+// ---------- Kiểm tra ----------
+let imgLimits = null;
+getSample().then(async (s) => {
+  if (!s) { $("#inImgNote").textContent = "Mở trang này trên claude.ai để dùng Claude."; return; }
+  imgLimits = await s.limits().catch(() => null);
+  if (!imgLimits?.images) { $("#inFiles").hidden = true; $("#inImgNote").textContent = "Thiết bị này chưa gửi ảnh được, hãy dán chữ."; }
+  else $("#inFiles").accept = imgLimits.images.mediaTypes.join(",");
+});
+$("#inGo").addEventListener("click", async (e) => {
+  const sample = await getSample(); if (!sample) return toast("Trang này cần chạy trên claude.ai để dùng Claude.");
+  const text = $("#inText").value.trim();
+  const files = [...$("#inFiles").files].slice(0, imgLimits?.images?.maxCount || 0);
+  if (!text && !files.length) return toast("Dán nội dung hoặc chọn ảnh trước nhé.");
+  const out = $("#inOut");
+  out.innerHTML = `<div class="sheet"><span class="thinking"><span class="dot"></span>Claude đang đọc…</span></div>`;
+  e.target.disabled = true;
+  try {
+    const r = await sample.json(`Tu aides un·e étudiant·e vietnamien·ne de L1 EEA à Sorbonne Université (campus Pierre et Marie Curie, Jussieu). Date du jour : ${todayISO()}.
+Analyse le contenu ci-dessous${files.length ? " et les captures d'écran jointes (mails, stories Instagram, posts, articles)" : ""}. Tu n'as PAS accès au web : n'invente rien, signale ce qui doit être vérifié.
+Réponds UNIQUEMENT avec un objet JSON :
+{"resume_vi": "résumé clair en vietnamien, 3-6 phrases",
+ "date_publication": "date de la publication si visible, sinon ''",
+ "fiabilite": "officiel" | "probable" | "rumeur" | "inconnu",
+ "points_a_verifier": ["affirmation à vérifier", ...],
+ "impact_vi": "ce que ça change pour l'étudiant (aller au campus ? rendre quelque chose ?), en vietnamien",
+ "events": [{"type": "exam|deadline|event|closure|holiday|other", "title": "...", "date": "AAAA-MM-JJ ou ''", "time": "HH:MM ou ''", "course": "", "location": "", "to_submit": "ce qu'il faut rendre et où", "exam_content": "chapitres au programme", "details": "", "presence": "oui|non|inconnu"}]}
+Convertis les dates relatives en dates absolues.
+
+Contenu :
+${text || "(voir images)"}`, { images: files.length ? files : undefined, cache: false });
+    const evs = Array.isArray(r?.events) ? r.events : [];
+    const rel = { officiel: ["t-holiday", "Nguồn chính thức"], probable: ["t-event", "Có vẻ đáng tin"], rumeur: ["t-exam", "Tin đồn"], inconnu: ["t-other", "Chưa rõ nguồn"] }[r?.fiabilite] || ["t-other", "Chưa rõ nguồn"];
+    const checkPrompt = `Vérifie avec la recherche web (date du jour ${todayISO()}) ces affirmations concernant Sorbonne Université / campus Jussieu, en priorisant les sources officielles, puis la presse, puis Instagram (@sorbonne_univ, @sorbonne_sciences_vieetudiante) et Facebook. Vérifie la date (vieille info recyclée ?). Verdict pour chacune : ✅ Đúng · ⚠️ Một phần · ❌ Sai · ❓ Chưa xác minh được, avec sources. Réponds en vietnamien.\n\n${(r?.points_a_verifier || []).map((p) => "- " + p).join("\n")}\n\nContenu original :\n${text || r?.resume_vi || ""}`;
+    out.innerHTML = `<div class="sheet stack">
+      <div class="row"><span class="pill ${rel[0]}">${rel[1]}</span>${r?.date_publication ? `<span class="small muted">đăng ngày ${esc(r.date_publication)}</span>` : ""}</div>
+      <div class="md">${md(r?.resume_vi || "")}</div>
+      ${r?.impact_vi ? `<div class="kv"><b>Ảnh hưởng tới bạn:</b> ${esc(r.impact_vi)}</div>` : ""}
+      ${(r?.points_a_verifier || []).length ? `<div><div class="kv"><b>Cần kiểm chứng:</b></div><ul class="small">${r.points_a_verifier.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>
+        <div class="row"><button class="chip primary" id="copyCheck">📋 Chép lệnh kiểm chứng</button><a class="btn chip" href="https://claude.ai/new" target="_blank" rel="noopener">Mở Claude ↗</a></div></div>` : ""}
+    </div>
+    ${evs.length ? `<div class="sheet stack"><div class="kv"><b>📅 Tìm thấy ${evs.length} mốc thời gian</b></div>
+      ${evs.map((ev, i) => `<label class="check"><input type="checkbox" data-ev="${i}" checked> ${esc(TYPE[ev.type] || "•")} ${esc(ev.date || "?")} ${esc(ev.time || "")} — ${esc(ev.title)}</label>`).join("")}
+      <button class="primary" id="addEvs">Thêm vào lịch</button></div>` : ""}`;
+    $("#copyCheck")?.addEventListener("click", () => copyText(checkPrompt, "lệnh kiểm chứng"));
+    $("#addEvs")?.addEventListener("click", () => {
+      const chosen = $$("[data-ev]").filter((c) => c.checked).map((c) => evs[+c.dataset.ev]);
+      const n = mergeEvents(chosen, "kiểm tra"); renderAll(); toast(`📅 Đã thêm ${n} mốc vào lịch`);
+      $("#addEvs").disabled = true;
+    });
+    $("#inText").value = ""; $("#inFiles").value = "";
+  } catch (err) { out.innerHTML = `<div class="sheet small" style="color:var(--bad)">${esc(sampleErr(err))}</div>`; }
+  finally { e.target.disabled = false; }
+});
+
+// ---------- Tài liệu (PDF → chữ, ảnh scan → Claude đọc) ----------
+function loadScript(src) { return new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = () => rej(new Error("load " + src)); document.head.appendChild(s); }); }
+let pdfReady = null;
+function getPdf() {
+  return (pdfReady ||= (async () => {
+    await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");
+    await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"); // chạy trên luồng chính
+    return window.pdfjsLib;
+  })());
+}
+const MAX_OCR_PAGES = 40;
+async function ocrImages(blobs, onProg) {
+  const sample = await getSample();
+  const max = Math.min(imgLimits?.images?.maxCount || 0, 5);
+  if (!sample || !max) throw new Error("no-images");
+  const out = [];
+  for (let i = 0; i < blobs.length; i += max) {
+    const batch = blobs.slice(i, i + max);
+    const r = await sample.json(`Ces ${batch.length} images sont des pages de cours (slides ou polycopié de L1 EEA). Transcris fidèlement le contenu de chaque page en Markdown, formules en LaTeX ($...$), décris brièvement les schémas entre [Schéma : ...]. Réponds UNIQUEMENT avec un tableau JSON de ${batch.length} chaînes, une par image, dans l'ordre.`, { images: batch, modelTier: "default" });
+    batch.forEach((_, j) => out.push(String(Array.isArray(r) ? r[j] ?? "" : "")));
+    onProg?.(Math.min(i + max, blobs.length), blobs.length);
+  }
+  return out;
+}
+async function pdfToPages(file, onProg) {
+  const pdfjs = await getPdf();
+  const doc = await pdfjs.getDocument({ data: await file.arrayBuffer() }).promise;
+  const pages = [], scanned = [];
+  for (let p = 1; p <= doc.numPages; p++) {
+    const page = await doc.getPage(p);
+    const tc = await page.getTextContent();
+    let s = "", lastY = null;
+    for (const it of tc.items) { const y = it.transform?.[5]; if (lastY !== null && Math.abs(y - lastY) > 4) s += "\n"; else if (s && !s.endsWith(" ")) s += " "; s += it.str; lastY = y; }
+    s = s.replace(/[ \t]+/g, " ").trim();
+    pages.push(s);
+    if (s.length < 40) scanned.push(p);
+    onProg?.(p, doc.numPages, "Đọc PDF");
+  }
+  if (scanned.length) {
+    const todo = scanned.slice(0, MAX_OCR_PAGES);
+    const blobs = [];
+    for (const p of todo) {
+      const page = await doc.getPage(p);
+      const vp = page.getViewport({ scale: 1.6 });
+      const cv = document.createElement("canvas"); cv.width = vp.width; cv.height = vp.height;
+      await page.render({ canvasContext: cv.getContext("2d"), viewport: vp }).promise;
+      blobs.push(await new Promise((r) => cv.toBlob(r, "image/jpeg", 0.82)));
+    }
+    try {
+      const texts = await ocrImages(blobs, (d, t) => onProg?.(d, t, "Claude đọc trang scan"));
+      todo.forEach((p, i) => (pages[p - 1] = texts[i] || pages[p - 1]));
+    } catch { /* giữ chữ đã có */ }
+  }
+  return { pages, scanned: scanned.length, ocrSkipped: Math.max(0, scanned.length - MAX_OCR_PAGES) };
+}
+$("#cAdd").addEventListener("click", async (e) => {
+  const files = [...$("#cFiles").files];
+  const title = $("#cTitle").value.trim() || files[0]?.name?.replace(/\.[^.]+$/, "");
+  if (!files.length) return toast("Chọn ít nhất một file.");
+  const prog = $("#cProg"), bar = prog.querySelector("i"), status = $("#cStatus");
+  prog.hidden = false; e.target.disabled = true;
+  const onProg = (d, t, label) => { bar.style.width = Math.round((d / t) * 100) + "%"; status.textContent = `${label || "Đang xử lý"}: ${d}/${t}`; };
+  try {
+    let pages = [], notes = [];
+    const images = [];
+    for (const f of files) {
+      if (f.type === "application/pdf") { const r = await pdfToPages(f, onProg); pages.push(...r.pages); if (r.ocrSkipped) notes.push(`${r.ocrSkipped} trang scan chưa đọc được (giới hạn ${MAX_OCR_PAGES} trang)`); }
+      else if (f.type.startsWith("image/")) images.push(f);
+      else pages.push(await f.text());
+    }
+    if (images.length) { try { pages.push(...(await ocrImages(images, (d, t) => onProg(d, t, "Claude đọc ảnh")))); } catch { notes.push("không đọc được ảnh trên thiết bị này"); } }
+    if (!pages.some((p) => p.trim())) throw new Error("Không lấy được chữ nào từ tài liệu.");
+    const c = { id: uid8(), title, examContent: $("#cExam").value.trim(), pageCount: pages.length, chunks: 0, createdAt: new Date().toISOString() };
+    // chia thành các phần < 200 KB để lưu
+    let chunk = [], size = 0;
+    const flush = async () => { if (!chunk.length) return; await save(`text-${c.id}-${c.chunks}`, { pages: chunk }); c.chunks++; chunk = []; size = 0; };
+    for (const p of pages) { const b = new Blob([p]).size + 8; if (size + b > 200000) await flush(); chunk.push(p); size += b; }
+    await flush();
+    c._pages = pages;
+    state.courses.push(c); await saveCourses();
+    state.cur = c.id;
+    $("#cTitle").value = ""; $("#cExam").value = ""; $("#cFiles").value = "";
+    $("#addCourse").open = false;
+    toast(`✅ Đã thêm "${title}" (${pages.length} trang)` + (notes.length ? " · " + notes.join(", ") : ""), 5000);
+    renderAll();
+  } catch (err) { status.textContent = "⚠️ " + (err.message || "Lỗi khi đọc tài liệu"); }
+  finally { e.target.disabled = false; prog.hidden = true; bar.style.width = "0"; }
+});
+
+// ---------- Gia sư Feynman ----------
+const TUTOR = (c, pagesText, range, vi) => `Tu es mon tuteur / ma tutrice personnel·le pour ma L1 EEA à Sorbonne Université. J'étudie à distance avec des slides et polycopiés très denses. Je suis vietnamien·ne.
+Cours : « ${c.title} » (pages ${range}).${c.examContent ? `\nProgramme de l'examen : ${c.examContent}` : ""}
+Pédagogie (Feynman + répétition espacée) :
+- Une notion à la fois : une analogie concrète et drôle de la vie quotidienne, puis la version rigoureuse (formules en LaTeX entre $...$ ou $$...$$), puis un mini-exemple chiffré. Cite la page du document ([p. N]).
+- Après chaque notion, demande-moi de la réexpliquer avec MES mots.
+- Si mon message commence par "[EXPLICATION FEYNMAN]" : note /10, ce qui est juste, les trous, les contresens, une analogie plus simple, une question de suivi.
+- Questions de fond (pourquoi, sens physique) : va au fond, en t'appuyant sur des connaissances académiques solides ; si tu n'es pas sûr, dis-le.
+- De temps en temps, rappelle une notion vue plus tôt pour la consolider.
+- Réponses courtes et vivantes, pas de murs de texte. Ne corrige pas mon français (un autre module s'en charge).
+- Langue : ${vi ? "réponds en VIETNAMIEN, garde les termes techniques français entre parenthèses" : "français simple"}.
+
+=== DOCUMENT DE COURS ===
+${pagesText}
+=== FIN DU DOCUMENT ===`;
+const curCourse = () => state.courses.find((c) => c.id === state.cur);
+function chatOf(id) { return (state.chats[id] ||= { turns: [] }); }
+function renderCourses() {
+  $("#courseBar").innerHTML = state.courses.map((c) => `<button class="course" data-id="${esc(c.id)}" aria-pressed="${c.id === state.cur}">${esc(c.title)}<span>${c.pageCount} trang · ${(state.decks[c.id] || []).length} thẻ</span></button>`).join("");
+  $("#studyEmpty").hidden = !!state.courses.length;
+  if (!state.courses.length) $("#addCourse").open = true;
+  const c = curCourse();
+  $("#studyPane").hidden = !c;
+  if (!c) return;
+  $("#curTitle").textContent = c.title;
+  $("#curInfo").textContent = `${c.pageCount} trang · 🎯 ${c.examContent || "chưa nhập nội dung thi"}`;
+  $("#pFrom").max = $("#pTo").max = c.pageCount;
+  if (!$("#pFrom").value || state._shown !== c.id) { $("#pFrom").value = c.range?.[0] || 1; $("#pTo").value = c.range?.[1] || Math.min(c.pageCount, 30); }
+  if (state._shown !== c.id) { state._shown = c.id; renderChat(); }
+}
+function renderChat() {
+  const c = curCourse(); const box = $("#chat"); box.innerHTML = "";
+  if (!c) return;
+  const turns = chatOf(c.id).turns;
+  if (!turns.length) box.innerHTML = `<div class="sheet small muted">Bấm <b>🚀 Bắt đầu</b> hoặc hỏi bất cứ gì về tài liệu. Chọn khoảng trang ở trên để gia sư tập trung (mỗi lần gửi khoảng 30 trang là vừa).</div>`;
+  for (const t of turns) {
+    const div = document.createElement("div");
+    div.className = "msg " + t.role;
+    if (t.role === "user") div.textContent = t.content.replace(/^\[EXPLICATION FEYNMAN\] /, "🗣️ ");
+    else div.innerHTML = md(t.content);
+    box.appendChild(div);
+    if (t.fix) box.appendChild(fixBubble(t.fix));
+  }
+  typeset(box);
+}
+$("#courseBar").addEventListener("click", (e) => { const b = e.target.closest(".course"); if (!b) return; state.cur = b.dataset.id; renderCourses(); });
+["#pFrom", "#pTo"].forEach((s) => $(s).addEventListener("change", () => { const c = curCourse(); if (!c) return; c.range = [+$("#pFrom").value || 1, +$("#pTo").value || c.pageCount]; saveCourses(); }));
+$("#editExam").addEventListener("click", () => { const c = curCourse(); $("#examInput").value = c?.examContent || ""; $("#examEditBox").hidden = !$("#examEditBox").hidden; });
+$("#saveExam").addEventListener("click", () => { const c = curCourse(); c.examContent = $("#examInput").value.trim(); saveCourses(); $("#examEditBox").hidden = true; renderCourses(); });
+$("#resetChat").addEventListener("click", () => ($("#resetConfirm").hidden = false));
+$("#resetNo").addEventListener("click", () => ($("#resetConfirm").hidden = true));
+$("#resetYes").addEventListener("click", () => { const c = curCourse(); state.chats[c.id] = { turns: [] }; saveChat(c.id); $("#resetConfirm").hidden = true; renderChat(); });
+try { $("#viMode").checked = localStorage.getItem("vi") === "1"; } catch {}
+$("#viMode").addEventListener("change", () => { try { localStorage.setItem("vi", $("#viMode").checked ? "1" : ""); } catch {} });
+
+function fixBubble(fix) {
+  const d = document.createElement("div");
+  d.className = "msg fix";
+  d.innerHTML = `<b>✏️ Petit point français</b> ${esc(fix.encouragement || "")}<ul>${fix.errors.map((x) => `<li><s>${esc(x.original)}</s> → <b>${esc(x.correction)}</b><br><span class="small">📘 ${esc(x.rule)}<br>🇻🇳 ${esc(x.vi)}<br>💡 ${esc(x.astuce)}</span></li>`).join("")}</ul><span class="small muted">Đã thêm vào bộ thẻ "Ngữ pháp tiếng Pháp".</span>`;
+  return d;
+}
+async function grammarCheck(sample, message) {
+  if (message.length < 12 || !/[a-zàâçéèêëîïôûùüÿœ]{3,}/i.test(message)) return null;
+  try {
+    const g = await sample.json(`Tu es un correcteur de français bienveillant et drôle pour un·e étudiant·e vietnamien·ne (niveau B1-B2). Analyse UNIQUEMENT ce message. Relève les vraies fautes (grammaire, accords, conjugaison, prépositions, genre, tournures non idiomatiques). Ignore les fautes de frappe évidentes, les accents manquants isolés et le style oral acceptable.
+Réponds UNIQUEMENT avec un JSON : {"is_french": true|false, "errors": [{"original": "...", "correction": "...", "rule": "règle en français simple", "vi": "giải thích ngắn bằng tiếng Việt", "astuce": "moyen mnémotechnique drôle"}], "encouragement": "une phrase courte"}
+Si le message n'est pas en français : {"is_french": false, "errors": [], "encouragement": ""}.
+
+Message : """${message}"""`, { modelTier: "quick" });
+    if (!g?.is_french || !Array.isArray(g.errors) || !g.errors.length) return null;
+    addCards("francais", g.errors.map((x) => ({ front: `✏️ Sửa câu này: « ${x.original} »`, back: `**${x.correction}**\n\n📘 ${x.rule}\n\n🇻🇳 ${x.vi}`, mnemonic: x.astuce })));
+    return g;
+  } catch { return null; }
+}
+let abort = null;
+async function send(message) {
+  message = message.trim(); const c = curCourse();
+  if (!message || !c || abort) return;
+  const sample = await getSample(); if (!sample) return toast("Trang này cần chạy trên claude.ai để dùng Claude.");
+  const feyn = $("#feynMode").checked, vi = $("#viMode").checked;
+  const content = (feyn ? "[EXPLICATION FEYNMAN] " : "") + message;
+  const chat = chatOf(c.id);
+  if (!chat.turns.length) $("#chat").innerHTML = "";
+  const uDiv = document.createElement("div"); uDiv.className = "msg user"; uDiv.textContent = (feyn ? "🗣️ " : "") + message; $("#chat").appendChild(uDiv);
+  const aDiv = document.createElement("div"); aDiv.className = "msg assistant"; aDiv.innerHTML = `<span class="thinking"><span class="dot"></span>Gia sư đang nghĩ…</span>`; $("#chat").appendChild(aDiv);
+  aDiv.scrollIntoView({ block: "end", behavior: "smooth" });
+  $("#chatIn").value = ""; $("#feynMode").checked = false;
+  $("#send").hidden = true; $("#stop").hidden = false; abort = new AbortController();
+
+  // dựng đầu vào: chỉ dẫn + tài liệu nằm trong lượt user đầu tiên còn giữ
+  const pages = await loadCourseText(c);
+  const from = Math.max(1, +$("#pFrom").value || 1), to = Math.min(pages.length, Math.max(from, +$("#pTo").value || pages.length));
+  const lim = (imgLimits?.maxPromptBytes || 262144) - 40000;
+  let history = [...chat.turns.map((t) => ({ role: t.role, content: t.content })), { role: "user", content }].slice(-16);
+  while (history[0]?.role !== "user") history.shift();
+  const histBytes = new Blob([history.map((t) => t.content).join("")]).size;
+  let docText = "", used = 0;
+  for (let p = from; p <= to; p++) { const s = `\n[p. ${p}]\n${pages[p - 1] || ""}`; const b = new Blob([s]).size; if (used + b > lim - histBytes) { docText += `\n[… pages ${p}-${to} non incluses : trop long, choisis une plage plus petite]`; break; } docText += s; used += b; }
+  const input = history.map((t, i) => i === 0 ? { role: "user", content: TUTOR(c, docText, `${from}-${to}`, vi) + "\n\nMon message : " + t.content } : t);
+  if (vi) input[input.length - 1] = { role: "user", content: input[input.length - 1].content + "\n\n(Réponds en vietnamien, termes techniques en français entre parenthèses.)" };
+
+  const fixP = grammarCheck(sample, message);
+  let answer = "";
+  try {
+    const r = await sample(input, { onText: ({ text }) => { answer = text; aDiv.innerHTML = md(text); }, signal: abort.signal, cache: false });
+    answer = r.text;
+    setMd(aDiv, answer + (r.truncated ? "\n\n_(câu trả lời bị cắt ngắn)_" : ""));
+  } catch (err) {
+    if (err?.text) answer = err.text;
+    aDiv.innerHTML = (answer ? md(answer) : "") + (err?.code === "cancelled" ? `<p class="small muted">Đã dừng.</p>` : `<p class="small" style="color:var(--bad)">${esc(sampleErr(err))}</p>`);
+    typeset(aDiv);
+  } finally { abort = null; $("#send").hidden = false; $("#stop").hidden = true; }
+  const fix = await fixP;
+  if (answer) {
+    chat.turns.push({ role: "user", content }, { role: "assistant", content: answer, ...(fix ? { fix: { errors: fix.errors, encouragement: fix.encouragement } } : {}) });
+    chat.turns = chat.turns.slice(-60);
+    saveChat(c.id);
+  }
+  if (fix) $("#chat").appendChild(fixBubble(fix));
+}
+$("#send").addEventListener("click", () => send($("#chatIn").value));
+$("#stop").addEventListener("click", () => abort?.abort());
+$("#chatIn").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); send($("#chatIn").value); } });
+$("#quick").addEventListener("click", (e) => { const b = e.target.closest("button[data-q]"); if (b) send(b.dataset.q); });
+$("#mkCards").addEventListener("click", async (e) => {
+  const c = curCourse(); const sample = await getSample(); if (!sample || !c) return toast("Trang này cần chạy trên claude.ai để dùng Claude.");
+  const pages = await loadCourseText(c);
+  const from = Math.max(1, +$("#pFrom").value || 1), to = Math.min(pages.length, +$("#pTo").value || pages.length);
+  let text = ""; for (let p = from; p <= to && text.length < 150000; p++) text += `\n[p. ${p}]\n${pages[p - 1]}`;
+  const existing = (state.decks[c.id] || []).map((k) => "- " + k.front).join("\n").slice(0, 20000);
+  e.target.disabled = true; const old = e.target.textContent; e.target.textContent = "Đang tạo…";
+  try {
+    const cards = await sample.json(`Crée 12 flashcards de répétition espacée en français à partir de ce cours de L1 EEA (pages ${from}-${to}). Chaque carte teste UNE idée et oblige à comprendre (pas juste réciter). Verso court et exact (formules en LaTeX $...$). "mnemonic" = image mentale ou analogie drôle pour retenir.${c.examContent ? " Priorité au programme d'examen : " + c.examContent : ""}
+Évite ces cartes existantes :\n${existing || "(aucune)"}
+Réponds UNIQUEMENT avec un tableau JSON : [{"front": "...", "back": "...", "mnemonic": "..."}]
+
+=== COURS ===${text}`, { cache: false });
+    const ok = (Array.isArray(cards) ? cards : []).filter((k) => k?.front && k?.back);
+    addCards(c.id, ok); toast(`🃏 Đã tạo ${ok.length} thẻ. Vào tab Ôn tập để học.`); renderAll();
+  } catch (err) { toast("⚠️ " + sampleErr(err), 5000); }
+  finally { e.target.disabled = false; e.target.textContent = old; }
+});
+
+// ---------- Flashcards (SM-2) ----------
+function addCards(deckId, cards) {
+  const t = todayISO();
+  (state.decks[deckId] ||= []).push(...cards.map((k) => ({ id: uid8(), front: String(k.front), back: String(k.back), mnemonic: String(k.mnemonic || ""), ef: 2.5, interval: 0, reps: 0, lapses: 0, due: t })));
+  saveDeck(deckId); renderHome();
+}
+function grade(card, g) {
+  if (g < 3) { card.reps = 0; card.interval = 0; card.lapses++; }
+  else { card.reps++; card.interval = card.reps === 1 ? 1 : card.reps === 2 ? 4 : Math.round(Math.max(1, card.interval) * card.ef); if (g === 5) card.interval = Math.round(card.interval * 1.3); }
+  card.ef = Math.max(1.3, card.ef + (0.1 - (5 - g) * (0.08 + (5 - g) * 0.02)));
+  card.due = addDays(todayISO(), card.interval);
+}
+const rv = { deck: null, queue: [], card: null };
+function deckList() { return [{ id: "francais", title: "🇫🇷 Ngữ pháp tiếng Pháp" }, ...state.courses.map((c) => ({ id: c.id, title: c.title }))]; }
+function renderDecks() {
+  $("#decks").innerHTML = deckList().map((d) => { const all = (state.decks[d.id] || []).length, due = dueCards(d.id).length;
+    return `<button class="deck" data-deck="${esc(d.id)}" ${due ? "" : "disabled"}><span class="n">${due}</span><span>${esc(d.title)}</span><span class="small muted">${all} thẻ</span></button>`; }).join("");
+}
+$("#decks").addEventListener("click", (e) => { const b = e.target.closest(".deck"); if (!b) return; rv.deck = b.dataset.deck; rv.queue = dueCards(rv.deck).sort(() => Math.random() - 0.5); $("#rvDone").hidden = true; nextCard(); });
+function nextCard() {
+  rv.card = rv.queue.shift();
+  $("#review").hidden = !rv.card; $("#decks").hidden = !!rv.card;
+  if (!rv.card) { $("#rvDone").hidden = !rv.deck; renderDecks(); renderHome(); return; }
+  $("#rvMeta").textContent = `Còn ${rv.queue.length} thẻ · đã ôn ${rv.card.reps} lần`;
+  setMd($("#rvFront"), rv.card.front);
+  $("#rvBack").innerHTML = md(rv.card.back) + (rv.card.mnemonic ? `<div class="mnemo">💡 ${md(rv.card.mnemonic)}</div>` : "");
+  $("#rvBack").hidden = true; $("#rvGrades").hidden = true; $("#rvShow").hidden = false;
+}
+$("#rvShow").addEventListener("click", () => { $("#rvBack").hidden = false; typeset($("#rvBack")); $("#rvGrades").hidden = false; $("#rvShow").hidden = true; });
+$("#rvGrades").addEventListener("click", (e) => { const b = e.target.closest("button[data-g]"); if (!b) return; const g = +b.dataset.g; grade(rv.card, g); if (g < 3) rv.queue.push(rv.card); saveDeck(rv.deck); nextCard(); });
+$("#rvExit").addEventListener("click", () => { rv.queue = []; rv.deck = null; nextCard(); });
+
+// ---------- điều hướng ----------
+const VIEWS = ["home", "study", "cards", "agenda", "inbox"];
+function show(v) {
+  if (!VIEWS.includes(v)) v = "home";
+  VIEWS.forEach((x) => ($("#v-" + x).hidden = x !== v));
+  $$("nav.tabs button").forEach((b) => (b.dataset.v === v ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
+  if (location.hash.slice(1) !== v) history.replaceState(null, "", "#" + v);
+  window.scrollTo(0, 0);
+}
+$$("nav.tabs button").forEach((b) => b.addEventListener("click", () => show(b.dataset.v)));
+window.addEventListener("hashchange", () => show(location.hash.slice(1)));
+function renderAll() { renderHome(); renderAgenda(); renderCourses(); if (!rv.card) renderDecks(); }
+show(location.hash.slice(1) || "home");
+renderAll();
+loadData();
+})();
+</script>
