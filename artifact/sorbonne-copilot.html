@@ -281,7 +281,7 @@ details > summary { cursor: pointer; font-weight: 600; padding: 4px 0; }
       <div class="row"><strong class="grow">📬 Mail trường (qua Gmail)</strong>
         <select id="mailDays" style="width:auto" aria-label="Khoảng thời gian"><option value="3">3 ngày</option><option value="7" selected>7 ngày</option><option value="30">30 ngày</option></select>
         <button class="primary" id="mailGo">Đọc mail mới</button></div>
-      <div class="small muted" id="mailStatus">App đọc các mail gửi tới địa chỉ @etu.sorbonne-universite.fr đã được chuyển sang Gmail, tóm tắt và tìm ngày thi, hạn nộp.</div>
+      <div class="small muted" id="mailStatus">App đọc mail của trường đã chuyển sang Gmail (gồm cả Moodle và các danh sách chung như [etudiants]), tóm tắt và tìm ngày thi, hạn nộp, biểu tình, đóng cửa.</div>
       <div id="mailEvents" class="stack"></div>
       <div id="mailList" class="stack"></div>
     </div>
@@ -590,7 +590,8 @@ ${text || "(voir images)"}`, { images: files.length ? files : undefined, cache: 
 });
 
 // ---------- Mail trường (qua kết nối Gmail) ----------
-const MAIL_Q = (days) => `(to:etu.sorbonne-universite.fr OR cc:etu.sorbonne-universite.fr OR from:sorbonne-universite.fr) newer_than:${days}d`;
+// bắt cả mail gửi thẳng cho bạn lẫn danh sách chung (listes.sorbonne-universite.fr, Moodle…)
+const MAIL_Q = (days) => `(to:sorbonne-universite.fr OR cc:sorbonne-universite.fr OR from:sorbonne-universite.fr OR list:sorbonne-universite.fr) newer_than:${days}d`;
 function mcpErr(e) {
   return ({
     needs_reauth: "Kết nối Gmail đã hết hạn. Vào claude.ai → Cài đặt → Connectors → Gmail để kết nối lại.",
