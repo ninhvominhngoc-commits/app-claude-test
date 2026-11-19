@@ -1,313 +1,530 @@
 <title>Sorbonne Copilot</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
 <style>
-/* Layout: app một cột kiểu điện thoại, thanh tab cố định ở đáy, nội dung là các "phiếu" giấy trên nền bảng đen-xanh Jussieu */
+/* Layout: sổ tay tối giản — một cột đọc 680px, thẻ phẳng viền mảnh, thanh tab nổi; Học và Ôn tập mở toàn màn hình như chế độ đọc */
 :root {
-  --bg: #eef1f6;
-  --paper: #ffffff;
-  --ink: #17213a;
-  --muted: #5d6882;
-  --line: #d9dfea;
-  --accent: #23408e;      /* bleu Sorbonne */
+  --bg: #f6f6f9;
+  --surface: #ffffff;
+  --surface-2: #f0eff5;
+  --ink: #1e1c28;
+  --ink-2: #5f5c70;
+  --ink-3: #8e8ba1;
+  --line: #e7e6ef;
+  --accent: #6656e8;
   --accent-ink: #ffffff;
-  --chalk: #f3b63f;       /* vàng phấn */
-  --soft: #e5ebf8;
-  --go: #1f8a5b; --go-bg: #e3f4ec;
-  --warn: #b86e00; --warn-bg: #fff3dc;
-  --bad: #c2372d; --bad-bg: #fde9e7;
-  --font: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
-  --r: 14px;
+  --accent-soft: #eeecfd;
+  --blush: #ff9fb0;
+  --res-body: #eadcc2;
+  --danger: #d4473b; --danger-ink: #ffffff;
+  --exam-bg: #ffe9e7; --exam-fg: #c0392f;
+  --due-bg: #fff3d4; --due-fg: #8f6200;
+  --close-bg: #ffeadc; --close-fg: #ad531a;
+  --hol-bg: #e1f5ea; --hol-fg: #1f7a50;
+  --evt-bg: #e7efff; --evt-fg: #2f5fc0;
+  --shadow-soft: 0 1px 2px rgba(30, 24, 60, .04), 0 4px 14px rgba(30, 24, 60, .05);
+  --shadow-float: 0 1px 2px rgba(30, 24, 60, .06), 0 12px 34px rgba(30, 24, 60, .12);
+  --font: "Nunito", "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --r-s: 10px; --r-m: 16px; --r-l: 22px;
+  --tabbar-h: 66px;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #0f1422; --paper: #182033; --ink: #e7ebf5; --muted: #9aa5c0; --line: #2a3550;
-  --accent: #8eaaf5; --accent-ink: #0f1422; --chalk: #f3b63f; --soft: #1f2a44;
-  --go: #5fd19c; --go-bg: #12301f; --warn: #f0b552; --warn-bg: #33270f; --bad: #ff8a80; --bad-bg: #3a1714;
+  --bg: #141319; --surface: #1c1b23; --surface-2: #25242e; --ink: #ecebf3; --ink-2: #aeabbf; --ink-3: #7d7a92; --line: #2f2e3a;
+  --accent: #a99cff; --accent-ink: #141319; --accent-soft: #2a2645; --blush: #ff8aa0; --res-body: #5a5142;
+  --danger: #ff8f86; --danger-ink: #1b1219;
+  --exam-bg: #3a2120; --exam-fg: #ff9c94; --due-bg: #33290f; --due-fg: #f2c45a; --close-bg: #36241a; --close-fg: #ffb27d;
+  --hol-bg: #15301f; --hol-fg: #74d6a4; --evt-bg: #1b2840; --evt-fg: #8fb4ff;
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, .3); --shadow-float: 0 12px 34px rgba(0, 0, 0, .45);
   color-scheme: dark; } }
 :root[data-theme="dark"] {
-  --bg: #0f1422; --paper: #182033; --ink: #e7ebf5; --muted: #9aa5c0; --line: #2a3550;
-  --accent: #8eaaf5; --accent-ink: #0f1422; --chalk: #f3b63f; --soft: #1f2a44;
-  --go: #5fd19c; --go-bg: #12301f; --warn: #f0b552; --warn-bg: #33270f; --bad: #ff8a80; --bad-bg: #3a1714;
+  --bg: #141319; --surface: #1c1b23; --surface-2: #25242e; --ink: #ecebf3; --ink-2: #aeabbf; --ink-3: #7d7a92; --line: #2f2e3a;
+  --accent: #a99cff; --accent-ink: #141319; --accent-soft: #2a2645; --blush: #ff8aa0; --res-body: #5a5142;
+  --danger: #ff8f86; --danger-ink: #1b1219;
+  --exam-bg: #3a2120; --exam-fg: #ff9c94; --due-bg: #33290f; --due-fg: #f2c45a; --close-bg: #36241a; --close-fg: #ffb27d;
+  --hol-bg: #15301f; --hol-fg: #74d6a4; --evt-bg: #1b2840; --evt-fg: #8fb4ff;
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, .3); --shadow-float: 0 12px 34px rgba(0, 0, 0, .45);
   color-scheme: dark; }
 
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-html, body { height: 100%; }
-body { background: var(--bg); color: var(--ink); font: 15px/1.55 var(--font); }
-.app { max-width: 760px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 12px 110px; }
-header.top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-block: 6px 10px; }
-.brand { font-weight: 800; font-size: 1.2rem; letter-spacing: -0.01em; }
-.brand b { color: var(--accent); }
-.date { color: var(--muted); font-size: .85rem; }
-h2 { font-size: 1.35rem; font-weight: 800; margin: 8px 0 4px; text-wrap: balance; letter-spacing: -0.01em; }
-h3 { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 22px 0 8px; }
-p { margin: 6px 0; }
-.muted { color: var(--muted); } .small { font-size: .84rem; } .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
-.sheet { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 500 15px/1.55 var(--font); -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 40; background: var(--bg); }
+body.noscroll { overflow: hidden; }
+button, input, textarea, select { font: inherit; color: inherit; }
+button { -webkit-user-select: none; user-select: none; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+a { color: var(--accent); }
+h1, h2, h3, h4 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.muted { color: var(--ink-2); } .faint { color: var(--ink-3); } .small { font-size: 13px; }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.center { text-align: center; }
+.err { color: var(--danger); font-weight: 700; font-size: 14px; }
+.label { font: 800 11px/1.2 var(--font); letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); }
+.vh { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; clip: rect(0 0 0 0); }
+
+.wrap { max-width: 680px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 18px calc(var(--tabbar-h) + 44px + env(safe-area-inset-bottom, 0px)); }
+.view { display: grid; gap: 14px; }
 .stack { display: grid; gap: 10px; }
 .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.row > .grow { flex: 1; min-width: 0; }
-button, .btn { font: inherit; font-weight: 600; cursor: pointer; border-radius: 12px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); padding: 9px 14px; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
-button:hover, .btn:hover { border-color: var(--accent); }
-button:focus-visible, .btn:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-button:disabled { opacity: .5; cursor: default; }
-.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-.chip { font-size: .82rem; padding: 6px 11px; border-radius: 999px; font-weight: 500; }
-.ghost { border-color: transparent; background: transparent; padding: 6px 8px; }
-input, textarea, select { font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; width: 100%; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.notice { background: var(--due-bg); color: var(--ink); border-radius: 14px; padding: 10px 12px; font-size: 13.5px; margin-bottom: 12px; }
+
+/* tiêu đề */
+.hello { display: flex; align-items: center; gap: 12px; padding-block: 4px 2px; }
+.hello h1 { font: 800 25px/1.15 var(--font); letter-spacing: -.02em; }
+.page-h { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding-block: 4px 2px; }
+.page-h h1 { font: 800 28px/1.1 var(--font); letter-spacing: -.02em; }
+.page-h p { margin-top: 4px; }
+.sec-head { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+.link { border: 0; background: none; color: var(--accent); font: 800 13px var(--font); cursor: pointer; padding: 4px 2px; }
+
+/* linh vật: electron nhỏ */
+.mascot { width: 48px; height: 48px; flex: none; overflow: visible; }
+.mascot.sm { width: 38px; height: 38px; } .mascot.lg { width: 84px; height: 84px; } .mascot.xs { width: 20px; height: 20px; }
+.m-orbit { fill: none; stroke: var(--accent); stroke-width: 1.6; opacity: .45; }
+.m-e { fill: var(--accent); }
+.m-body { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.m-eye { fill: var(--ink); }
+.m-smile { fill: none; stroke: var(--ink); stroke-width: 1.8; stroke-linecap: round; }
+.m-blush { fill: var(--blush); opacity: .75; }
+
+/* nút */
+.btn { font: 800 14px/1.1 var(--font); border-radius: 12px; padding: 11px 14px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); display: inline-flex; gap: 7px; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; transition: transform .08s ease, background .15s ease; }
+.btn:active:not(:disabled) { transform: scale(.97); }
+.btn:disabled { opacity: .45; cursor: default; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.btn.soft { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
+.btn.ghost { background: transparent; border-color: transparent; color: var(--ink-2); }
+.btn.danger { background: var(--danger); color: var(--danger-ink); border-color: transparent; }
+.btn.sm { padding: 8px 11px; font-size: 13px; border-radius: 10px; }
+.btn.lg { padding: 14px 16px; font-size: 15px; border-radius: 14px; }
+.btn.block { width: 100%; }
+.i { width: 20px; height: 20px; flex: none; }
+.i.xs { width: 14px; height: 14px; vertical-align: -2px; }
+.btn .i { width: 18px; height: 18px; }
+.icon-btn { width: 40px; height: 40px; border-radius: 12px; border: 0; background: transparent; color: var(--ink-2); display: grid; place-items: center; cursor: pointer; flex: none; }
+.icon-btn:hover { background: var(--surface-2); }
+.icon-btn.solid { background: var(--accent); color: var(--accent-ink); border-radius: 14px; width: 44px; height: 44px; }
+.typing { display: inline-flex; gap: 4px; align-items: center; color: var(--ink-3); font-size: 13.5px; }
+.typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-3); animation: bob 1s infinite ease-in-out; }
+.typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
+.typing span { margin-left: 6px; }
+@keyframes bob { 0%, 80%, 100% { transform: translateY(0); opacity: .45; } 40% { transform: translateY(-4px); opacity: 1; } }
+
+/* thẻ */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-l); padding: 16px; display: grid; gap: 12px; min-width: 0; }
+.empty { text-align: center; display: grid; justify-items: center; gap: 10px; padding: 26px 18px; background: var(--surface); border: 1px dashed var(--line); border-radius: var(--r-l); }
+.empty h3 { font: 800 17px var(--font); }
+.empty p { color: var(--ink-2); max-width: 38ch; font-size: 14px; }
+.empty.flat { padding: 16px; } .empty.flat p { font-size: 13.5px; }
+
+/* tình hình campus */
+.st-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.st-verdict { display: flex; align-items: center; gap: 12px; font-size: 19px; line-height: 1.25; }
+.st-verdict strong { font-weight: 800; letter-spacing: -.01em; }
+.st-dot { width: 12px; height: 12px; border-radius: 50%; flex: none; background: var(--dot); box-shadow: 0 0 0 5px var(--dot-ring); margin-left: 4px; }
+.v-go { --dot: var(--evt-fg); --dot-ring: var(--evt-bg); }
+.v-stay { --dot: var(--hol-fg); --dot-ring: var(--hol-bg); }
+.v-partial { --dot: var(--due-fg); --dot-ring: var(--due-bg); }
+.v-unknown { --dot: var(--ink-3); --dot-ring: var(--surface-2); }
+.st-points { margin: 0; padding-left: 18px; display: grid; gap: 3px; color: var(--ink-2); font-size: 14px; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; counter-reset: s; }
+.steps li { counter-increment: s; background: var(--surface-2); border-radius: 12px; padding: 8px 10px; font-size: 12px; line-height: 1.35; color: var(--ink-2); min-width: 0; }
+.steps li::before { content: counter(s); display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); font: 800 11px var(--font); margin-bottom: 4px; }
+.steps b { color: var(--ink); font-weight: 800; }
+
+/* mail */
+.mini-mails { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.mini-mails li { display: flex; gap: 10px; min-width: 0; }
+.mini-mails li > div { min-width: 0; }
+.mini-mails strong { display: block; font-weight: 800; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mini-mails p { color: var(--ink-2); font-size: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.imp { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: none; background: var(--ink-3); }
+.imp-haute { background: var(--exam-fg); } .imp-moyenne { background: var(--due-fg); }
+.mail { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-m); padding: 12px 14px; display: grid; gap: 4px; min-width: 0; }
+.mail-top { display: flex; gap: 8px; align-items: baseline; }
+.mail-top strong { flex: 1; min-width: 0; font-weight: 800; overflow-wrap: anywhere; }
+.mail-top .imp { margin-top: 0; align-self: center; }
+.todo { display: flex; gap: 6px; font-weight: 700; font-size: 14px; color: var(--ink); }
+.todo .i { width: 16px; height: 16px; margin-top: 2px; color: var(--accent); }
+.nudge { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; border: 1px solid transparent; background: var(--accent-soft); border-radius: var(--r-l); padding: 12px 14px; cursor: pointer; color: var(--ink); }
+.nudge > span:nth-child(2) { flex: 1; display: grid; min-width: 0; }
+.nudge strong { font-weight: 800; }
+
+/* lịch */
+.list { display: grid; gap: 8px; }
+.ev { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 12px; align-items: start; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-m); padding: 12px; transition: box-shadow .3s; }
+.ev[data-go] { cursor: pointer; grid-template-columns: 52px minmax(0, 1fr); }
+.ev.flash { box-shadow: 0 0 0 2px var(--accent); }
+.ev.done { opacity: .5; } .ev.done h4 { text-decoration: line-through; }
+.ev-date { display: grid; justify-items: center; background: var(--ev-bg); color: var(--ev-fg); border-radius: 12px; padding: 7px 0 6px; }
+.ev-date .dn { font: 800 20px/1 var(--font); font-variant-numeric: tabular-nums; }
+.ev-date .wd { font: 800 10px/1.3 var(--font); margin-top: 3px; opacity: .85; white-space: nowrap; }
+.ev-body { min-width: 0; display: grid; gap: 3px; }
+.ev-top { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.ev h4 { font: 800 15px/1.3 var(--font); overflow-wrap: anywhere; }
+.ev .meta { font-size: 13px; color: var(--ink-2); }
+.ev .det { font-size: 13px; color: var(--ink-2); }
+.ev .det b { color: var(--ink); font-weight: 800; margin-right: 6px; }
+.ev .icon-btn { width: 34px; height: 34px; margin: -4px -4px 0 0; }
+.count { font: 800 11.5px/1 var(--font); font-variant-numeric: tabular-nums; color: var(--ink-3); }
+.count.urgent { color: var(--exam-fg); }
+.c-exam { --ev-bg: var(--exam-bg); --ev-fg: var(--exam-fg); }
+.c-deadline { --ev-bg: var(--due-bg); --ev-fg: var(--due-fg); }
+.c-closure { --ev-bg: var(--close-bg); --ev-fg: var(--close-fg); }
+.c-holiday { --ev-bg: var(--hol-bg); --ev-fg: var(--hol-fg); }
+.c-event { --ev-bg: var(--evt-bg); --ev-fg: var(--evt-fg); }
+.tag { font: 800 11px/1 var(--font); padding: 4px 8px; border-radius: 999px; background: var(--ev-bg, var(--surface-2)); color: var(--ev-fg, var(--ink-2)); white-space: nowrap; }
+.group-h { margin: 8px 2px 0; }
+.strip { display: grid; grid-auto-flow: column; grid-auto-columns: 46px; gap: 6px; overflow-x: auto; padding: 2px 2px 6px; scrollbar-width: none; }
+.strip::-webkit-scrollbar { display: none; }
+.day { border: 1px solid var(--line); background: var(--surface); border-radius: 14px; padding: 8px 0 7px; display: grid; justify-items: center; gap: 3px; cursor: pointer; color: var(--ink); }
+.day .wd { font: 800 10px var(--font); color: var(--ink-3); }
+.day .dn { font: 800 16px/1 var(--font); font-variant-numeric: tabular-nums; }
+.day .dots { display: flex; gap: 2px; height: 5px; }
+.day .dots i { width: 5px; height: 5px; border-radius: 50%; background: var(--ev-fg); }
+.day.today { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.day.today .wd { color: inherit; opacity: .85; }
+.day.today .dots i { background: var(--accent-ink); }
+
+/* học */
+.course-card { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-m); padding: 12px; cursor: pointer; color: var(--ink); }
+.course-card:active { transform: scale(.99); }
+.cc-body { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.cc-title { font: 800 15.5px/1.3 var(--font); overflow-wrap: anywhere; }
+.cc-meta { font-size: 12.5px; color: var(--ink-3); }
+.cc-exam { font-size: 12.5px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.res { width: 44px; height: 44px; border-radius: 14px; background: var(--surface-2); display: grid; place-items: center; flex: none; position: relative; }
+.res::before { content: ""; position: absolute; left: 6px; right: 6px; top: 50%; height: 2px; margin-top: -1px; background: var(--ink-3); opacity: .55; border-radius: 2px; }
+.res i { position: relative; width: 24px; height: 12px; border-radius: 6px; background: linear-gradient(90deg, transparent 5px, var(--b1) 5px 8px, transparent 8px 11px, var(--b2) 11px 14px, transparent 14px 17px, var(--b3) 17px 20px, transparent 20px), var(--res-body); }
+.fr-glyph { width: 44px; height: 44px; border-radius: 14px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font: 800 15px var(--font); flex: none; }
+.deck-row { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-m); padding: 12px; }
+.deck-row > div { flex: 1; min-width: 0; display: grid; }
+.deck-row strong { font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* màn toàn màn hình (học, ôn) */
+.immersive { min-height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; }
+.bar-in { max-width: 720px; margin: 0 auto; width: 100%; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bg); background: color-mix(in srgb, var(--bg) 88%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+.topbar .bar-in { display: flex; align-items: center; gap: 6px; padding-block: 8px; }
+.tb-title { flex: 1; min-width: 0; display: grid; }
+.tb-title strong { font: 800 15.5px/1.25 var(--font); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tb-sub { border: 0; background: none; padding: 0; text-align: left; color: var(--ink-3); font: 700 12px var(--font); cursor: pointer; display: inline-flex; gap: 4px; align-items: center; justify-self: start; }
+.tb-sub .i { width: 13px; height: 13px; }
+.seg { display: inline-flex; background: var(--surface-2); border-radius: 10px; padding: 3px; flex: none; }
+.seg button { border: 0; background: none; font: 800 12px/1 var(--font); padding: 7px 9px; border-radius: 8px; color: var(--ink-3); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.thread-wrap { flex: 1; }
+.thread { display: flex; flex-direction: column; gap: 20px; padding-block: 20px 14px; }
+.msg { min-width: 0; }
+.msg.a .who { display: flex; align-items: center; gap: 6px; font: 800 12px/1 var(--font); color: var(--ink-3); margin-bottom: 8px; }
+.msg.a .md { font-size: 16px; line-height: 1.68; }
+.msg.u { align-self: flex-end; max-width: 86%; display: grid; justify-items: end; gap: 6px; }
+.msg.u .bubble { background: var(--accent-soft); color: var(--ink); padding: 10px 14px; border-radius: 18px 18px 6px 18px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 15.5px; }
+.msg.u .mode { display: inline-flex; gap: 4px; align-items: center; font: 800 11.5px var(--font); color: var(--accent); }
+.msg.u .mode .i { width: 14px; height: 14px; }
+.fix { background: var(--due-bg); border-radius: 14px; padding: 8px 12px; font-size: 14px; max-width: 100%; }
+.fix summary { cursor: pointer; font-weight: 800; color: var(--due-fg); list-style: none; display: flex; gap: 6px; align-items: center; }
+.fix summary::-webkit-details-marker { display: none; }
+.fix summary .i { width: 15px; height: 15px; }
+.fix ul { margin: 8px 0 4px; padding: 0; list-style: none; display: grid; gap: 10px; }
+.fix li { display: grid; gap: 2px; }
+.fix s { color: var(--exam-fg); }
+.fix .vi, .fix .tip { color: var(--ink-2); } .fix .tip { font-style: italic; }
+.starter { display: grid; justify-items: center; text-align: center; gap: 8px; padding-block: 24px 8px; }
+.starter h2 { font: 800 20px/1.25 var(--font); }
+.starter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; margin-top: 10px; }
+.starter-grid button { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: var(--r-m); padding: 12px; cursor: pointer; display: grid; gap: 3px; color: var(--ink); }
+.starter-grid strong { font-weight: 800; font-size: 14px; }
+.starter-grid span { font-size: 12.5px; color: var(--ink-2); }
+.composer { position: sticky; bottom: 0; z-index: 20; background: linear-gradient(to top, var(--bg) 80%, transparent); padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }
+.composer .bar-in { display: grid; gap: 8px; padding-top: 12px; }
+.suggest { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.suggest::-webkit-scrollbar { display: none; }
+.chip { flex: none; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 7px 12px; font: 700 13px var(--font); color: var(--ink-2); cursor: pointer; }
+.mode-banner { display: flex; align-items: center; gap: 8px; background: var(--accent-soft); color: var(--accent); border-radius: 12px; padding: 6px 6px 6px 12px; font: 700 13px/1.35 var(--font); }
+.mode-banner span { flex: 1; }
+.mode-banner .icon-btn { width: 30px; height: 30px; color: var(--accent); }
+.input-row { display: flex; align-items: flex-end; gap: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 5px; box-shadow: var(--shadow-soft); }
+.input-row:focus-within, .input-row.feyn-on { border-color: var(--accent); }
+.input-row textarea { flex: 1; min-width: 0; border: 0; background: transparent; resize: none; font: 500 16px/1.45 var(--font); padding: 8px 4px; max-height: 160px; outline: none; box-shadow: none; }
+.input-row .icon-btn { width: 38px; height: 38px; border-radius: 50%; }
+.input-row .icon-btn[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
+.send { width: 38px; height: 38px; border-radius: 50%; border: 0; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; cursor: pointer; flex: none; }
+.send:disabled { opacity: .35; cursor: default; }
+
+/* thẻ ôn */
+.session-in { flex: 1; display: grid; align-content: center; gap: 16px; padding-block: 20px calc(20px + env(safe-area-inset-bottom, 0px)); }
+.progress { flex: 1; height: 6px; background: var(--surface-2); border-radius: 999px; overflow: hidden; }
+.progress i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: inherit; transition: width .3s ease; }
+.flash { display: grid; perspective: 1200px; cursor: pointer; outline-offset: 4px; border-radius: 26px; }
+.flash .face { grid-area: 1 / 1; background: var(--surface); border: 1px solid var(--line); border-radius: 26px; padding: 24px 20px; min-height: 300px; display: grid; align-content: center; gap: 12px; backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: transform .45s cubic-bezier(.2, .7, .2, 1); box-shadow: var(--shadow-soft); min-width: 0; }
+.flash .back { transform: rotateY(180deg); }
+.flash.flipped .front { transform: rotateY(-180deg); }
+.flash.flipped .back { transform: rotateY(0deg); }
+.face .md { font-size: 18px; line-height: 1.55; text-align: center; font-weight: 700; overflow-wrap: anywhere; }
+.face.back .md { font-size: 16px; font-weight: 500; text-align: left; }
+.deck-name { justify-self: center; text-align: center; }
+.hint { text-align: center; color: var(--ink-3); font-size: 12.5px; }
+.mnemo { background: var(--due-bg); color: var(--ink); border-radius: 14px; padding: 10px 12px; font-size: 14px; display: flex; gap: 8px; align-items: flex-start; }
+.mnemo .i { color: var(--due-fg); width: 18px; height: 18px; margin-top: 2px; }
+.grades { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.grade { border: 1px solid var(--line); background: var(--surface); border-radius: 16px; padding: 11px 4px; display: grid; justify-items: center; gap: 3px; cursor: pointer; color: var(--ink); }
+.grade strong { font: 800 14px var(--font); }
+.grade span { font: 700 11.5px var(--font); font-variant-numeric: tabular-nums; color: var(--ink-3); }
+.grade.g0 strong { color: var(--exam-fg); } .grade.g3 strong { color: var(--due-fg); } .grade.g4 strong { color: var(--evt-fg); } .grade.g5 strong { color: var(--hol-fg); }
+
+/* hộp thư */
+.segmented { display: grid; grid-template-columns: 1fr 1fr; background: var(--surface-2); padding: 4px; border-radius: 14px; }
+.segmented button { border: 0; background: none; padding: 9px; border-radius: 11px; font: 800 13.5px var(--font); color: var(--ink-3); cursor: pointer; }
+.segmented button[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0, 0, 0, .1); }
+.pills { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+.pills button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 11px; font: 800 12.5px var(--font); color: var(--ink-2); cursor: pointer; }
+.pills button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.drop { display: flex; align-items: center; gap: 10px; border: 1.5px dashed var(--line); border-radius: 16px; padding: 12px; cursor: pointer; color: var(--ink-2); font-weight: 700; font-size: 14px; position: relative; }
+.drop:focus-within { border-color: var(--accent); }
+.thumbs { display: flex; gap: 6px; flex-wrap: wrap; }
+.thumbs img { width: 52px; height: 52px; object-fit: cover; border-radius: 10px; border: 1px solid var(--line); }
+.file-list { display: grid; gap: 4px; }
+
+/* ô nhập */
+.field { display: grid; gap: 6px; min-width: 0; }
+.field > span { font: 800 12px var(--font); color: var(--ink-2); }
+input[type="text"], input[type="date"], input[type="time"], input[type="number"], textarea, select { width: 100%; min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; font: 500 16px/1.4 var(--font); color: var(--ink); }
 textarea { resize: vertical; }
-label.check { display: inline-flex; align-items: center; gap: 8px; font-size: .9rem; cursor: pointer; }
-label.check input { width: auto; accent-color: var(--accent); }
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.type-pick { display: flex; flex-wrap: wrap; gap: 6px; }
+.type-pick .tag { border: 2px solid transparent; padding: 7px 11px; cursor: pointer; font-size: 12.5px; }
+.type-pick .tag[aria-pressed="true"] { border-color: currentColor; }
 
-/* tab bar */
-nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; background: var(--paper); border-top: 1px solid var(--line);
-  display: flex; justify-content: center; padding-bottom: env(safe-area-inset-bottom, 0px);
-  padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
-nav.tabs .in { display: grid; grid-template-columns: repeat(5, 1fr); width: 100%; max-width: 760px; }
-nav.tabs button { border: 0; border-radius: 0; background: none; flex-direction: column; gap: 2px; padding: 9px 2px 10px; font-size: .72rem; font-weight: 600; color: var(--muted); }
-nav.tabs button svg { width: 22px; height: 22px; }
-nav.tabs button[aria-current="page"] { color: var(--accent); }
-nav.tabs button[aria-current="page"] svg { stroke-width: 2.3; }
-.badge { background: var(--bad); color: #fff; border-radius: 999px; font-size: .65rem; padding: 0 5px; margin-left: 2px; font-weight: 700; }
+/* bảng trượt (sheet) */
+#sheetRoot { position: fixed; inset: 0; z-index: 50; }
+.backdrop { position: absolute; inset: 0; background: rgba(15, 12, 30, .4); opacity: 0; transition: opacity .2s; }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; margin: 0 auto; max-width: 620px; max-height: 88vh; max-height: 88dvh; display: flex; flex-direction: column; background: var(--surface); border-radius: 24px 24px 0 0; box-shadow: var(--shadow-float); transform: translateY(100%); transition: transform .28s cubic-bezier(.2, .8, .2, 1); padding-bottom: env(safe-area-inset-bottom, 0px); }
+#sheetRoot.open .backdrop { opacity: 1; }
+#sheetRoot.open .sheet { transform: translateY(0); }
+.grab { width: 38px; height: 5px; border-radius: 999px; background: var(--line); margin: 8px auto 0; flex: none; }
+.sheet-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px max(10px, env(safe-area-inset-right, 0px)) 2px max(18px, env(safe-area-inset-left, 0px)); }
+.sheet-h h3 { font: 800 17px/1.3 var(--font); min-width: 0; overflow-wrap: anywhere; }
+.sheet-b { overflow-y: auto; padding: 6px max(18px, env(safe-area-inset-right, 0px)) 20px max(18px, env(safe-area-inset-left, 0px)); display: grid; gap: 12px; }
+@media (min-width: 700px) {
+  .sheet { bottom: auto; top: 50%; border-radius: 24px; opacity: 0; transform: translateY(-46%); transition: transform .2s, opacity .2s; }
+  #sheetRoot.open .sheet { transform: translateY(-50%); opacity: 1; }
+}
+.menu { display: grid; gap: 2px; }
+.menu-i { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; border: 0; background: none; padding: 11px 8px; border-radius: 14px; cursor: pointer; color: var(--ink); }
+.menu-i:hover { background: var(--surface-2); }
+.menu-i > .i { width: 22px; height: 22px; color: var(--ink-2); }
+.menu-i > span { display: grid; min-width: 0; }
+.menu-i strong { font-weight: 800; }
+.menu-i.danger, .menu-i.danger > .i { color: var(--danger); }
+.pick { display: grid; gap: 6px; }
+.pick-row { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid var(--line); border-radius: 14px; cursor: pointer; }
+.pick-row input { width: 20px; height: 20px; accent-color: var(--accent); flex: none; }
+.pick-t { display: grid; min-width: 0; }
+.pick-t strong { overflow-wrap: anywhere; }
 
-/* today */
-.verdict { border-radius: var(--r); padding: 16px; display: grid; gap: 6px; border: 1px solid var(--line); background: var(--soft); }
-.stat { display: flex; align-items: baseline; gap: 8px; }
-.stat .n { font-size: 2rem; font-weight: 800; color: var(--accent); font-variant-numeric: tabular-nums; line-height: 1; }
+/* tab bar nổi */
+.tabbar { position: fixed; z-index: 25; left: 0; right: 0; bottom: 0; padding: 0 max(12px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); pointer-events: none; }
+.tabbar .in { pointer-events: auto; max-width: 520px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); background: var(--surface); background: color-mix(in srgb, var(--surface) 92%, transparent); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow-float); padding: 6px; }
+.tab { border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 7px 0 6px; border-radius: 16px; color: var(--ink-3); font: 800 11px/1 var(--font); cursor: pointer; position: relative; }
+.tab .i { width: 22px; height: 22px; }
+.tab[aria-current="page"] { color: var(--accent); background: var(--accent-soft); }
+.badge { position: absolute; top: 3px; left: calc(50% + 6px); min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; background: var(--danger); color: var(--danger-ink); font: 800 10px/16px var(--font); text-align: center; }
+#toast { position: fixed; z-index: 60; left: 50%; bottom: calc(var(--tabbar-h) + 28px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 14px; font: 700 14px/1.35 var(--font); max-width: calc(100vw - 32px); width: max-content; box-shadow: var(--shadow-float); }
+body.immersive #toast { bottom: calc(130px + env(safe-area-inset-bottom, 0px)); }
 
-/* agenda items */
-.item { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 11px 13px; display: grid; gap: 3px; }
-.item .head { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
-.item .title { font-weight: 700; min-width: 0; overflow-wrap: anywhere; }
-.pill { font-size: .72rem; font-weight: 700; border-radius: 999px; padding: 1px 8px; white-space: nowrap; }
-.t-exam { background: var(--bad-bg); color: var(--bad); }
-.t-deadline { background: var(--warn-bg); color: var(--warn); }
-.t-closure { background: var(--warn-bg); color: var(--warn); }
-.t-holiday { background: var(--go-bg); color: var(--go); }
-.t-event, .t-other { background: var(--soft); color: var(--accent); }
-.when { margin-left: auto; font-size: .8rem; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.soon { color: var(--bad); font-weight: 700; }
-.item.done { opacity: .5; }
-.kv { font-size: .86rem; } .kv b { font-weight: 600; }
-
-/* study */
-.courses { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
-.course { flex: 0 0 auto; max-width: 240px; text-align: left; flex-direction: column; align-items: flex-start; gap: 0; }
-.course[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
-.course span { font-weight: 500; font-size: .75rem; color: var(--muted); }
-.chat { display: flex; flex-direction: column; gap: 10px; margin: 10px 0; }
-.msg { border-radius: 16px; padding: 10px 14px; max-width: 94%; min-width: 0; overflow-wrap: anywhere; }
-.msg.user { align-self: flex-end; background: var(--accent); color: var(--accent-ink); white-space: pre-wrap; border-bottom-right-radius: 4px; }
-.msg.assistant { align-self: flex-start; background: var(--paper); border: 1px solid var(--line); border-bottom-left-radius: 4px; }
-.msg.fix { align-self: flex-end; background: var(--warn-bg); border: 1px dashed var(--warn); color: var(--ink); font-size: .9rem; }
-.msg.fix ul { margin: 4px 0; padding-left: 18px; } .msg.fix li { margin: 6px 0; }
-.msg.fix s { color: var(--bad); }
-.composer { position: sticky; bottom: calc(64px + env(safe-area-inset-bottom, 0px)); background: var(--bg); padding-block: 8px; display: grid; gap: 6px; }
-.quick { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
-.quick button { flex: 0 0 auto; }
-.md :is(h1,h2,h3,h4) { font-size: 1rem; text-transform: none; letter-spacing: 0; color: var(--ink); margin: 10px 0 4px; }
-.md p { margin: 5px 0; } .md ul, .md ol { padding-left: 20px; margin: 4px 0; }
-.md pre { overflow-x: auto; background: var(--soft); border-radius: 8px; padding: 8px; font-family: var(--mono); font-size: .85rem; }
-.md code { font-family: var(--mono); font-size: .88em; background: var(--soft); border-radius: 4px; padding: 0 4px; }
-.md table { display: block; overflow-x: auto; border-collapse: collapse; } .md td, .md th { border: 1px solid var(--line); padding: 4px 8px; }
-.md a { color: var(--accent); }
-.md blockquote { border-left: 3px solid var(--chalk); margin: 6px 0; padding: 2px 10px; color: var(--muted); }
-mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
-.thinking { display: inline-flex; gap: 8px; align-items: center; color: var(--muted); font-size: .88rem; }
-.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--chalk); animation: pulse 1s ease-in-out infinite; }
-@keyframes pulse { 50% { opacity: .25; } }
-@media (prefers-reduced-motion: reduce) { .dot { animation: none; } }
-
-/* flashcards */
-.decks { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
-.deck { flex-direction: column; align-items: flex-start; text-align: left; gap: 2px; }
-.deck .n { font-size: 1.4rem; font-weight: 800; color: var(--accent); font-variant-numeric: tabular-nums; }
-.card-face { min-height: 150px; display: grid; place-items: center; text-align: center; font-size: 1.1rem; font-weight: 600; padding: 18px; }
-.answer { border-top: 1px dashed var(--line); padding-top: 12px; }
-.mnemo { background: var(--warn-bg); border-radius: 10px; padding: 8px 12px; margin-top: 8px; font-size: .92rem; }
-.grades { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-.grades button { justify-content: center; flex-direction: column; gap: 0; font-size: .85rem; }
-.grades button span { font-size: .7rem; font-weight: 500; color: var(--muted); }
-
-.notice { border-radius: 12px; padding: 10px 12px; font-size: .88rem; background: var(--warn-bg); color: var(--ink); border: 1px solid var(--warn); }
-.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(80px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 12px; z-index: 30; max-width: calc(100vw - 32px); font-size: .9rem; }
-.dropzone { border: 2px dashed var(--line); border-radius: var(--r); padding: 14px; text-align: center; color: var(--muted); }
-.progress { height: 6px; background: var(--soft); border-radius: 999px; overflow: hidden; } .progress i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .3s; }
-.copybox { font-family: var(--mono); font-size: .78rem; max-height: 120px; }
-details > summary { cursor: pointer; font-weight: 600; padding: 4px 0; }
+/* chữ dạng ghi chú */
+.md > :first-child { margin-top: 0; } .md > :last-child { margin-bottom: 0; }
+.md p { margin: .55em 0; }
+.md h1, .md h2, .md h3, .md h4 { font-weight: 800; font-size: 1.06em; margin: 1.1em 0 .4em; letter-spacing: -.01em; }
+.md ul, .md ol { padding-left: 1.3em; margin: .5em 0; } .md li { margin: .25em 0; }
+.md strong { font-weight: 800; }
+.md blockquote { margin: .7em 0; padding: .5em .9em; border-left: 3px solid var(--accent); background: var(--surface-2); border-radius: 0 10px 10px 0; color: var(--ink-2); }
+.md code { font-family: var(--mono); font-size: .86em; background: var(--surface-2); padding: .1em .35em; border-radius: 6px; }
+.md pre { background: var(--surface-2); padding: 12px; border-radius: 12px; overflow-x: auto; }
+.md pre code { background: none; padding: 0; }
+.md table { display: block; overflow-x: auto; border-collapse: collapse; font-size: .92em; }
+.md th, .md td { border: 1px solid var(--line); padding: 6px 10px; } .md th { background: var(--surface-2); }
+.md a { color: var(--accent); text-underline-offset: 2px; overflow-wrap: anywhere; }
+.md hr { border: 0; border-top: 1px solid var(--line); margin: 1.2em 0; }
+mjx-container { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+@media (max-width: 380px) { .steps { grid-template-columns: 1fr; } .starter-grid { grid-template-columns: 1fr; } }
 </style>
 
-<div class="app">
-  <header class="top">
-    <div class="brand">Sorbonne <b>Copilot</b></div>
-    <div class="date" id="today"></div>
-  </header>
-  <div id="globalNotice" class="notice" hidden></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 12 4l8 6.5V19a1.5 1.5 0 0 1-1.5 1.5H15v-6H9v6H5.5A1.5 1.5 0 0 1 4 19z"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5.5A2.5 2.5 0 0 1 7.5 3H19v14H7.5A2.5 2.5 0 0 0 5 19.5z"/><path d="M5 19.5A2.5 2.5 0 0 0 7.5 22H19v-5"/><path d="M9 7.5h6"/></symbol>
+  <symbol id="i-cards" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="7" width="13" height="14" rx="2.5"/><path d="M8 3.5h10A2.5 2.5 0 0 1 20.5 6v11"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-inbox" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 13.5 6 5.5h12l2.5 8V18a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/><path d="M3.5 13.5h5l1.5 2.5h4l1.5-2.5h5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2.5" fill="currentColor"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24" fill="currentColor"><circle cx="5.5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="18.5" cy="12" r="1.7"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8.5" y="8.5" width="11.5" height="11.5" rx="2.5"/><path d="M15.5 8.5V6.5A2.5 2.5 0 0 0 13 4H6.5A2.5 2.5 0 0 0 4 6.5V13a2.5 2.5 0 0 0 2.5 2.5h2"/></symbol>
+  <symbol id="i-paste" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4.5" width="14" height="16" rx="2.5"/><path d="M9 4.5V3.5h6v1M9 11h6M9 15h4"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><path d="m4.5 7 7.5 6 7.5-6"/></symbol>
+  <symbol id="i-sparkle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M11 3.5l1.9 5.1 5.1 1.9-5.1 1.9L11 17.5l-1.9-5.1L4 10.5l5.1-1.9z"/><path d="M18.5 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></symbol>
+  <symbol id="i-speak" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19V7a2.5 2.5 0 0 1 2.5-2.5h9A2.5 2.5 0 0 1 19 7v6a2.5 2.5 0 0 1-2.5 2.5H9z"/><path d="M9 9h6M9 12h3.5"/></symbol>
+  <symbol id="i-pages" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3.5h7l4.5 4.5v12a.5.5 0 0 1-.5.5H7a.5.5 0 0 1-.5-.5V4a.5.5 0 0 1 .5-.5z"/><path d="M14 3.5V8h4.5M9.5 12.5h5M9.5 16h5"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1" fill="currentColor"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 11A7.5 7.5 0 0 0 6 6.6M4.5 3.5v3.7h3.7M4.5 13A7.5 7.5 0 0 0 18 17.4M19.5 20.5v-3.7h-3.7"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l.8 12.2A1.5 1.5 0 0 0 8.8 20.6h6.4a1.5 1.5 0 0 0 1.5-1.4L17.5 7"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="m4 18 5-5 4 4 2.5-2.5L20 18"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4.5M7.5 9 12 4.5 16.5 9M5 15v3.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V15"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9.5 6 6 6-6 6"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9.5 6 6 6-6"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></symbol>
+</svg>
+
+<main class="wrap" id="main">
+  <div id="notice" class="notice" hidden></div>
 
   <!-- HÔM NAY -->
-  <section id="v-home" class="stack">
-    <h2>Hôm nay</h2>
-    <div class="verdict" id="homeVerdict">
-      <div style="font-weight:700">🏫 Hôm nay có cần lên trường không?</div>
-      <p class="small">App không tự lên mạng được. Bấm nút dưới: app chép sẵn câu lệnh (kèm lịch của bạn), rồi bạn dán vào Claude và bật <b>Tìm kiếm web</b>. Claude sẽ tìm tin blocus, biểu tình, giao thông, Instagram @sorbonne_univ và @sorbonne_sciences_vieetudiante.</p>
-      <div class="row">
-        <button class="primary" id="copyBriefing">📋 Chép lệnh briefing</button>
-        <a class="btn" href="https://claude.ai/new" target="_blank" rel="noopener">Mở Claude ↗</a>
-      </div>
-      <p class="small muted">Có kết quả rồi thì dán nó vào tab <b>Kiểm tra</b> để app lưu ngày thi và hạn nộp vào lịch.</p>
-    </div>
-    <div class="row">
-      <div class="sheet grow stat"><span class="n" id="dueCount">0</span><span class="small">thẻ cần ôn hôm nay</span></div>
-      <div class="sheet grow stat"><span class="n" id="soonCount">0</span><span class="small">mốc trong 14 ngày tới</span></div>
-    </div>
-    <h3>Sắp tới</h3>
-    <div class="stack" id="homeAgenda"></div>
+  <section id="v-home" class="view">
+    <header class="hello">
+      <div id="hMascot"></div>
+      <div><p class="muted small" id="hDate"></p><h1 id="hGreet">Chào bạn</h1></div>
+    </header>
+    <article class="card" id="hStatus"></article>
+    <article class="card" id="hMail"></article>
+    <div id="hNudge"></div>
+    <div class="sec-head"><span class="label">Sắp tới</span><button class="link" data-go="agenda">Xem lịch</button></div>
+    <div id="hUpcoming" class="list"></div>
   </section>
 
   <!-- HỌC -->
-  <section id="v-study" class="stack" hidden>
-    <h2>Học với gia sư</h2>
-    <div class="courses" id="courseBar"></div>
-    <details class="sheet" id="addCourse">
-      <summary>➕ Thêm tài liệu (slide, giáo trình)</summary>
-      <div class="stack" style="margin-top:10px">
-        <input id="cTitle" placeholder="Tên môn / chương, vd: Électrocinétique – ch.2">
-        <textarea id="cExam" rows="2" placeholder="Nội dung thi của môn này (nếu biết)"></textarea>
-        <div class="dropzone small">PDF, ảnh chụp slide, hoặc file .txt<br><input id="cFiles" type="file" multiple accept="application/pdf,image/*,.txt,.md" style="margin-top:8px"></div>
-        <div class="progress" hidden id="cProg"><i></i></div>
-        <div class="small muted" id="cStatus"></div>
-        <button class="primary" id="cAdd">Tải lên</button>
-      </div>
-    </details>
-    <div id="studyEmpty" class="sheet muted small">Chưa có tài liệu. Thêm một file PDF để bắt đầu học kiểu Feynman: gia sư giảng bằng ví dụ vui, rồi bắt bạn giải thích lại.</div>
-
-    <div id="studyPane" hidden>
-      <div class="sheet stack">
-        <div class="row">
-          <strong class="grow" id="curTitle"></strong>
-          <button class="chip" id="mkCards">🃏 Tạo flashcards</button>
-          <button class="chip ghost" id="resetChat" title="Buổi học mới">↺ Buổi mới</button>
-        </div>
-        <div class="small muted" id="curInfo"></div>
-        <div class="row small">
-          <span>Học trang</span>
-          <input id="pFrom" type="number" min="1" style="width:76px" aria-label="Từ trang">
-          <span>→</span>
-          <input id="pTo" type="number" min="1" style="width:76px" aria-label="Đến trang">
-          <button class="chip ghost" id="editExam">🎯 Sửa nội dung thi</button>
-        </div>
-        <div id="examEditBox" hidden class="row">
-          <textarea id="examInput" rows="2" class="grow"></textarea>
-          <button class="chip primary" id="saveExam">Lưu</button>
-        </div>
-        <div id="resetConfirm" hidden class="row notice">
-          <span class="grow">Xoá cuộc trò chuyện này để bắt đầu buổi mới? Flashcards vẫn giữ.</span>
-          <button class="chip" id="resetYes">Xoá</button><button class="chip ghost" id="resetNo">Thôi</button>
-        </div>
-      </div>
-      <div class="chat" id="chat"></div>
-      <div class="composer">
-        <div class="quick" id="quick">
-          <button class="chip" data-q="Commence le cours depuis le début de ces pages : quelles sont les grandes idées ? Explique la première.">🚀 Bắt đầu</button>
-          <button class="chip" data-q="Je n'ai pas compris. Réexplique avec une autre analogie, plus simple.">🤯 Chưa hiểu</button>
-          <button class="chip" data-q="Pourquoi c'est comme ça, physiquement ? Va au fond des choses.">🔬 Bản chất?</button>
-          <button class="chip" data-q="Donne-moi un exercice type examen sur ce qu'on vient de voir, sans la correction.">📝 Bài tập</button>
-          <button class="chip" data-q="Fais-moi un quiz rapide de 5 questions sur ce qu'on a vu.">⚡ Quiz</button>
-        </div>
-        <div class="row small">
-          <label class="check"><input type="checkbox" id="viMode"> 🇻🇳 Tui không hiểu tiếng Pháp</label>
-          <label class="check"><input type="checkbox" id="feynMode"> 🗣️ Tui tự giải thích lại (chấm điểm)</label>
-        </div>
-        <div class="row">
-          <textarea id="chatIn" class="grow" rows="2" placeholder="Hỏi bằng tiếng Pháp, sai ngữ pháp sẽ được sửa 😉"></textarea>
-          <button class="primary" id="send" aria-label="Gửi">➤</button>
-          <button id="stop" hidden aria-label="Dừng">■</button>
-        </div>
-      </div>
-    </div>
+  <section id="v-study" class="view" hidden>
+    <header class="page-h">
+      <div><h1>Học</h1><p class="muted">Gia sư Feynman cho từng tài liệu</p></div>
+      <button class="icon-btn solid" data-act="add-course" aria-label="Thêm tài liệu"><svg class="i"><use href="#i-plus"></use></svg></button>
+    </header>
+    <div id="sList" class="stack"></div>
   </section>
 
   <!-- ÔN TẬP -->
-  <section id="v-cards" class="stack" hidden>
-    <h2>Ôn tập</h2>
-    <p class="small muted">Lặp lại ngắt quãng: thẻ nhớ tốt sẽ quay lại sau 1, 4, 10… ngày; thẻ quên sẽ quay lại ngay.</p>
-    <div class="decks" id="decks"></div>
-    <div id="review" class="sheet stack" hidden>
-      <div class="row small muted"><span class="grow" id="rvMeta"></span><button class="chip ghost" id="rvExit">Thoát</button></div>
-      <div class="card-face md" id="rvFront"></div>
-      <div class="answer md" id="rvBack" hidden></div>
-      <button class="primary" id="rvShow" style="justify-content:center">Xem đáp án</button>
-      <div class="grades" id="rvGrades" hidden>
-        <button data-g="0">😵 Quên<span>ngay lại</span></button>
-        <button data-g="3">😬 Khó<span>ngắn</span></button>
-        <button data-g="4">🙂 Ổn<span>vừa</span></button>
-        <button data-g="5">😎 Dễ<span>dài</span></button>
-      </div>
-    </div>
-    <div id="rvDone" class="sheet muted small" hidden>🎉 Hết thẻ cần ôn trong bộ này. Mai quay lại nhé!</div>
+  <section id="v-review" class="view" hidden>
+    <header class="page-h"><div><h1>Ôn tập</h1><p class="muted" id="rSub"></p></div></header>
+    <div id="rList" class="stack"></div>
   </section>
 
   <!-- LỊCH -->
-  <section id="v-agenda" class="stack" hidden>
-    <h2>Lịch thi & hạn nộp</h2>
-    <div class="row">
-      <button id="planBtn">🗺️ Kế hoạch ôn thi</button>
-      <button id="addToggle">➕ Thêm thủ công</button>
-    </div>
-    <div id="planOut" class="sheet md" hidden></div>
-    <form id="addForm" class="sheet stack" hidden>
-      <div class="row">
-        <select id="aType" style="width:auto"><option value="exam">📝 Thi</option><option value="deadline">📤 Hạn nộp</option><option value="event">📌 Sự kiện</option><option value="closure">🚧 Đóng cửa / blocus</option><option value="holiday">🌴 Nghỉ</option></select>
-        <input id="aDate" type="date" style="width:auto">
-        <input id="aTime" type="time" style="width:auto">
-      </div>
-      <input id="aTitle" placeholder="Tiêu đề" required>
-      <input id="aCourse" placeholder="Môn (UE)">
-      <input id="aSubmit" placeholder="Cần nộp gì / nộp ở đâu">
-      <textarea id="aExam" rows="2" placeholder="Nội dung thi"></textarea>
-      <button class="primary" type="submit">Thêm</button>
-    </form>
-    <div class="stack" id="agendaList"></div>
+  <section id="v-agenda" class="view" hidden>
+    <header class="page-h">
+      <div><h1>Lịch</h1><p class="muted">Thi, hạn nộp và những ngày đặc biệt</p></div>
+      <button class="icon-btn solid" data-act="add-event" aria-label="Thêm mốc thời gian"><svg class="i"><use href="#i-plus"></use></svg></button>
+    </header>
+    <div class="strip" id="aStrip"></div>
+    <button class="btn soft block" data-act="plan"><svg class="i"><use href="#i-sparkle"></use></svg> Lập kế hoạch ôn thi</button>
+    <div id="aList" class="list"></div>
   </section>
 
-  <!-- KIỂM TRA -->
-  <section id="v-inbox" class="stack" hidden>
-    <h2>Kiểm tra thông tin</h2>
-    <p class="small muted">Gửi ảnh chụp mail, story Instagram, bài Facebook, hoặc dán nội dung. App tóm tắt, tìm ngày thi/hạn nộp để lưu vào lịch, và chỉ ra chỗ nào cần kiểm chứng.</p>
-    <div class="sheet stack" id="mailBox">
-      <div class="row"><strong class="grow">📬 Mail trường (qua Gmail)</strong>
-        <select id="mailDays" style="width:auto" aria-label="Khoảng thời gian"><option value="3">3 ngày</option><option value="7" selected>7 ngày</option><option value="30">30 ngày</option></select>
-        <button class="primary" id="mailGo">Đọc mail mới</button></div>
-      <div class="small muted" id="mailStatus">App đọc mail của trường đã chuyển sang Gmail (gồm cả Moodle và các danh sách chung như [etudiants]), tóm tắt và tìm ngày thi, hạn nộp, biểu tình, đóng cửa.</div>
-      <div id="mailEvents" class="stack"></div>
-      <div id="mailList" class="stack"></div>
+  <!-- HỘP THƯ -->
+  <section id="v-inbox" class="view" hidden>
+    <header class="page-h"><div><h1>Hộp thư</h1><p class="muted">Mail trường và kiểm tra tin tức</p></div></header>
+    <div class="segmented" id="iSeg" role="tablist">
+      <button role="tab" data-seg="mail" aria-selected="true">Mail trường</button>
+      <button role="tab" data-seg="check" aria-selected="false">Kiểm tra tin</button>
     </div>
-    <h3>Ảnh chụp hoặc nội dung khác</h3>
-    <div class="sheet stack">
-      <textarea id="inText" rows="5" placeholder="Dán nội dung mail / tin tức / kết quả briefing…"></textarea>
-      <input id="inFiles" type="file" multiple accept="image/*">
-      <div class="row">
-        <button class="primary" id="inGo">🔎 Phân tích</button>
-        <span class="small muted" id="inImgNote"></span>
+    <div id="iMail" class="stack">
+      <div class="card">
+        <div class="row" style="justify-content:space-between">
+          <div class="pills" id="mDays" aria-label="Khoảng thời gian">
+            <button data-d="3" aria-pressed="false">3 ngày</button><button data-d="7" aria-pressed="true">7 ngày</button><button data-d="30" aria-pressed="false">30 ngày</button>
+          </div>
+          <button class="btn primary sm" data-act="read-mail"><svg class="i"><use href="#i-mail"></use></svg> Đọc mail mới</button>
+        </div>
+        <div class="small" data-mailmsg></div>
       </div>
+      <div id="mList" class="list"></div>
     </div>
-    <div id="inOut" class="stack"></div>
+    <div id="iCheck" class="stack" hidden>
+      <div class="card">
+        <p class="muted small">Dán nội dung, hoặc gửi ảnh chụp mail, story Instagram, bài Facebook. App tóm tắt, chỉ ra chỗ cần kiểm chứng và tìm ngày thi, hạn nộp.</p>
+        <textarea id="ckText" rows="5" placeholder="Dán nội dung ở đây…"></textarea>
+        <label class="drop" id="ckDrop"><svg class="i"><use href="#i-image"></use></svg><span id="ckDropText">Thêm ảnh chụp màn hình</span><input type="file" id="ckFiles" class="vh" accept="image/*" multiple></label>
+        <div class="thumbs" id="ckThumbs"></div>
+        <button class="btn primary block" id="ckGo"><svg class="i"><use href="#i-sparkle"></use></svg> Phân tích</button>
+      </div>
+      <div id="ckOut" class="stack"></div>
+    </div>
   </section>
-</div>
+</main>
 
-<nav class="tabs" aria-label="Điều hướng">
-  <div class="in">
-    <button data-v="home" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>Hôm nay</button>
-    <button data-v="study"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l10-3 10 3-10 3z"/><path d="M6 8v6c0 1.7 2.7 3 6 3s6-1.3 6-3V8"/></svg>Học</button>
-    <button data-v="cards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="14" height="14" rx="2"/><path d="M7 3h12a2 2 0 0 1 2 2v12"/></svg><span>Ôn tập<span class="badge" id="navDue" hidden></span></span></button>
-    <button data-v="agenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Lịch</button>
-    <button data-v="inbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.5-4.5"/></svg>Kiểm tra</button>
+<!-- HỌC: CHẾ ĐỘ TOÀN MÀN HÌNH -->
+<section id="v-course" class="immersive" hidden>
+  <header class="topbar"><div class="bar-in">
+    <button class="icon-btn" data-go="study" aria-label="Quay lại"><svg class="i"><use href="#i-back"></use></svg></button>
+    <div class="tb-title"><strong id="cTitle"></strong><button class="tb-sub" data-act="c-range" id="cRange"></button></div>
+    <div class="seg" id="cLang" role="group" aria-label="Ngôn ngữ giảng"><button data-lang="fr" aria-pressed="true">FR</button><button data-lang="vi" aria-pressed="false">VI</button></div>
+    <button class="icon-btn" data-act="c-menu" aria-label="Tuỳ chọn"><svg class="i"><use href="#i-more"></use></svg></button>
+  </div></header>
+  <div class="thread-wrap"><div class="bar-in"><div class="thread" id="thread"></div></div></div>
+  <footer class="composer"><div class="bar-in">
+    <div class="suggest" id="suggest" aria-label="Gợi ý"></div>
+    <div class="mode-banner" id="feynBanner" hidden><svg class="i"><use href="#i-speak"></use></svg><span>Tự giảng lại: viết theo cách bạn hiểu, gia sư chấm /10</span><button class="icon-btn" id="feynOff" aria-label="Tắt chế độ tự giảng"><svg class="i"><use href="#i-x"></use></svg></button></div>
+    <div class="input-row" id="inputRow">
+      <button class="icon-btn" id="feynBtn" aria-pressed="false" aria-label="Tự giảng lại (chấm điểm Feynman)" title="Tự giảng lại (chấm điểm)"><svg class="i"><use href="#i-speak"></use></svg></button>
+      <textarea id="chatIn" rows="1" placeholder="Hỏi gia sư…" aria-label="Tin nhắn"></textarea>
+      <button class="send" id="sendBtn" aria-label="Gửi" disabled><svg class="i"><use href="#i-send"></use></svg></button>
+      <button class="send" id="stopBtn" aria-label="Dừng" hidden><svg class="i"><use href="#i-stop"></use></svg></button>
+    </div>
+  </div></footer>
+</section>
+
+<!-- ÔN: CHẾ ĐỘ TOÀN MÀN HÌNH -->
+<section id="v-session" class="immersive" hidden>
+  <header class="topbar"><div class="bar-in">
+    <button class="icon-btn" id="sExit" aria-label="Kết thúc phiên ôn"><svg class="i"><use href="#i-x"></use></svg></button>
+    <div class="progress"><i id="sProg"></i></div>
+    <span class="mono small faint" id="sCount"></span>
+  </div></header>
+  <div class="bar-in session-in">
+    <div id="sCardWrap" class="stack">
+      <div class="flash" id="flash" role="button" tabindex="0" aria-label="Lật thẻ">
+        <div class="face front"><span class="label deck-name" id="sDeck"></span><div class="md" id="sFront"></div><p class="hint">Chạm để lật thẻ</p></div>
+        <div class="face back"><div class="md" id="sBack"></div><div class="mnemo" id="sMnemo" hidden></div></div>
+      </div>
+      <div class="grades" id="sGrades" hidden>
+        <button class="grade g0" data-g="0"><strong>Quên</strong><span></span></button>
+        <button class="grade g3" data-g="3"><strong>Khó</strong><span></span></button>
+        <button class="grade g4" data-g="4"><strong>Ổn</strong><span></span></button>
+        <button class="grade g5" data-g="5"><strong>Dễ</strong><span></span></button>
+      </div>
+      <button class="btn primary block lg" id="sFlip">Lật thẻ</button>
+    </div>
+    <div id="sDone" class="empty" hidden>
+      <div id="sDoneMascot"></div>
+      <h3>Xong phiên ôn rồi!</h3>
+      <p id="sDoneText"></p>
+      <button class="btn primary" data-go="review">Về Ôn tập</button>
+    </div>
   </div>
-</nav>
-<div class="toast" id="toast" hidden></div>
+</section>
+
+<nav class="tabbar" aria-label="Điều hướng"><div class="in">
+  <button class="tab" data-v="home" aria-current="page"><svg class="i"><use href="#i-home"></use></svg>Hôm nay</button>
+  <button class="tab" data-v="study"><svg class="i"><use href="#i-book"></use></svg>Học</button>
+  <button class="tab" data-v="review"><svg class="i"><use href="#i-cards"></use></svg>Ôn tập<span class="badge" id="tabDue" hidden></span></button>
+  <button class="tab" data-v="agenda"><svg class="i"><use href="#i-calendar"></use></svg>Lịch</button>
+  <button class="tab" data-v="inbox"><svg class="i"><use href="#i-inbox"></use></svg>Hộp thư</button>
+</div></nav>
+<div id="sheetRoot" hidden></div>
+<div id="toast" role="status" hidden></div>
 
 <script>
 window.MathJax = { tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] }, svg: { fontCache: "global" }, startup: { typeset: false } };
@@ -318,21 +535,59 @@ window.MathJax = { tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\
 <script>
 (() => {
 "use strict";
-const $ = (s) => document.querySelector(s);
-const $$ = (s) => [...document.querySelectorAll(s)];
+// ================= tiện ích =================
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const uid8 = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const finePointer = matchMedia("(pointer: fine)").matches;
+const NEED_CLAUDE = "Mở app trên claude.ai (đã đăng nhập) để dùng Claude.";
+const FEYN = "[EXPLICATION FEYNMAN] ";
+const icon = (n, cls = "") => `<svg class="i ${cls}" aria-hidden="true"><use href="#i-${n}"></use></svg>`;
+const thinking = (label = "") => `<span class="typing" role="status"><i></i><i></i><i></i>${label ? `<span>${esc(label)}</span>` : ""}</span>`;
+function lsGet(k, d = "") { try { const v = localStorage.getItem(k); return v === null ? d : v; } catch { return d; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
+function mascot(cls = "") {
+  const motion = reduceMotion ? "" : `<animateMotion dur="6s" repeatCount="indefinite" path="M3,0 a29,11 0 1,0 58,0 a29,11 0 1,0 -58,0"/>`;
+  return `<svg class="mascot ${cls}" viewBox="0 0 64 64" aria-hidden="true"><g transform="rotate(-18 32 32)"><ellipse class="m-orbit" cx="32" cy="32" rx="29" ry="11"/><circle class="m-e" cx="0" cy="32" r="3">${motion}</circle></g><circle class="m-body" cx="32" cy="33" r="16.5"/><circle class="m-eye" cx="26.5" cy="31" r="2.1"/><circle class="m-eye" cx="37.5" cy="31" r="2.1"/><path class="m-smile" d="M28.5 36.5 q3.5 3 7 0"/><circle class="m-blush" cx="22.5" cy="35.5" r="2.4"/><circle class="m-blush" cx="41.5" cy="35.5" r="2.4"/></svg>`;
+}
 
-// ---------- ngày giờ (Paris) ----------
-const todayISO = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Paris" }).format(new Date());
+// ================= ngày giờ (giờ Paris) =================
+const TZ = "Europe/Paris";
+const todayISO = () => new Intl.DateTimeFormat("en-CA", { timeZone: TZ }).format(new Date());
 const addDays = (iso, n) => { const d = new Date(iso + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
 const diffDays = (iso) => Math.round((new Date(iso + "T12:00:00Z") - new Date(todayISO() + "T12:00:00Z")) / 86400000);
-const whenLabel = (iso) => { if (!iso) return "chưa rõ ngày"; const d = diffDays(iso); return d === 0 ? "hôm nay" : d === 1 ? "ngày mai" : d < 0 ? `${-d} ngày trước` : `còn ${d} ngày`; };
-$("#today").textContent = new Date().toLocaleDateString("vi-VN", { weekday: "long", day: "numeric", month: "long", timeZone: "Europe/Paris" });
+const WD = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+const wdOf = (iso) => WD[new Date(iso + "T12:00:00Z").getUTCDay()];
+const longDate = (iso) => new Date(iso + "T12:00:00Z").toLocaleDateString("vi-VN", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" });
+function countdown(iso) {
+  if (!iso) return "";
+  const d = diffDays(iso);
+  if (d === 0) return "hôm nay";
+  if (d === 1) return "ngày mai";
+  if (d === -1) return "hôm qua";
+  if (d < 0) return `${-d} ngày trước`;
+  return d < 14 ? `còn ${d} ngày` : `còn ${Math.round(d / 7)} tuần`;
+}
+function timeAgo(ts) {
+  const m = Math.round((Date.now() - new Date(ts)) / 60000);
+  if (!isFinite(m)) return "";
+  if (m < 1) return "vừa xong";
+  if (m < 60) return `${m} phút trước`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `${h} giờ trước`;
+  return `${Math.round(h / 24)} ngày trước`;
+}
+const hhmm = (ts) => new Date(ts).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", timeZone: TZ });
+function shortDT(ts) { const d = new Date(ts); return isNaN(d) ? "" : d.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", timeZone: TZ }) + " · " + hhmm(ts); }
+function greeting() {
+  const h = Number(new Intl.DateTimeFormat("en-GB", { hour: "numeric", hourCycle: "h23", timeZone: TZ }).format(new Date()));
+  return h < 11 ? "Chào buổi sáng" : h < 14 ? "Chào buổi trưa" : h < 18 ? "Chào buổi chiều" : "Chào buổi tối";
+}
 
-function toast(msg, ms = 3200) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => (t.hidden = true), ms); }
-
-// ---------- Markdown + công thức ----------
+// ================= Markdown + công thức =================
 function md(text) {
   const maths = [];
   const keep = (tex, display) => `@@M${maths.push({ tex, display }) - 1}@@`;
@@ -349,50 +604,96 @@ function md(text) {
 function typeset(el) { if (window.MathJax?.typesetPromise) window.MathJax.typesetPromise([el]).catch(() => {}); }
 function setMd(el, text) { el.innerHTML = md(text); typeset(el); }
 
-// ---------- lưu trữ (db riêng tư theo người dùng) ----------
-const state = { agenda: [], courses: [], decks: {}, chats: {}, mail: { seen: [], recent: [] }, cur: null, persist: false };
-let base = null; // collection data/users/<id>
+// ================= thông báo nhỏ & bảng trượt =================
+function toast(msg, ms = 3000) {
+  const t = $("#toast"); t.textContent = msg; t.hidden = false;
+  clearTimeout(toast.t); toast.t = setTimeout(() => (t.hidden = true), ms);
+}
+function showNotice(msg) { const n = $("#notice"); n.textContent = msg; n.hidden = !msg; }
+const sheetRoot = $("#sheetRoot");
+function openSheet({ title, html, onMount }) {
+  sheetRoot.innerHTML = `<div class="backdrop" data-close></div><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="grab"></div><header class="sheet-h"><h3>${esc(title)}</h3><button class="icon-btn" data-close aria-label="Đóng">${icon("x")}</button></header><div class="sheet-b">${html}</div></div>`;
+  sheetRoot.hidden = false;
+  sheetRoot.classList.remove("open");
+  document.body.classList.add("noscroll");
+  const el = sheetRoot.querySelector(".sheet");
+  onMount?.(el);
+  requestAnimationFrame(() => requestAnimationFrame(() => sheetRoot.classList.add("open")));
+  if (finePointer) el.querySelector("input[type=text], textarea")?.focus();
+  return el;
+}
+function closeSheet() {
+  if (sheetRoot.hidden) return;
+  sheetRoot.classList.remove("open"); sheetRoot.hidden = true; sheetRoot.innerHTML = "";
+  document.body.classList.remove("noscroll");
+}
+sheetRoot.addEventListener("click", (e) => { if (e.target.closest("[data-close]")) closeSheet(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSheet(); });
+function openConfirm({ title, text, yes, danger = false, onYes }) {
+  openSheet({ title, html: `<p class="muted">${esc(text)}</p><div class="two"><button class="btn" data-close>Thôi</button><button class="btn ${danger ? "danger" : "primary"}" id="cfYes">${esc(yes)}</button></div>`,
+    onMount: (el) => $("#cfYes", el).addEventListener("click", () => { closeSheet(); onYes(); }) });
+}
+async function copyText(text, label) {
+  try { await navigator.clipboard.writeText(text); toast(`Đã chép ${label}. Dán vào Claude và bật Tìm kiếm web nhé.`, 4200); }
+  catch {
+    openSheet({ title: "Chép thủ công", html: `<p class="muted small">Không tự chép được. Chọn hết chữ trong ô dưới rồi sao chép.</p><textarea readonly rows="9" id="cpBox"></textarea>`,
+      onMount: (el) => { const ta = $("#cpBox", el); ta.value = text; ta.focus(); ta.select(); } });
+  }
+}
+
+// ================= dữ liệu (riêng tư theo người dùng) =================
+const state = { agenda: [], courses: [], decks: {}, chats: {}, mail: { seen: [], recent: [], lastRun: "" }, status: null, cur: null, view: "home", seg: "mail", mailMsg: null };
+let base = null;
 const writeQueue = new Map();
-function save(docId, data) {
-  if (!base) return Promise.resolve();
-  const prev = writeQueue.get(docId) || Promise.resolve();
-  const next = prev.then(() => base.doc(docId).set(data)).catch((e) => {
+function queue(docId, op) {
+  const next = (writeQueue.get(docId) || Promise.resolve()).then(op).catch((e) => {
     if (e?.code === "quota_exceeded") showNotice("Bộ nhớ của app đã đầy. Hãy xoá bớt tài liệu cũ.");
-    else console.warn("save", docId, e);
+    else if (e?.code === "invalid_argument") showNotice("Có dữ liệu quá lớn nên chưa lưu được. Thử chia nhỏ tài liệu.");
+    else console.warn("db", docId, e);
   });
   writeQueue.set(docId, next);
   return next;
 }
+const save = (docId, data) => (base ? queue(docId, () => base.doc(docId).set(data)) : Promise.resolve());
+const removeDoc = (docId) => (base ? queue(docId, () => base.doc(docId).delete()) : Promise.resolve());
 const saveAgenda = () => save("agenda", { items: state.agenda });
-const saveCourses = () => save("courses", { list: state.courses });
+const saveCourses = () => save("courses", { list: state.courses.map(({ _pages, ...c }) => c) });
 const saveDeck = (id) => save("deck-" + id, { cards: state.decks[id] || [] });
 const saveMail = () => save("mail", state.mail);
-const saveChat = (id) => save("chat-" + id, state.chats[id] || { turns: [] });
-function showNotice(msg) { const n = $("#globalNotice"); n.textContent = msg; n.hidden = !msg; }
-
+const saveStatus = () => save("status", state.status || {});
+function saveChat(id) {
+  const chat = state.chats[id] || { turns: [] };
+  while (chat.turns.length > 2 && new Blob([JSON.stringify(chat)]).size > 200000) chat.turns.splice(0, 2);
+  return save("chat-" + id, chat);
+}
 async function loadData() {
   const timer = setTimeout(() => showNotice("Đang chờ kết nối dữ liệu…"), 10000);
   try {
-    const db = await window.claude?.use?.("db");
-    const user = await window.claude?.use?.("user");
+    const db = await (window.claude?.use?.("db") ?? null);
+    const user = await (window.claude?.use?.("user") ?? null);
     const id = user ? await user.id() : null;
-    if (!db || !id) { showNotice("Bạn cần đăng nhập claude.ai để app lưu được dữ liệu. Hiện dữ liệu chỉ giữ tới khi đóng trang."); return; }
+    if (!db || !id) { showNotice("Đăng nhập claude.ai để app lưu được dữ liệu. Hiện dữ liệu chỉ giữ tới khi đóng trang."); return; }
     base = db.collection("data/users/" + id);
     const snap = await base.get();
     for (const d of snap.docs) {
-      const v = d.data();
+      const v = d.data() || {};
       if (d.id === "agenda") state.agenda = v.items || [];
-      else if (d.id === "courses") state.courses = v.list || [];
+      else if (d.id === "courses") state.courses = (v.list || []).map(({ _pages, ...c }) => c);
       else if (d.id.startsWith("deck-")) state.decks[d.id.slice(5)] = v.cards || [];
-      else if (d.id.startsWith("chat-")) state.chats[d.id.slice(5)] = v;
-      else if (d.id === "mail") state.mail = { seen: v.seen || [], recent: v.recent || [] };
+      else if (d.id.startsWith("chat-")) state.chats[d.id.slice(5)] = { turns: v.turns || [] };
+      else if (d.id === "mail") state.mail = { seen: v.seen || [], recent: v.recent || [], lastRun: v.lastRun || "" };
+      else if (d.id === "status") state.status = v.date ? v : null;
     }
-    state.persist = true;
     showNotice("");
   } catch (e) {
     console.warn(e);
     showNotice("Không đọc được dữ liệu đã lưu. Thử tải lại trang sau.");
-  } finally { clearTimeout(timer); renderAll(); }
+  } finally {
+    clearTimeout(timer);
+    const cur = lsGet("cur");
+    if (cur && state.courses.some((c) => c.id === cur)) state.cur = cur;
+    if (START === "course" && state.cur && state.view !== "course") show("course"); else render();
+  }
 }
 async function loadCourseText(c) {
   if (c._pages) return c._pages;
@@ -405,193 +706,24 @@ async function loadCourseText(c) {
   return pages;
 }
 
-// ---------- Claude (dùng lượt trong gói của bạn) ----------
-let samplePromise = null;
-const getSample = () => (samplePromise ||= (window.claude?.use?.("sample") ?? Promise.resolve(null)));
+// ================= Claude & Gmail =================
+let samplePromise = null, limitsPromise = null;
+const getSample = () => (samplePromise ||= Promise.resolve(window.claude?.use?.("sample") ?? null));
+const getLimits = () => (limitsPromise ||= getSample().then((s) => (s ? s.limits().catch(() => null) : null)));
+const getMcp = () => Promise.resolve(window.claude?.use?.("mcp") ?? null);
 function sampleErr(e) {
   const c = e?.code;
-  if (c === "not_granted") return "Bạn chưa cho phép trang dùng Claude. Tải lại trang và bấm Cho phép.";
-  if (c === "rate_limited") return "Đã chạm giới hạn dùng Claude của gói. Đợi một lúc rồi thử lại.";
-  if (c === "invalid_json") return "Claude trả lời sai định dạng, bấm thử lại nhé.";
-  if (c === "refused") return "Claude từ chối yêu cầu này.";
-  if (c === "prompt_too_large") return "Tài liệu quá dài cho một lần hỏi. Chọn khoảng trang nhỏ hơn.";
-  if (c === "session_expired") return "Phiên đăng nhập hết hạn. Tải lại trang.";
-  if (c === "images_unavailable" || c === "image_rejected") return "Không gửi được ảnh này cho Claude.";
-  return "Có lỗi khi hỏi Claude" + (c ? ` (${c})` : "") + ".";
+  return ({
+    not_granted: "Bạn chưa cho phép trang dùng Claude. Tải lại trang và bấm Cho phép.",
+    rate_limited: "Đã chạm giới hạn dùng Claude của gói. Đợi một lúc rồi thử lại.",
+    invalid_json: "Claude trả lời sai định dạng, thử lại nhé.",
+    refused: "Claude từ chối yêu cầu này.",
+    prompt_too_large: "Tài liệu quá dài cho một lần hỏi. Chọn ít trang hơn.",
+    session_expired: "Phiên đăng nhập hết hạn. Tải lại trang.",
+    images_unavailable: "Thiết bị này chưa gửi ảnh cho Claude được.",
+    image_rejected: "Claude không nhận ảnh này. Thử ảnh PNG hoặc JPG khác.",
+  })[c] || "Có lỗi khi hỏi Claude" + (c ? ` (${c})` : "") + ". Thử lại sau nhé.";
 }
-
-// ---------- Lịch ----------
-const TYPE = { exam: "📝 Thi", deadline: "📤 Hạn nộp", event: "📌 Sự kiện", closure: "🚧 Đóng cửa", holiday: "🌴 Nghỉ", other: "• Khác" };
-const norm = (s) => (s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
-function mergeEvents(events, source) {
-  let added = 0;
-  for (const e of events || []) {
-    if (!e?.title) continue;
-    const date = /^\d{4}-\d{2}-\d{2}$/.test(e.date || "") ? e.date : "";
-    const dup = state.agenda.find((a) => a.date === date && norm(a.title) === norm(e.title));
-    if (dup) { for (const k of ["time", "course", "location", "to_submit", "exam_content", "details"]) if (!dup[k] && e[k]) dup[k] = e[k]; continue; }
-    state.agenda.push({ id: uid8(), type: TYPE[e.type] ? e.type : "other", title: e.title, date, time: e.time || "", course: e.course || "", location: e.location || "",
-      to_submit: e.to_submit || "", exam_content: e.exam_content || "", details: e.details || "", presence: e.presence || "", source, done: false });
-    added++;
-  }
-  state.agenda.sort((a, b) => (a.date || "9999").localeCompare(b.date || "9999"));
-  saveAgenda();
-  return added;
-}
-function itemHtml(a, actions) {
-  const d = a.date ? diffDays(a.date) : null;
-  return `<div class="item ${a.done ? "done" : ""}" data-id="${esc(a.id)}">
-    <div class="head"><span class="pill t-${esc(a.type)}">${TYPE[a.type] || "•"}</span><span class="title">${esc(a.title)}</span>
-      <span class="when mono ${d !== null && d >= 0 && d <= 3 ? "soon" : ""}">${esc(a.date ? a.date.slice(8, 10) + "/" + a.date.slice(5, 7) : "")} ${esc(a.time)} · ${whenLabel(a.date)}</span></div>
-    ${a.course ? `<div class="kv">📚 ${esc(a.course)}</div>` : ""}
-    ${a.location ? `<div class="kv">📍 ${esc(a.location)}</div>` : ""}
-    ${a.to_submit ? `<div class="kv"><b>📤 Cần nộp:</b> ${esc(a.to_submit)}</div>` : ""}
-    ${a.exam_content ? `<div class="kv"><b>🎯 Nội dung thi:</b> ${esc(a.exam_content)}</div>` : ""}
-    ${a.presence === "oui" ? `<div class="kv">🏫 Phải có mặt ở trường</div>` : ""}
-    ${a.details ? `<div class="kv muted">${esc(a.details)}</div>` : ""}
-    ${actions ? `<div class="row"><button class="chip" data-act="done">${a.done ? "↩ Bỏ đánh dấu" : "✓ Xong"}</button><button class="chip ghost" data-act="del">Xoá</button></div>` : ""}
-  </div>`;
-}
-function upcoming(days) { const t = todayISO(), end = addDays(t, days); return state.agenda.filter((a) => !a.done && (!a.date || (a.date >= t && a.date <= end))); }
-function agendaText(items) {
-  return items.length ? items.map((a) => `- [${a.type}] ${a.date || "?"} ${a.time} — ${a.title}${a.course ? " — " + a.course : ""}${a.to_submit ? " — à rendre: " + a.to_submit : ""}${a.exam_content ? " — programme: " + a.exam_content : ""}`).join("\n") : "(agenda vide)";
-}
-function renderAgenda() {
-  const t = todayISO();
-  const future = state.agenda.filter((a) => !a.date || a.date >= t);
-  const past = state.agenda.filter((a) => a.date && a.date < t);
-  $("#agendaList").innerHTML = (future.map((a) => itemHtml(a, true)).join("") || `<div class="sheet muted small">Lịch còn trống. Dán mail của trường vào tab <b>Kiểm tra</b> để app tự lấy ngày thi và hạn nộp.</div>`)
-    + (past.length ? `<details class="sheet"><summary>Đã qua (${past.length})</summary><div class="stack" style="margin-top:8px">${past.map((a) => itemHtml(a, true)).join("")}</div></details>` : "");
-}
-$("#agendaList").addEventListener("click", (e) => {
-  const b = e.target.closest("button[data-act]"); if (!b) return;
-  const id = b.closest(".item").dataset.id;
-  const i = state.agenda.findIndex((a) => a.id === id); if (i < 0) return;
-  if (b.dataset.act === "del") state.agenda.splice(i, 1); else state.agenda[i].done = !state.agenda[i].done;
-  saveAgenda(); renderAll();
-});
-$("#addToggle").addEventListener("click", () => ($("#addForm").hidden = !$("#addForm").hidden));
-$("#addForm").addEventListener("submit", (e) => {
-  e.preventDefault();
-  mergeEvents([{ type: $("#aType").value, title: $("#aTitle").value.trim(), date: $("#aDate").value, time: $("#aTime").value, course: $("#aCourse").value, to_submit: $("#aSubmit").value, exam_content: $("#aExam").value }], "manuel");
-  e.target.reset(); $("#addForm").hidden = true; renderAll(); toast("Đã thêm vào lịch");
-});
-$("#planBtn").addEventListener("click", async (e) => {
-  const sample = await getSample(); if (!sample) return toast("Trang này cần chạy trên claude.ai để dùng Claude.");
-  const out = $("#planOut"); out.hidden = false; out.innerHTML = `<span class="thinking"><span class="dot"></span>Đang lập kế hoạch…</span>`;
-  e.target.disabled = true;
-  const courses = state.courses.map((c) => `- ${c.title}${c.examContent ? " — programme: " + c.examContent : ""} (${(state.decks[c.id] || []).length} flashcards)`).join("\n") || "(aucun)";
-  try {
-    await sample(`Tu es un coach de révision pour un·e étudiant·e vietnamien·ne en L1 EEA à Sorbonne Université. Réponds en vietnamien (garde les noms des matières en français).
-Date du jour : ${todayISO()}.
-Échéances :\n${agendaText(state.agenda.filter((a) => !a.done && (!a.date || a.date >= todayISO())))}
-Cours importés :\n${courses}
-Fais un plan de révision réaliste jusqu'au dernier examen : sessions de 25-50 min, répétition espacée (J+1, J+3, J+7), priorités selon les dates et ce qui est au programme. Markdown court, tableau par semaine, ton motivant et un peu drôle.`, { onText: ({ text }) => (out.innerHTML = md(text)), cache: false });
-    typeset(out);
-  } catch (err) { out.innerHTML = (err.text ? md(err.text) : "") + `<p class="small" style="color:var(--bad)">${esc(sampleErr(err))}</p>`; }
-  finally { e.target.disabled = false; }
-});
-
-// ---------- Hôm nay ----------
-function briefingPrompt() {
-  return `Briefing du ${todayISO()} — utilise la recherche web.
-Je suis étudiant·e en L1 EEA à Sorbonne Université, campus Pierre et Marie Curie (Jussieu, Paris 5e), surtout à distance. Réponds en vietnamien (noms officiels en français entre parenthèses).
-Cherche les infos d'aujourd'hui et d'hier :
-1. État du campus Jussieu : ouvert / fermé / blocus / filtrage, bâtiments accessibles, cours et examens maintenus ou passés à distance.
-2. Mobilisations : AG, appels au blocage, manifestations (parcours déclarés à la Préfecture de police, horaires, passage près de Jussieu).
-3. Transports : métro Jussieu (lignes 7 et 10), grèves RATP.
-4. Calendrier : vacances, jours fériés, examens.
-Sources prioritaires : sorbonne-universite.fr, sciences.sorbonne-universite.fr, Instagram @sorbonne_univ et @sorbonne_sciences_vieetudiante, syndicats étudiants, presse (Le Parisien, Le Monde, France Info). Si Instagram n'est pas accessible, dis-le.
-Commence par UNE ligne : 🏫 CẦN lên trường / 🏠 KHÔNG cần lên trường / ⚖️ Một phần / ❓ Chưa chắc.
-Puis sections courtes : 🏫 Campus · 📣 Blocus / biểu tình · 🚇 Giao thông · 📅 Sắp tới · ✅ Việc hôm nay · 🔗 Nguồn. Date chaque info, sépare officiel et rumeur.
-
-Mon agenda (14 jours) :
-${agendaText(upcoming(14))}
-
-Mails récents de l'université (résumés) :
-${state.mail.recent.slice(0, 8).map((m) => `- ${String(m.date).slice(0, 10)} · ${m.subject} : ${m.resume}`).join("\n") || "(aucun)"}`;
-}
-async function copyText(text, label) {
-  try { await navigator.clipboard.writeText(text); toast(`📋 Đã chép ${label}. Mở Claude, dán vào và bật Tìm kiếm web.`, 5000); }
-  catch { showCopyFallback(text); }
-}
-function showCopyFallback(text) {
-  const box = document.createElement("div");
-  box.className = "sheet stack";
-  box.innerHTML = `<div class="small">Không tự chép được. Bấm vào ô dưới, chọn tất cả rồi sao chép:</div><textarea class="copybox" rows="5" readonly></textarea>`;
-  box.querySelector("textarea").value = text;
-  const host = document.querySelector("section:not([hidden])");
-  host.appendChild(box);
-  const ta = box.querySelector("textarea"); ta.focus(); ta.select();
-}
-$("#copyBriefing").addEventListener("click", () => copyText(briefingPrompt(), "lệnh briefing"));
-function dueCards(deckId) { const t = todayISO(); return (state.decks[deckId] || []).filter((c) => c.due <= t); }
-function totalDue() { return Object.keys(state.decks).reduce((n, k) => n + dueCards(k).length, 0); }
-function renderHome() {
-  const up = upcoming(14);
-  $("#dueCount").textContent = totalDue();
-  $("#soonCount").textContent = up.length;
-  $("#homeAgenda").innerHTML = up.map((a) => itemHtml(a, false)).join("") || `<div class="sheet muted small">Chưa có mốc nào trong 14 ngày tới.</div>`;
-  const n = totalDue(); $("#navDue").hidden = !n; $("#navDue").textContent = n;
-}
-
-// ---------- Kiểm tra ----------
-let imgLimits = null;
-getSample().then(async (s) => {
-  if (!s) { $("#inImgNote").textContent = "Mở trang này trên claude.ai để dùng Claude."; return; }
-  imgLimits = await s.limits().catch(() => null);
-  if (!imgLimits?.images) { $("#inFiles").hidden = true; $("#inImgNote").textContent = "Thiết bị này chưa gửi ảnh được, hãy dán chữ."; }
-  else $("#inFiles").accept = imgLimits.images.mediaTypes.join(",");
-});
-$("#inGo").addEventListener("click", async (e) => {
-  const sample = await getSample(); if (!sample) return toast("Trang này cần chạy trên claude.ai để dùng Claude.");
-  const text = $("#inText").value.trim();
-  const files = [...$("#inFiles").files].slice(0, imgLimits?.images?.maxCount || 0);
-  if (!text && !files.length) return toast("Dán nội dung hoặc chọn ảnh trước nhé.");
-  const out = $("#inOut");
-  out.innerHTML = `<div class="sheet"><span class="thinking"><span class="dot"></span>Claude đang đọc…</span></div>`;
-  e.target.disabled = true;
-  try {
-    const r = await sample.json(`Tu aides un·e étudiant·e vietnamien·ne de L1 EEA à Sorbonne Université (campus Pierre et Marie Curie, Jussieu). Date du jour : ${todayISO()}.
-Analyse le contenu ci-dessous${files.length ? " et les captures d'écran jointes (mails, stories Instagram, posts, articles)" : ""}. Tu n'as PAS accès au web : n'invente rien, signale ce qui doit être vérifié.
-Réponds UNIQUEMENT avec un objet JSON :
-{"resume_vi": "résumé clair en vietnamien, 3-6 phrases",
- "date_publication": "date de la publication si visible, sinon ''",
- "fiabilite": "officiel" | "probable" | "rumeur" | "inconnu",
- "points_a_verifier": ["affirmation à vérifier", ...],
- "impact_vi": "ce que ça change pour l'étudiant (aller au campus ? rendre quelque chose ?), en vietnamien",
- "events": [{"type": "exam|deadline|event|closure|holiday|other", "title": "...", "date": "AAAA-MM-JJ ou ''", "time": "HH:MM ou ''", "course": "", "location": "", "to_submit": "ce qu'il faut rendre et où", "exam_content": "chapitres au programme", "details": "", "presence": "oui|non|inconnu"}]}
-Convertis les dates relatives en dates absolues.
-
-Contenu :
-${text || "(voir images)"}`, { images: files.length ? files : undefined, cache: false });
-    const evs = Array.isArray(r?.events) ? r.events : [];
-    const rel = { officiel: ["t-holiday", "Nguồn chính thức"], probable: ["t-event", "Có vẻ đáng tin"], rumeur: ["t-exam", "Tin đồn"], inconnu: ["t-other", "Chưa rõ nguồn"] }[r?.fiabilite] || ["t-other", "Chưa rõ nguồn"];
-    const checkPrompt = `Vérifie avec la recherche web (date du jour ${todayISO()}) ces affirmations concernant Sorbonne Université / campus Jussieu, en priorisant les sources officielles, puis la presse, puis Instagram (@sorbonne_univ, @sorbonne_sciences_vieetudiante) et Facebook. Vérifie la date (vieille info recyclée ?). Verdict pour chacune : ✅ Đúng · ⚠️ Một phần · ❌ Sai · ❓ Chưa xác minh được, avec sources. Réponds en vietnamien.\n\n${(r?.points_a_verifier || []).map((p) => "- " + p).join("\n")}\n\nContenu original :\n${text || r?.resume_vi || ""}`;
-    out.innerHTML = `<div class="sheet stack">
-      <div class="row"><span class="pill ${rel[0]}">${rel[1]}</span>${r?.date_publication ? `<span class="small muted">đăng ngày ${esc(r.date_publication)}</span>` : ""}</div>
-      <div class="md">${md(r?.resume_vi || "")}</div>
-      ${r?.impact_vi ? `<div class="kv"><b>Ảnh hưởng tới bạn:</b> ${esc(r.impact_vi)}</div>` : ""}
-      ${(r?.points_a_verifier || []).length ? `<div><div class="kv"><b>Cần kiểm chứng:</b></div><ul class="small">${r.points_a_verifier.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>
-        <div class="row"><button class="chip primary" id="copyCheck">📋 Chép lệnh kiểm chứng</button><a class="btn chip" href="https://claude.ai/new" target="_blank" rel="noopener">Mở Claude ↗</a></div></div>` : ""}
-    </div>
-    ${evs.length ? `<div class="sheet stack"><div class="kv"><b>📅 Tìm thấy ${evs.length} mốc thời gian</b></div>
-      ${evs.map((ev, i) => `<label class="check"><input type="checkbox" data-ev="${i}" checked> ${esc(TYPE[ev.type] || "•")} ${esc(ev.date || "?")} ${esc(ev.time || "")} — ${esc(ev.title)}</label>`).join("")}
-      <button class="primary" id="addEvs">Thêm vào lịch</button></div>` : ""}`;
-    $("#copyCheck")?.addEventListener("click", () => copyText(checkPrompt, "lệnh kiểm chứng"));
-    $("#addEvs")?.addEventListener("click", () => {
-      const chosen = $$("[data-ev]").filter((c) => c.checked).map((c) => evs[+c.dataset.ev]);
-      const n = mergeEvents(chosen, "kiểm tra"); renderAll(); toast(`📅 Đã thêm ${n} mốc vào lịch`);
-      $("#addEvs").disabled = true;
-    });
-    $("#inText").value = ""; $("#inFiles").value = "";
-  } catch (err) { out.innerHTML = `<div class="sheet small" style="color:var(--bad)">${esc(sampleErr(err))}</div>`; }
-  finally { e.target.disabled = false; }
-});
-
-// ---------- Mail trường (qua kết nối Gmail) ----------
-// bắt cả mail gửi thẳng cho bạn lẫn danh sách chung (listes.sorbonne-universite.fr, Moodle…)
-const MAIL_Q = (days) => `(to:sorbonne-universite.fr OR cc:sorbonne-universite.fr OR from:sorbonne-universite.fr OR list:sorbonne-universite.fr) newer_than:${days}d`;
 function mcpErr(e) {
   return ({
     needs_reauth: "Kết nối Gmail đã hết hạn. Vào claude.ai → Cài đặt → Connectors → Gmail để kết nối lại.",
@@ -606,36 +738,141 @@ function mcpErr(e) {
     rate_limited: "Đọc mail quá nhiều lần liền. Đợi một chút rồi thử lại.",
   })[e?.code] || "Không đọc được Gmail" + (e?.code ? ` (${e.code})` : "") + ".";
 }
-const IMP = { haute: ["t-exam", "Quan trọng"], moyenne: ["t-deadline", "Nên đọc"], basse: ["t-other", "Thông tin"] };
-function renderMail() {
-  $("#mailList").innerHTML = state.mail.recent.map((m) => {
-    const imp = IMP[m.importance] || IMP.basse;
-    return `<div class="item"><div class="head"><span class="pill ${imp[0]}">${imp[1]}</span><span class="title">${esc(m.subject || "(không tiêu đề)")}</span><span class="when mono">${esc(String(m.date).slice(0, 10))}</span></div>
-      <div class="kv muted">${esc(m.from)}</div>
-      <div class="kv">${esc(m.resume)}</div>
-      ${m.action ? `<div class="kv"><b>👉 Cần làm:</b> ${esc(m.action)}</div>` : ""}
-      ${m.url ? `<div><a class="small" href="${esc(m.url)}" target="_blank" rel="noopener" style="color:var(--accent)">Mở trong Gmail ↗</a></div>` : ""}</div>`;
-  }).join("");
+
+// ================= lịch =================
+const TYPE = {
+  exam: { label: "Thi", cls: "c-exam" },
+  deadline: { label: "Hạn nộp", cls: "c-deadline" },
+  closure: { label: "Đóng cửa", cls: "c-closure" },
+  holiday: { label: "Nghỉ", cls: "c-holiday" },
+  event: { label: "Sự kiện", cls: "c-event" },
+  other: { label: "Khác", cls: "c-event" },
+};
+const typeOf = (t) => TYPE[t] || TYPE.other;
+const norm = (s) => (s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+function cleanEvents(list) {
+  return (Array.isArray(list) ? list : []).filter((e) => e && typeof e.title === "string" && e.title.trim()).map((e) => ({ ...e, type: TYPE[e.type] ? e.type : "other" }));
 }
-$("#mailGo").addEventListener("click", async (e) => {
-  const btn = e.currentTarget, status = $("#mailStatus");
-  const mcp = await window.claude?.use?.("mcp");
-  const sample = await getSample();
-  if (!mcp || !sample) { status.textContent = "Mở app trên claude.ai (đã đăng nhập) để đọc mail."; return; }
-  btn.disabled = true; $("#mailEvents").innerHTML = "";
+function mergeEvents(events, source) {
+  let added = 0;
+  for (const e of events || []) {
+    if (!e?.title) continue;
+    const date = /^\d{4}-\d{2}-\d{2}$/.test(e.date || "") ? e.date : "";
+    const dup = state.agenda.find((a) => a.date === date && norm(a.title) === norm(e.title));
+    if (dup) { for (const k of ["time", "course", "location", "to_submit", "exam_content", "details"]) if (!dup[k] && e[k]) dup[k] = e[k]; continue; }
+    state.agenda.push({ id: uid8(), type: TYPE[e.type] ? e.type : "other", title: String(e.title).trim(), date, time: e.time || "", course: e.course || "", location: e.location || "",
+      to_submit: e.to_submit || "", exam_content: e.exam_content || "", details: e.details || "", presence: e.presence || "", source, done: false });
+    added++;
+  }
+  state.agenda.sort((a, b) => (a.date || "9999").localeCompare(b.date || "9999") || (a.time || "").localeCompare(b.time || ""));
+  saveAgenda();
+  return added;
+}
+function upcoming(days) { const t = todayISO(), end = addDays(t, days); return state.agenda.filter((a) => !a.done && a.date && a.date >= t && a.date <= end); }
+function agendaText(items) {
+  return items.length ? items.map((a) => `- [${a.type}] ${a.date || "?"} ${a.time || ""} — ${a.title}${a.course ? " — " + a.course : ""}${a.to_submit ? " — à rendre : " + a.to_submit : ""}${a.exam_content ? " — programme : " + a.exam_content : ""}`).join("\n") : "(agenda vide)";
+}
+const EVENT_JSON = `{"type": "exam|deadline|event|closure|holiday|other", "title": "...", "date": "AAAA-MM-JJ ou ''", "time": "HH:MM ou ''", "course": "", "location": "", "to_submit": "ce qu'il faut rendre et où", "exam_content": "chapitres au programme", "details": "", "presence": "oui|non|inconnu"}`;
+function openEventsSheet(evs, source, title = "Tìm thấy các mốc thời gian") {
+  openSheet({ title, html: `
+    <p class="muted small">Bỏ chọn những mốc bạn không cần, rồi thêm vào lịch.</p>
+    <div class="pick">${evs.map((ev, i) => `<label class="pick-row"><input type="checkbox" data-i="${i}" checked><span class="tag ${typeOf(ev.type).cls}">${typeOf(ev.type).label}</span><span class="pick-t"><strong>${esc(ev.title)}</strong><span class="faint small">${esc(ev.date ? longDate(ev.date) : "chưa rõ ngày")}${ev.time ? " · " + esc(ev.time) : ""}</span></span></label>`).join("")}</div>
+    <button class="btn primary block" id="evAdd">${icon("calendar")} Thêm vào lịch</button>`,
+    onMount: (el) => $("#evAdd", el).addEventListener("click", () => {
+      const chosen = $$("input[data-i]", el).filter((c) => c.checked).map((c) => evs[+c.dataset.i]);
+      const n = mergeEvents(chosen, source);
+      closeSheet(); render();
+      toast(n ? `Đã thêm ${n} mốc vào lịch` : "Các mốc này đã có trong lịch");
+    }) });
+}
+
+// ================= tình hình campus (briefing) =================
+const VERDICT = {
+  go: { label: "Nên lên trường hôm nay", cls: "v-go" },
+  stay: { label: "Hôm nay có thể ở nhà", cls: "v-stay" },
+  partial: { label: "Lên trường một phần", cls: "v-partial" },
+  unknown: { label: "Chưa rõ tình hình", cls: "v-unknown" },
+};
+function briefingPrompt() {
+  return `Briefing du ${todayISO()} — utilise la recherche web.
+Je suis étudiant·e en L1 EEA à Sorbonne Université, campus Pierre et Marie Curie (Jussieu, Paris 5e), surtout à distance. Réponds en vietnamien (noms officiels en français entre parenthèses).
+Cherche les infos d'aujourd'hui et d'hier :
+1. État du campus Jussieu : ouvert / fermé / blocus / filtrage, bâtiments accessibles, cours et examens maintenus ou passés à distance.
+2. Mobilisations : AG, appels au blocage, manifestations (parcours déclarés à la Préfecture de police, horaires, passage près de Jussieu).
+3. Transports : métro Jussieu (lignes 7 et 10), grèves RATP.
+4. Calendrier : vacances, jours fériés, examens.
+Sources prioritaires : sorbonne-universite.fr, sciences.sorbonne-universite.fr, Instagram @sorbonne_univ et @sorbonne_sciences_vieetudiante, syndicats étudiants, presse (Le Parisien, Le Monde, France Info). Si Instagram n'est pas accessible, dis-le.
+Commence par UNE ligne : 🏫 CẦN lên trường / 🏠 KHÔNG cần lên trường / ⚖️ Một phần / ❓ Chưa chắc.
+Puis sections courtes : Campus · Blocus / biểu tình · Giao thông · Sắp tới · Việc hôm nay · Nguồn. Date chaque info, sépare officiel et rumeur.
+
+Mon agenda (14 jours) :
+${agendaText(upcoming(14))}
+
+Mails récents de l'université (résumés) :
+${state.mail.recent.slice(0, 8).map((m) => `- ${String(m.date).slice(0, 10)} · ${m.subject} : ${m.resume}`).join("\n") || "(aucun)"}`;
+}
+function openPasteBrief() {
+  openSheet({ title: "Dán bản tin hôm nay", html: `
+    <p class="muted small">Dán toàn bộ câu trả lời briefing của Claude. App rút ra kết luận và lưu các mốc thời gian.</p>
+    <textarea id="pbText" rows="8" placeholder="🏠 KHÔNG cần lên trường…"></textarea>
+    <div class="small" id="pbStatus"></div>
+    <button class="btn primary block" id="pbGo">Lưu bản tin</button>`,
+    onMount: (el) => $("#pbGo", el).addEventListener("click", async (ev) => {
+      const text = $("#pbText", el).value.trim();
+      if (!text) return toast("Dán nội dung trước nhé");
+      const sample = await getSample(); if (!sample) return toast(NEED_CLAUDE);
+      const btn = ev.currentTarget; btn.disabled = true; $("#pbStatus", el).innerHTML = thinking("Claude đang đọc bản tin…");
+      try {
+        const r = await sample.json(`Voici un briefing sur l'état du campus Jussieu (Sorbonne Université) pour aujourd'hui (${todayISO()}). Extrais-en l'essentiel pour l'étudiant.
+Réponds UNIQUEMENT avec un objet JSON :
+{"verdict": "go|stay|partial|unknown" (go = doit aller au campus aujourd'hui, stay = pas besoin, partial = en partie, unknown = pas clair),
+ "headline_vi": "une phrase de moins de 120 caractères en vietnamien",
+ "points_vi": ["3 à 5 points clés très courts en vietnamien : campus, blocus, manifestations, transports, cours"],
+ "events": [${EVENT_JSON}]}
+Convertis les dates relatives en dates absolues. N'invente rien.
+
+Briefing :
+"""${text.slice(0, 60000)}"""`, { cache: false });
+        state.status = { date: todayISO(), verdict: VERDICT[r?.verdict] ? r.verdict : "unknown", headline: String(r?.headline_vi || "").slice(0, 220),
+          points: (Array.isArray(r?.points_vi) ? r.points_vi : []).slice(0, 5).map(String), updatedAt: new Date().toISOString() };
+        saveStatus(); render();
+        const evs = cleanEvents(r?.events);
+        if (evs.length) openEventsSheet(evs, "briefing", "Bản tin có nhắc tới các mốc này");
+        else { closeSheet(); toast("Đã cập nhật tình hình campus"); }
+      } catch (err) { if (el.isConnected) { $("#pbStatus", el).innerHTML = `<span class="err">${esc(sampleErr(err))}</span>`; btn.disabled = false; } }
+    }) });
+}
+
+// ================= mail trường (qua kết nối Gmail) =================
+// bắt cả mail gửi thẳng cho bạn lẫn danh sách chung (listes.sorbonne-universite.fr, Moodle…)
+const MAIL_Q = (days) => `(to:sorbonne-universite.fr OR cc:sorbonne-universite.fr OR from:sorbonne-universite.fr OR list:sorbonne-universite.fr) newer_than:${days}d`;
+let mailBusy = false;
+function paintMailMsg() {
+  const m = state.mailMsg;
+  const html = m ? (m.kind === "busy" ? thinking(m.text) : `<span class="${m.kind === "err" ? "err" : "faint"}">${esc(m.text)}</span>`)
+    : `<span class="faint">${state.mail.lastRun ? "Đọc lần cuối " + timeAgo(state.mail.lastRun) : "Chưa đọc lần nào"}</span>`;
+  $$("[data-mailmsg]").forEach((el) => (el.innerHTML = html));
+  $$('[data-act="read-mail"]').forEach((b) => (b.disabled = mailBusy));
+}
+function setMailMsg(text, kind = "") { state.mailMsg = { text, kind }; paintMailMsg(); }
+async function runMail(days) {
+  if (mailBusy) return;
+  const [mcp, sample] = await Promise.all([getMcp(), getSample()]);
+  if (!mcp || !sample) return setMailMsg(NEED_CLAUDE, "err");
+  mailBusy = true;
   let phase = "gmail";
   try {
-    status.textContent = "Đang tìm mail của trường…";
-    const days = +$("#mailDays").value || 7;
+    setMailMsg("Đang tìm mail của trường…", "busy");
     const r = await mcp.callTool("Gmail", "search_threads", { query: MAIL_Q(days), pageSize: 25, view: "THREAD_VIEW_SUMMARY" });
     const threads = Array.isArray(r?.payload?.threads) ? r.payload.threads : [];
     const seen = new Set(state.mail.seen);
     const keyOf = (t) => `${t.id}:${t.messageCount || 1}`;
     const fresh = threads.filter((t) => t?.id && !seen.has(keyOf(t))).slice(0, 10);
-    if (!fresh.length) { status.textContent = `Không có mail mới của trường trong ${days} ngày qua. (Mail cũ đã đọc nằm ở dưới.)`; return; }
+    state.mail.lastRun = new Date().toISOString();
+    if (!fresh.length) { saveMail(); setMailMsg(`Không có mail mới trong ${days} ngày qua.`, "ok"); return; }
     const mails = [];
     for (let i = 0; i < fresh.length; i++) {
-      status.textContent = `Đang đọc mail ${i + 1}/${fresh.length}…`;
+      setMailMsg(`Đang đọc mail ${i + 1}/${fresh.length}…`, "busy");
       const t = fresh[i];
       try {
         const th = await mcp.callTool("Gmail", "get_thread", { threadId: t.id, messageFormat: "PLAIN_TEXT" });
@@ -647,40 +884,32 @@ $("#mailGo").addEventListener("click", async (e) => {
         mails.push({ id: t.id, key: keyOf(t), subject: lm.subject || msgs[0]?.subject || "", from: lm.sender || "", date: lm.date || "", url: th?.payload?.viewUrl || t.viewUrl || "", body, att });
       } catch (err) { if (["needs_reauth", "server_not_connected", "not_granted", "approval_required", "blocked_by_policy"].includes(err?.code)) throw err; }
     }
-    if (!mails.length) { status.textContent = "Không đọc được nội dung mail nào, thử lại sau."; return; }
-    status.textContent = "Claude đang tóm tắt…";
+    if (!mails.length) { setMailMsg("Không đọc được nội dung mail nào, thử lại sau.", "err"); return; }
+    setMailMsg("Claude đang tóm tắt…", "busy");
     phase = "claude";
     const res = await sample.json(`Tu aides un·e étudiant·e vietnamien·ne de L1 EEA à Sorbonne Université (campus Pierre et Marie Curie). Date du jour : ${todayISO()}.
-Voici ${mails.length} mails universitaires, chacun avec un numéro [ref]. Pour chacun : résumé clair en vietnamien (2-4 phrases), importance, action concrète attendue. Puis extrais TOUS les examens, rendus, fermetures, blocages, vacances et événements (dates relatives → dates absolues ; n'invente rien).
+Voici ${mails.length} mails universitaires, chacun avec un numéro [ref]. Pour chacun : résumé clair en vietnamien (2-4 phrases), importance, action concrète attendue. Puis extrais TOUS les examens, rendus, fermetures, blocages, manifestations, vacances et événements (dates relatives → dates absolues ; n'invente rien).
 Réponds UNIQUEMENT avec un JSON :
 {"mails": [{"ref": 0, "resume_vi": "...", "importance": "haute|moyenne|basse", "action_vi": "action concrète ou ''"}],
- "events": [{"type": "exam|deadline|event|closure|holiday|other", "title": "...", "date": "AAAA-MM-JJ ou ''", "time": "HH:MM ou ''", "course": "", "location": "", "to_submit": "ce qu'il faut rendre et où", "exam_content": "chapitres au programme", "details": "", "presence": "oui|non|inconnu"}]}
+ "events": [${EVENT_JSON}]}
 
 ${mails.map((m, i) => `[ref:${i}] Objet : ${m.subject}\nDe : ${m.from}\nDate : ${m.date}\nPièces jointes : ${m.att.join(", ") || "aucune"}\n\n${m.body}`).join("\n\n=====\n\n")}`, { cache: false });
     const sums = Array.isArray(res?.mails) ? res.mails : [];
-    const added = [];
-    mails.forEach((m, i) => {
+    const added = mails.map((m, i) => {
       const s = sums.find((x) => +x?.ref === i) || {};
-      added.push({ id: m.id, subject: m.subject, from: m.from, date: m.date, url: m.url, resume: s.resume_vi || "", importance: s.importance || "basse", action: s.action_vi || "" });
+      return { id: m.id, subject: m.subject, from: m.from, date: m.date, url: m.url, resume: s.resume_vi || "", importance: ["haute", "moyenne", "basse"].includes(s.importance) ? s.importance : "basse", action: s.action_vi || "" };
     });
     state.mail.recent = [...added, ...state.mail.recent.filter((x) => !added.some((a) => a.id === x.id))].slice(0, 40);
     state.mail.seen = [...state.mail.seen, ...mails.map((m) => m.key)].slice(-600);
-    saveMail(); renderMail();
-    const evs = Array.isArray(res?.events) ? res.events.filter((x) => x?.title) : [];
-    status.textContent = `✅ Đã đọc ${mails.length} mail mới.` + (evs.length ? ` Tìm thấy ${evs.length} mốc thời gian:` : "");
-    if (evs.length) {
-      $("#mailEvents").innerHTML = evs.map((ev, i) => `<label class="check"><input type="checkbox" data-mev="${i}" checked> ${esc(TYPE[ev.type] || "•")} ${esc(ev.date || "?")} ${esc(ev.time || "")} — ${esc(ev.title)}</label>`).join("") + `<button class="primary" id="mailAddEvs">Thêm vào lịch</button>`;
-      $("#mailAddEvs").addEventListener("click", (ev2) => {
-        const chosen = $$("[data-mev]").filter((c) => c.checked).map((c) => evs[+c.dataset.mev]);
-        const n = mergeEvents(chosen, "mail"); renderAll(); toast(`📅 Đã thêm ${n} mốc vào lịch`); ev2.currentTarget.disabled = true;
-      });
-    }
-  } catch (err) {
-    status.textContent = "⚠️ " + (phase === "claude" ? sampleErr(err) : mcpErr(err));
-  } finally { btn.disabled = false; }
-});
+    saveMail();
+    const evs = cleanEvents(res?.events);
+    setMailMsg(`Đã đọc ${mails.length} mail mới${evs.length ? ` · ${evs.length} mốc thời gian` : ""}.`, "ok");
+    if (evs.length) openEventsSheet(evs, "mail", `Mail mới có ${evs.length} mốc thời gian`);
+  } catch (err) { setMailMsg(phase === "claude" ? sampleErr(err) : mcpErr(err), "err"); }
+  finally { mailBusy = false; render(); }
+}
 
-// ---------- Tài liệu (PDF → chữ, ảnh scan → Claude đọc) ----------
+// ================= tài liệu: PDF → chữ, ảnh scan → Claude đọc =================
 function loadScript(src) { return new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = () => rej(new Error("load " + src)); document.head.appendChild(s); }); }
 let pdfReady = null;
 function getPdf() {
@@ -693,14 +922,14 @@ function getPdf() {
 const MAX_OCR_PAGES = 40;
 async function ocrImages(blobs, onProg) {
   const sample = await getSample();
-  const max = Math.min(imgLimits?.images?.maxCount || 0, 5);
+  const max = Math.min((await getLimits())?.images?.maxCount || 0, 5);
   if (!sample || !max) throw new Error("no-images");
   const out = [];
   for (let i = 0; i < blobs.length; i += max) {
     const batch = blobs.slice(i, i + max);
-    const r = await sample.json(`Ces ${batch.length} images sont des pages de cours (slides ou polycopié de L1 EEA). Transcris fidèlement le contenu de chaque page en Markdown, formules en LaTeX ($...$), décris brièvement les schémas entre [Schéma : ...]. Réponds UNIQUEMENT avec un tableau JSON de ${batch.length} chaînes, une par image, dans l'ordre.`, { images: batch, modelTier: "default" });
+    const r = await sample.json(`Ces ${batch.length} images sont des pages de cours (slides ou polycopié de L1 EEA). Transcris fidèlement le contenu de chaque page en Markdown, formules en LaTeX ($...$), et décris brièvement les schémas entre [Schéma : ...]. Réponds UNIQUEMENT avec un tableau JSON de ${batch.length} chaînes, une par image, dans l'ordre.`, { images: batch, modelTier: "default" });
     batch.forEach((_, j) => out.push(String(Array.isArray(r) ? r[j] ?? "" : "")));
-    onProg?.(Math.min(i + max, blobs.length), blobs.length);
+    onProg?.(Math.min(i + max, blobs.length), blobs.length, "Claude đọc trang ảnh");
   }
   return out;
 }
@@ -718,8 +947,10 @@ async function pdfToPages(file, onProg) {
     if (s.length < 40) scanned.push(p);
     onProg?.(p, doc.numPages, "Đọc PDF");
   }
+  let skipped = 0;
   if (scanned.length) {
     const todo = scanned.slice(0, MAX_OCR_PAGES);
+    skipped = scanned.length - todo.length;
     const blobs = [];
     for (const p of todo) {
       const page = await doc.getPage(p);
@@ -728,107 +959,159 @@ async function pdfToPages(file, onProg) {
       await page.render({ canvasContext: cv.getContext("2d"), viewport: vp }).promise;
       blobs.push(await new Promise((r) => cv.toBlob(r, "image/jpeg", 0.82)));
     }
-    try {
-      const texts = await ocrImages(blobs, (d, t) => onProg?.(d, t, "Claude đọc trang scan"));
-      todo.forEach((p, i) => (pages[p - 1] = texts[i] || pages[p - 1]));
-    } catch { /* giữ chữ đã có */ }
+    try { const texts = await ocrImages(blobs, onProg); todo.forEach((p, i) => (pages[p - 1] = texts[i] || pages[p - 1])); }
+    catch { skipped = scanned.length; }
   }
-  return { pages, scanned: scanned.length, ocrSkipped: Math.max(0, scanned.length - MAX_OCR_PAGES) };
+  return { pages, skipped };
 }
-$("#cAdd").addEventListener("click", async (e) => {
-  const files = [...$("#cFiles").files];
-  const title = $("#cTitle").value.trim() || files[0]?.name?.replace(/\.[^.]+$/, "");
-  if (!files.length) return toast("Chọn ít nhất một file.");
-  const prog = $("#cProg"), bar = prog.querySelector("i"), status = $("#cStatus");
-  prog.hidden = false; e.target.disabled = true;
-  const onProg = (d, t, label) => { bar.style.width = Math.round((d / t) * 100) + "%"; status.textContent = `${label || "Đang xử lý"}: ${d}/${t}`; };
-  try {
-    let pages = [], notes = [];
-    const images = [];
-    for (const f of files) {
-      if (f.type === "application/pdf") { const r = await pdfToPages(f, onProg); pages.push(...r.pages); if (r.ocrSkipped) notes.push(`${r.ocrSkipped} trang scan chưa đọc được (giới hạn ${MAX_OCR_PAGES} trang)`); }
-      else if (f.type.startsWith("image/")) images.push(f);
-      else pages.push(await f.text());
-    }
-    if (images.length) { try { pages.push(...(await ocrImages(images, (d, t) => onProg(d, t, "Claude đọc ảnh")))); } catch { notes.push("không đọc được ảnh trên thiết bị này"); } }
-    if (!pages.some((p) => p.trim())) throw new Error("Không lấy được chữ nào từ tài liệu.");
-    const c = { id: uid8(), title, examContent: $("#cExam").value.trim(), pageCount: pages.length, chunks: 0, createdAt: new Date().toISOString() };
-    // chia thành các phần < 200 KB để lưu
-    let chunk = [], size = 0;
-    const flush = async () => { if (!chunk.length) return; await save(`text-${c.id}-${c.chunks}`, { pages: chunk }); c.chunks++; chunk = []; size = 0; };
-    for (const p of pages) { const b = new Blob([p]).size + 8; if (size + b > 200000) await flush(); chunk.push(p); size += b; }
-    await flush();
-    c._pages = pages;
-    state.courses.push(c); await saveCourses();
-    state.cur = c.id;
-    $("#cTitle").value = ""; $("#cExam").value = ""; $("#cFiles").value = "";
-    $("#addCourse").open = false;
-    toast(`✅ Đã thêm "${title}" (${pages.length} trang)` + (notes.length ? " · " + notes.join(", ") : ""), 5000);
-    renderAll();
-  } catch (err) { status.textContent = "⚠️ " + (err.message || "Lỗi khi đọc tài liệu"); }
-  finally { e.target.disabled = false; prog.hidden = true; bar.style.width = "0"; }
-});
+async function createCourse({ files, title, exam }, onProg) {
+  const pages = [], notes = [], images = [];
+  for (const f of files) {
+    if (f.type === "application/pdf") { const r = await pdfToPages(f, onProg); pages.push(...r.pages); if (r.skipped) notes.push(`${r.skipped} trang ảnh chưa đọc được`); }
+    else if (f.type.startsWith("image/")) images.push(f);
+    else pages.push(await f.text());
+  }
+  if (images.length) { try { pages.push(...(await ocrImages(images, onProg))); } catch { notes.push("không đọc được ảnh trên thiết bị này"); } }
+  if (!pages.some((p) => p.trim())) throw new Error("Không lấy được chữ nào từ tài liệu này.");
+  const c = { id: uid8(), title, examContent: exam, pageCount: pages.length, chunks: 0, createdAt: new Date().toISOString() };
+  let chunk = [], size = 0;
+  const flush = async () => { if (!chunk.length) return; await save(`text-${c.id}-${c.chunks}`, { pages: chunk }); c.chunks++; chunk = []; size = 0; };
+  for (const p of pages) { const b = new Blob([p]).size + 8; if (size + b > 200000) await flush(); chunk.push(p); size += b; }
+  await flush();
+  c._pages = pages;
+  state.courses.push(c);
+  await saveCourses();
+  return { c, notes };
+}
+function openAddCourse() {
+  openSheet({ title: "Thêm tài liệu", html: `
+    <label class="field"><span>Tên môn / chương</span><input type="text" id="acTitle" placeholder="vd: Électrocinétique – ch.2"></label>
+    <label class="field"><span>Nội dung thi (nếu biết)</span><textarea id="acExam" rows="2" placeholder="vd: Lois de Kirchhoff, diviseur de tension"></textarea></label>
+    <label class="drop">${icon("upload")}<span id="acDropText">Chọn PDF, ảnh chụp slide hoặc file .txt</span><input type="file" id="acFiles" class="vh" multiple accept="application/pdf,image/*,.txt,.md"></label>
+    <div class="progress" id="acProg" hidden><i></i></div>
+    <p class="small muted" id="acStatus">PowerPoint hay Word thì “Xuất ra PDF” trước. Slide dạng ảnh scan sẽ được Claude đọc giúp.</p>
+    <button class="btn primary block" id="acGo">Tải lên</button>`,
+    onMount: (el) => {
+      const files = $("#acFiles", el);
+      files.addEventListener("change", () => {
+        const list = [...files.files];
+        $("#acDropText", el).textContent = list.length ? list.map((f) => f.name).join(", ") : "Chọn PDF, ảnh chụp slide hoặc file .txt";
+        if (!$("#acTitle", el).value && list[0]) $("#acTitle", el).value = list[0].name.replace(/\.[^.]+$/, "");
+      });
+      $("#acGo", el).addEventListener("click", async (ev) => {
+        const list = [...files.files];
+        if (!list.length) return toast("Chọn ít nhất một file nhé");
+        const btn = ev.currentTarget, prog = $("#acProg", el), bar = prog.querySelector("i"), status = $("#acStatus", el);
+        btn.disabled = true; prog.hidden = false;
+        const onProg = (d, t, label) => { if (!el.isConnected) return; bar.style.width = Math.round((d / t) * 100) + "%"; status.textContent = `${label}: ${d}/${t}`; };
+        try {
+          const title = $("#acTitle", el).value.trim() || list[0].name.replace(/\.[^.]+$/, "");
+          const { c, notes } = await createCourse({ files: list, title, exam: $("#acExam", el).value.trim() }, onProg);
+          closeSheet();
+          state.cur = c.id; lsSet("cur", c.id);
+          show("course");
+          toast(`Đã thêm “${title}” (${c.pageCount} trang)` + (notes.length ? " · " + notes.join(", ") : ""), 5000);
+        } catch (err) {
+          if (el.isConnected) { status.innerHTML = `<span class="err">${esc(err?.code ? sampleErr(err) : err.message || "Lỗi khi đọc tài liệu.")}</span>`; btn.disabled = false; prog.hidden = true; }
+        }
+      });
+    } });
+}
+async function deleteCourse(c) {
+  for (let i = 0; i < (c.chunks || 0); i++) removeDoc(`text-${c.id}-${i}`);
+  removeDoc("chat-" + c.id); removeDoc("deck-" + c.id);
+  delete state.chats[c.id]; delete state.decks[c.id];
+  state.courses = state.courses.filter((x) => x.id !== c.id);
+  saveCourses();
+  if (state.cur === c.id) { state.cur = null; lsSet("cur", ""); }
+}
 
-// ---------- Gia sư Feynman ----------
+// ================= gia sư Feynman =================
+const curCourse = () => state.courses.find((c) => c.id === state.cur);
+const chatOf = (id) => (state.chats[id] ||= { turns: [] });
+const langOf = (c) => lsGet("lang:" + c.id, lsGet("lang", "fr"));
+function rangeOf(c, n = c.pageCount) {
+  const r = c.range || [1, Math.min(n, 30)];
+  const from = clamp(+r[0] || 1, 1, Math.max(1, n));
+  return [from, clamp(+r[1] || n, from, Math.max(1, n))];
+}
 const TUTOR = (c, pagesText, range, vi) => `Tu es mon tuteur / ma tutrice personnel·le pour ma L1 EEA à Sorbonne Université. J'étudie à distance avec des slides et polycopiés très denses. Je suis vietnamien·ne.
 Cours : « ${c.title} » (pages ${range}).${c.examContent ? `\nProgramme de l'examen : ${c.examContent}` : ""}
 Pédagogie (Feynman + répétition espacée) :
 - Une notion à la fois : une analogie concrète et drôle de la vie quotidienne, puis la version rigoureuse (formules en LaTeX entre $...$ ou $$...$$), puis un mini-exemple chiffré. Cite la page du document ([p. N]).
 - Après chaque notion, demande-moi de la réexpliquer avec MES mots.
-- Si mon message commence par "[EXPLICATION FEYNMAN]" : note /10, ce qui est juste, les trous, les contresens, une analogie plus simple, une question de suivi.
+- Si mon message commence par "[EXPLICATION FEYNMAN]", c'est mon explication : note /10, ce qui est juste, les trous, les contresens, une analogie plus simple, une question de suivi. Sinon, ne parle jamais de cette balise.
 - Questions de fond (pourquoi, sens physique) : va au fond, en t'appuyant sur des connaissances académiques solides ; si tu n'es pas sûr, dis-le.
 - De temps en temps, rappelle une notion vue plus tôt pour la consolider.
-- Réponses courtes et vivantes, pas de murs de texte. Ne corrige pas mon français (un autre module s'en charge).
+- Réponses courtes et vivantes, titres courts, pas de murs de texte. Ne corrige pas mon français (un autre module s'en charge).
 - Langue : ${vi ? "réponds en VIETNAMIEN, garde les termes techniques français entre parenthèses" : "français simple"}.
 
 === DOCUMENT DE COURS ===
 ${pagesText}
 === FIN DU DOCUMENT ===`;
-const curCourse = () => state.courses.find((c) => c.id === state.cur);
-function chatOf(id) { return (state.chats[id] ||= { turns: [] }); }
-function renderCourses() {
-  $("#courseBar").innerHTML = state.courses.map((c) => `<button class="course" data-id="${esc(c.id)}" aria-pressed="${c.id === state.cur}">${esc(c.title)}<span>${c.pageCount} trang · ${(state.decks[c.id] || []).length} thẻ</span></button>`).join("");
-  $("#studyEmpty").hidden = !!state.courses.length;
-  if (!state.courses.length) $("#addCourse").open = true;
-  const c = curCourse();
-  $("#studyPane").hidden = !c;
-  if (!c) return;
-  $("#curTitle").textContent = c.title;
-  $("#curInfo").textContent = `${c.pageCount} trang · 🎯 ${c.examContent || "chưa nhập nội dung thi"}`;
-  $("#pFrom").max = $("#pTo").max = c.pageCount;
-  if (!$("#pFrom").value || state._shown !== c.id) { $("#pFrom").value = c.range?.[0] || 1; $("#pTo").value = c.range?.[1] || Math.min(c.pageCount, 30); }
-  if (state._shown !== c.id) { state._shown = c.id; renderChat(); }
+const STARTERS = [
+  { t: "Bức tranh toàn cảnh", d: "Các ý chính, theo thứ tự", q: "Donne-moi une vue d'ensemble de ces pages : les grandes idées dans l'ordre, une phrase chacune, puis propose par où commencer." },
+  { t: "Giảng ý đầu tiên", d: "Kèm ví dụ đời thường", q: "Explique-moi la première notion importante de ces pages, avec une analogie drôle de la vie quotidienne." },
+  { t: "Quiz 5 câu", d: "Hỏi từng câu một", q: "Fais-moi un quiz de 5 questions sur ces pages, une question à la fois : attends ma réponse avant la suivante." },
+  { t: "Bài tập kiểu thi", d: "Chưa kèm lời giải", q: "Donne-moi un exercice type examen sur ces pages, sans la correction. Je te donnerai ma réponse." },
+];
+const SUGGEST = [
+  ["Chưa hiểu", "Je n'ai pas compris. Réexplique avec une autre analogie, plus simple."],
+  ["Ví dụ khác", "Donne-moi un autre exemple concret, avec des chiffres."],
+  ["Bản chất?", "Pourquoi c'est comme ça, physiquement ? Va au fond des choses."],
+  ["Ý tiếp theo", "On passe à la notion suivante."],
+  ["Bài tập", "Donne-moi un exercice type examen sur ce qu'on vient de voir, sans la correction."],
+  ["Tóm tắt", "Fais-moi un résumé en 5 points de ce qu'on a vu, à retenir pour l'examen."],
+];
+function fixHtml(fix, open = false) {
+  const n = fix?.errors?.length || 0;
+  if (!n) return "";
+  return `<details class="fix"${open ? " open" : ""}><summary>${icon("pencil")} Petit point français · ${n} lỗi</summary><ul>${fix.errors.map((x) => `<li><span><s>${esc(x.original)}</s> → <b>${esc(x.correction)}</b></span><span>${esc(x.rule)}</span><span class="vi">${esc(x.vi)}</span>${x.astuce ? `<span class="tip">${esc(x.astuce)}</span>` : ""}</li>`).join("")}</ul><p class="faint small">Đã lưu vào bộ thẻ Ngữ pháp để ôn lại.</p></details>`;
 }
-function renderChat() {
-  const c = curCourse(); const box = $("#chat"); box.innerHTML = "";
-  if (!c) return;
+function userHtml(content, fix) {
+  const feyn = content.startsWith(FEYN);
+  return `<div class="msg u">${feyn ? `<span class="mode">${icon("speak")} Tự giảng lại</span>` : ""}<div class="bubble">${esc(feyn ? content.slice(FEYN.length) : content)}</div>${fix ? fixHtml(fix) : ""}</div>`;
+}
+const tutorHtml = (inner) => `<div class="msg a"><div class="who">${mascot("xs")} Gia sư</div><div class="md">${inner}</div></div>`;
+function renderThread() {
+  const c = curCourse(), box = $("#thread");
   const turns = chatOf(c.id).turns;
-  if (!turns.length) box.innerHTML = `<div class="sheet small muted">Bấm <b>🚀 Bắt đầu</b> hoặc hỏi bất cứ gì về tài liệu. Chọn khoảng trang ở trên để gia sư tập trung (mỗi lần gửi khoảng 30 trang là vừa).</div>`;
-  for (const t of turns) {
-    const div = document.createElement("div");
-    div.className = "msg " + t.role;
-    if (t.role === "user") div.textContent = t.content.replace(/^\[EXPLICATION FEYNMAN\] /, "🗣️ ");
-    else div.innerHTML = md(t.content);
-    box.appendChild(div);
-    if (t.fix) box.appendChild(fixBubble(t.fix));
+  if (!turns.length) {
+    const [f, t] = rangeOf(c);
+    box.innerHTML = `<div class="starter">${mascot("lg")}<h2>Học “${esc(c.title)}”</h2><p class="muted small">Đang chọn trang ${f}–${t}. Bắt đầu từ một gợi ý, hoặc tự hỏi. Viết bằng tiếng Pháp thì gia sư sửa ngữ pháp giúp bạn.</p>
+      <div class="starter-grid">${STARTERS.map((s, i) => `<button data-act="starter" data-i="${i}"><strong>${s.t}</strong><span>${s.d}</span></button>`).join("")}</div></div>`;
+  } else {
+    // bản cũ lưu phần sửa ngữ pháp ở lượt gia sư: vẫn hiện dưới tin nhắn của bạn
+    box.innerHTML = turns.map((t, i) => t.role === "user" ? userHtml(t.content, t.fix || turns[i + 1]?.fix) : tutorHtml(md(t.content))).join("");
+    typeset(box);
   }
-  typeset(box);
 }
-$("#courseBar").addEventListener("click", (e) => { const b = e.target.closest(".course"); if (!b) return; state.cur = b.dataset.id; renderCourses(); });
-["#pFrom", "#pTo"].forEach((s) => $(s).addEventListener("change", () => { const c = curCourse(); if (!c) return; c.range = [+$("#pFrom").value || 1, +$("#pTo").value || c.pageCount]; saveCourses(); }));
-$("#editExam").addEventListener("click", () => { const c = curCourse(); $("#examInput").value = c?.examContent || ""; $("#examEditBox").hidden = !$("#examEditBox").hidden; });
-$("#saveExam").addEventListener("click", () => { const c = curCourse(); c.examContent = $("#examInput").value.trim(); saveCourses(); $("#examEditBox").hidden = true; renderCourses(); });
-$("#resetChat").addEventListener("click", () => ($("#resetConfirm").hidden = false));
-$("#resetNo").addEventListener("click", () => ($("#resetConfirm").hidden = true));
-$("#resetYes").addEventListener("click", () => { const c = curCourse(); state.chats[c.id] = { turns: [] }; saveChat(c.id); $("#resetConfirm").hidden = true; renderChat(); });
-try { $("#viMode").checked = localStorage.getItem("vi") === "1"; } catch {}
-$("#viMode").addEventListener("change", () => { try { localStorage.setItem("vi", $("#viMode").checked ? "1" : ""); } catch {} });
-
-function fixBubble(fix) {
-  const d = document.createElement("div");
-  d.className = "msg fix";
-  d.innerHTML = `<b>✏️ Petit point français</b> ${esc(fix.encouragement || "")}<ul>${fix.errors.map((x) => `<li><s>${esc(x.original)}</s> → <b>${esc(x.correction)}</b><br><span class="small">📘 ${esc(x.rule)}<br>🇻🇳 ${esc(x.vi)}<br>💡 ${esc(x.astuce)}</span></li>`).join("")}</ul><span class="small muted">Đã thêm vào bộ thẻ "Ngữ pháp tiếng Pháp".</span>`;
-  return d;
+function renderCourse() {
+  const c = curCourse(); if (!c) return;
+  $("#cTitle").textContent = c.title;
+  const [f, t] = rangeOf(c);
+  $("#cRange").innerHTML = `Trang ${f}–${t} / ${c.pageCount} ${icon("down")}`;
+  const lang = langOf(c);
+  $$("#cLang button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+  renderThread();
+  updateComposer();
+}
+let chatAbort = null, feynOn = false;
+const nearBottom = () => window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 160;
+const scrollToEnd = (smooth) => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: smooth && !reduceMotion ? "smooth" : "auto" });
+function autoGrow() { const ta = $("#chatIn"); ta.style.height = "auto"; ta.style.height = Math.min(ta.scrollHeight, 160) + "px"; }
+function updateComposer() {
+  const busy = !!chatAbort, c = curCourse();
+  $("#sendBtn").hidden = busy; $("#stopBtn").hidden = !busy;
+  $("#sendBtn").disabled = !$("#chatIn").value.trim();
+  $("#suggest").hidden = busy || !(c && chatOf(c.id).turns.length);
+}
+function setFeyn(on) {
+  feynOn = on;
+  $("#feynBanner").hidden = !on;
+  $("#inputRow").classList.toggle("feyn-on", on);
+  $("#feynBtn").setAttribute("aria-pressed", String(on));
+  $("#chatIn").placeholder = on ? "Giảng lại theo cách bạn hiểu…" : "Hỏi gia sư…";
 }
 async function grammarCheck(sample, message) {
   if (message.length < 12 || !/[a-zàâçéèêëîïôûùüÿœ]{3,}/i.test(message)) return null;
@@ -839,125 +1122,553 @@ Si le message n'est pas en français : {"is_french": false, "errors": [], "encou
 
 Message : """${message}"""`, { modelTier: "quick" });
     if (!g?.is_french || !Array.isArray(g.errors) || !g.errors.length) return null;
-    addCards("francais", g.errors.map((x) => ({ front: `✏️ Sửa câu này: « ${x.original} »`, back: `**${x.correction}**\n\n📘 ${x.rule}\n\n🇻🇳 ${x.vi}`, mnemonic: x.astuce })));
-    return g;
+    const errors = g.errors.filter((x) => x?.original && x?.correction).map((x) => ({ original: String(x.original), correction: String(x.correction), rule: String(x.rule || ""), vi: String(x.vi || ""), astuce: String(x.astuce || "") }));
+    if (!errors.length) return null;
+    addCards(FR, errors.map((x) => ({ front: `Sửa câu này: « ${x.original} »`, back: `**${x.correction}**\n\n${x.rule}\n\n${x.vi}`, mnemonic: x.astuce })));
+    return { errors, encouragement: String(g.encouragement || "") };
   } catch { return null; }
 }
-let abort = null;
-async function send(message) {
-  message = message.trim(); const c = curCourse();
-  if (!message || !c || abort) return;
-  const sample = await getSample(); if (!sample) return toast("Trang này cần chạy trên claude.ai để dùng Claude.");
-  const feyn = $("#feynMode").checked, vi = $("#viMode").checked;
-  const content = (feyn ? "[EXPLICATION FEYNMAN] " : "") + message;
-  const chat = chatOf(c.id);
-  if (!chat.turns.length) $("#chat").innerHTML = "";
-  const uDiv = document.createElement("div"); uDiv.className = "msg user"; uDiv.textContent = (feyn ? "🗣️ " : "") + message; $("#chat").appendChild(uDiv);
-  const aDiv = document.createElement("div"); aDiv.className = "msg assistant"; aDiv.innerHTML = `<span class="thinking"><span class="dot"></span>Gia sư đang nghĩ…</span>`; $("#chat").appendChild(aDiv);
-  aDiv.scrollIntoView({ block: "end", behavior: "smooth" });
-  $("#chatIn").value = ""; $("#feynMode").checked = false;
-  $("#send").hidden = true; $("#stop").hidden = false; abort = new AbortController();
+async function send(text, { canned = false } = {}) {
+  text = String(text || "").trim();
+  const c = curCourse();
+  if (!text || !c || chatAbort) return;
+  const sample = await getSample(); if (!sample) return toast(NEED_CLAUDE);
+  const feyn = !canned && feynOn, vi = langOf(c) === "vi";
+  const content = (feyn ? FEYN : "") + text;
+  const chat = chatOf(c.id), box = $("#thread");
+  if (!chat.turns.length) box.innerHTML = "";
+  box.insertAdjacentHTML("beforeend", userHtml(content));
+  const uEl = box.lastElementChild;
+  box.insertAdjacentHTML("beforeend", tutorHtml(thinking("đang nghĩ…")));
+  const aMd = box.lastElementChild.querySelector(".md");
+  scrollToEnd(true);
+  $("#chatIn").value = ""; autoGrow(); setFeyn(false);
+  chatAbort = new AbortController(); updateComposer();
 
-  // dựng đầu vào: chỉ dẫn + tài liệu nằm trong lượt user đầu tiên còn giữ
+  // đầu vào: chỉ dẫn + tài liệu nằm trong lượt đầu tiên còn giữ, rồi lịch sử gần nhất
   const pages = await loadCourseText(c);
-  const from = Math.max(1, +$("#pFrom").value || 1), to = Math.min(pages.length, Math.max(from, +$("#pTo").value || pages.length));
-  const lim = (imgLimits?.maxPromptBytes || 262144) - 40000;
-  let history = [...chat.turns.map((t) => ({ role: t.role, content: t.content })), { role: "user", content }].slice(-16);
-  while (history[0]?.role !== "user") history.shift();
+  const [from, to] = rangeOf(c, pages.length || c.pageCount);
+  const lim = ((await getLimits())?.maxPromptBytes || 262144) - 40000;
+  const history = [...chat.turns.map((t) => ({ role: t.role, content: t.content })), { role: "user", content }].slice(-16);
+  while (history.length && history[0].role !== "user") history.shift();
   const histBytes = new Blob([history.map((t) => t.content).join("")]).size;
   let docText = "", used = 0;
-  for (let p = from; p <= to; p++) { const s = `\n[p. ${p}]\n${pages[p - 1] || ""}`; const b = new Blob([s]).size; if (used + b > lim - histBytes) { docText += `\n[… pages ${p}-${to} non incluses : trop long, choisis une plage plus petite]`; break; } docText += s; used += b; }
-  const input = history.map((t, i) => i === 0 ? { role: "user", content: TUTOR(c, docText, `${from}-${to}`, vi) + "\n\nMon message : " + t.content } : t);
+  for (let p = from; p <= to; p++) {
+    const s = `\n[p. ${p}]\n${pages[p - 1] || ""}`, b = new Blob([s]).size;
+    if (used + b > lim - histBytes) { docText += `\n[… pages ${p}-${to} non incluses : trop long, choisis une plage plus petite]`; break; }
+    docText += s; used += b;
+  }
+  const input = history.map((t, i) => (i === 0 ? { role: "user", content: TUTOR(c, docText, `${from}-${to}`, vi) + "\n\nMon message : " + t.content } : t));
   if (vi) input[input.length - 1] = { role: "user", content: input[input.length - 1].content + "\n\n(Réponds en vietnamien, termes techniques en français entre parenthèses.)" };
 
-  const fixP = grammarCheck(sample, message);
-  let answer = "";
+  const fixP = canned ? Promise.resolve(null) : grammarCheck(sample, text);
+  let answer = "", raf = 0;
   try {
-    const r = await sample(input, { onText: ({ text }) => { answer = text; aDiv.innerHTML = md(text); }, signal: abort.signal, cache: false });
+    const r = await sample(input, {
+      onText: ({ text: t }) => { answer = t; if (!raf) raf = requestAnimationFrame(() => { raf = 0; const stick = nearBottom(); aMd.innerHTML = md(answer); if (stick) scrollToEnd(); }); },
+      signal: chatAbort.signal, cache: false });
+    cancelAnimationFrame(raf); raf = 0;
     answer = r.text;
-    setMd(aDiv, answer + (r.truncated ? "\n\n_(câu trả lời bị cắt ngắn)_" : ""));
+    setMd(aMd, answer + (r.truncated ? "\n\n_(Câu trả lời bị cắt ngắn. Thử chọn ít trang hơn.)_" : ""));
   } catch (err) {
+    cancelAnimationFrame(raf); raf = 0;
     if (err?.text) answer = err.text;
-    aDiv.innerHTML = (answer ? md(answer) : "") + (err?.code === "cancelled" ? `<p class="small muted">Đã dừng.</p>` : `<p class="small" style="color:var(--bad)">${esc(sampleErr(err))}</p>`);
-    typeset(aDiv);
-  } finally { abort = null; $("#send").hidden = false; $("#stop").hidden = true; }
+    aMd.innerHTML = (answer ? md(answer) : "") + (err?.code === "cancelled" ? `<p class="faint small">Đã dừng.</p>` : `<p class="err">${esc(sampleErr(err))}</p>`);
+    typeset(aMd);
+  } finally { chatAbort = null; updateComposer(); }
   const fix = await fixP;
   if (answer) {
-    chat.turns.push({ role: "user", content }, { role: "assistant", content: answer, ...(fix ? { fix: { errors: fix.errors, encouragement: fix.encouragement } } : {}) });
-    chat.turns = chat.turns.slice(-60);
+    chat.turns.push({ role: "user", content, ...(fix ? { fix } : {}) }, { role: "assistant", content: answer });
     saveChat(c.id);
+    c.lastStudied = new Date().toISOString(); saveCourses();
   }
-  if (fix) $("#chat").appendChild(fixBubble(fix));
+  if (fix && uEl.isConnected) uEl.insertAdjacentHTML("beforeend", fixHtml(fix, true));
+  renderBadges();
 }
-$("#send").addEventListener("click", () => send($("#chatIn").value));
-$("#stop").addEventListener("click", () => abort?.abort());
-$("#chatIn").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); send($("#chatIn").value); } });
-$("#quick").addEventListener("click", (e) => { const b = e.target.closest("button[data-q]"); if (b) send(b.dataset.q); });
-$("#mkCards").addEventListener("click", async (e) => {
-  const c = curCourse(); const sample = await getSample(); if (!sample || !c) return toast("Trang này cần chạy trên claude.ai để dùng Claude.");
-  const pages = await loadCourseText(c);
-  const from = Math.max(1, +$("#pFrom").value || 1), to = Math.min(pages.length, +$("#pTo").value || pages.length);
-  let text = ""; for (let p = from; p <= to && text.length < 150000; p++) text += `\n[p. ${p}]\n${pages[p - 1]}`;
-  const existing = (state.decks[c.id] || []).map((k) => "- " + k.front).join("\n").slice(0, 20000);
-  e.target.disabled = true; const old = e.target.textContent; e.target.textContent = "Đang tạo…";
-  try {
-    const cards = await sample.json(`Crée 12 flashcards de répétition espacée en français à partir de ce cours de L1 EEA (pages ${from}-${to}). Chaque carte teste UNE idée et oblige à comprendre (pas juste réciter). Verso court et exact (formules en LaTeX $...$). "mnemonic" = image mentale ou analogie drôle pour retenir.${c.examContent ? " Priorité au programme d'examen : " + c.examContent : ""}
+function openCourseMenu() {
+  const c = curCourse(); if (!c) return;
+  const [f, t] = rangeOf(c);
+  openSheet({ title: c.title, html: `<div class="menu">
+    <button class="menu-i" data-act="c-cards">${icon("cards")}<span><strong>Tạo flashcards</strong><span class="faint small">Từ trang ${f}–${t} đang học</span></span></button>
+    <button class="menu-i" data-act="c-range">${icon("pages")}<span><strong>Chọn trang học</strong><span class="faint small">Đang chọn trang ${f}–${t} / ${c.pageCount}</span></span></button>
+    <button class="menu-i" data-act="c-exam">${icon("target")}<span><strong>Nội dung thi</strong><span class="faint small">${esc(c.examContent || "Chưa nhập")}</span></span></button>
+    <button class="menu-i" data-act="c-reset">${icon("refresh")}<span><strong>Buổi học mới</strong><span class="faint small">Xoá cuộc trò chuyện, giữ flashcards</span></span></button>
+    <button class="menu-i danger" data-act="c-delete">${icon("trash")}<span><strong>Xoá tài liệu</strong><span class="faint small">Xoá tài liệu, trò chuyện và thẻ của nó</span></span></button>
+  </div>` });
+}
+function openRangeSheet() {
+  const c = curCourse(); if (!c) return;
+  const [f, t] = rangeOf(c), n = c.pageCount, span = Math.max(10, t - f + 1);
+  const presets = [];
+  if (t < n) presets.push([t + 1, Math.min(n, t + span), `Phần tiếp: ${t + 1}–${Math.min(n, t + span)}`]);
+  presets.push([1, Math.min(n, 10), `1–${Math.min(n, 10)}`]);
+  if (n <= 60) presets.push([1, n, `Toàn bộ (${n} trang)`]);
+  openSheet({ title: "Chọn trang học", html: `
+    <p class="muted small">Tài liệu có ${n} trang. Mỗi lần học khoảng 10–30 trang là vừa: gia sư tập trung hơn và tốn ít lượt hơn.</p>
+    <div class="two"><label class="field"><span>Từ trang</span><input type="number" id="rgFrom" min="1" max="${n}" value="${f}" inputmode="numeric"></label><label class="field"><span>Đến trang</span><input type="number" id="rgTo" min="1" max="${n}" value="${t}" inputmode="numeric"></label></div>
+    <div class="pills">${presets.map(([a, b, l]) => `<button type="button" data-a="${a}" data-b="${b}" aria-pressed="false">${esc(l)}</button>`).join("")}</div>
+    <button class="btn primary block" id="rgGo">Lưu</button>`,
+    onMount: (el) => {
+      $$(".pills button", el).forEach((b) => b.addEventListener("click", () => { $("#rgFrom", el).value = b.dataset.a; $("#rgTo", el).value = b.dataset.b; }));
+      $("#rgGo", el).addEventListener("click", () => {
+        const a = clamp(+$("#rgFrom", el).value || 1, 1, n), b = clamp(+$("#rgTo", el).value || n, a, n);
+        c.range = [a, b]; saveCourses(); closeSheet(); renderCourse(); toast(`Gia sư sẽ dùng trang ${a}–${b}`);
+      });
+    } });
+}
+function openExamSheet() {
+  const c = curCourse(); if (!c) return;
+  openSheet({ title: "Nội dung thi", html: `
+    <p class="muted small">Gia sư sẽ ưu tiên các phần này khi giảng và khi tạo flashcards.</p>
+    <textarea id="exText" rows="4" placeholder="vd: Chapitres 1 à 3, lois de Kirchhoff, exercices type TD 2"></textarea>
+    <button class="btn primary block" id="exGo">Lưu</button>`,
+    onMount: (el) => {
+      $("#exText", el).value = c.examContent || "";
+      $("#exGo", el).addEventListener("click", () => { c.examContent = $("#exText", el).value.trim(); saveCourses(); closeSheet(); toast("Đã lưu nội dung thi"); });
+    } });
+}
+function openCardsSheet() {
+  const c = curCourse(); if (!c) return;
+  const [f, t] = rangeOf(c);
+  openSheet({ title: "Tạo flashcards", html: `
+    <p class="muted small">Từ trang ${f}–${t} của “${esc(c.title)}”.</p>
+    <label class="field"><span>Tập trung vào (không bắt buộc)</span><input type="text" id="fcFocus" placeholder="vd: loi d'Ohm, condensateur"></label>
+    <div class="pills" id="fcCount">${[8, 12, 20].map((n) => `<button type="button" data-n="${n}" aria-pressed="${n === 12}">${n} thẻ</button>`).join("")}</div>
+    <div class="small" id="fcStatus"></div>
+    <button class="btn primary block" id="fcGo">${icon("sparkle")} Tạo thẻ</button>`,
+    onMount: (el) => {
+      let count = 12;
+      $$("#fcCount button", el).forEach((b) => b.addEventListener("click", () => { count = +b.dataset.n; $$("#fcCount button", el).forEach((x) => x.setAttribute("aria-pressed", String(x === b))); }));
+      $("#fcGo", el).addEventListener("click", async (ev) => {
+        const btn = ev.currentTarget;
+        if (btn.dataset.done) { closeSheet(); startSession([c.id]); return; }
+        const sample = await getSample(); if (!sample) return toast(NEED_CLAUDE);
+        btn.disabled = true; $("#fcStatus", el).innerHTML = thinking("Claude đang soạn thẻ…");
+        try {
+          const pages = await loadCourseText(c);
+          let text = ""; for (let p = f; p <= t && text.length < 150000; p++) text += `\n[p. ${p}]\n${pages[p - 1] || ""}`;
+          const existing = (state.decks[c.id] || []).map((k) => "- " + k.front).join("\n").slice(0, 20000);
+          const focus = $("#fcFocus", el).value.trim();
+          const cards = await sample.json(`Crée ${count} flashcards de répétition espacée en français à partir de ce cours de L1 EEA (pages ${f}-${t}). Chaque carte teste UNE idée et oblige à comprendre (pas juste réciter). Verso court et exact (formules en LaTeX $...$). "mnemonic" = image mentale ou analogie drôle pour retenir.${focus ? " Centre-toi sur : " + focus + "." : ""}${c.examContent ? " Priorité au programme d'examen : " + c.examContent : ""}
 Évite ces cartes existantes :\n${existing || "(aucune)"}
 Réponds UNIQUEMENT avec un tableau JSON : [{"front": "...", "back": "...", "mnemonic": "..."}]
 
 === COURS ===${text}`, { cache: false });
-    const ok = (Array.isArray(cards) ? cards : []).filter((k) => k?.front && k?.back);
-    addCards(c.id, ok); toast(`🃏 Đã tạo ${ok.length} thẻ. Vào tab Ôn tập để học.`); renderAll();
-  } catch (err) { toast("⚠️ " + sampleErr(err), 5000); }
-  finally { e.target.disabled = false; e.target.textContent = old; }
-});
+          const ok = (Array.isArray(cards) ? cards : []).filter((k) => k?.front && k?.back);
+          addCards(c.id, ok);
+          if (!el.isConnected) return toast(`Đã tạo ${ok.length} thẻ`);
+          $("#fcStatus", el).innerHTML = `<span class="faint">Đã tạo ${ok.length} thẻ mới cho bộ “${esc(c.title)}”.</span>`;
+          btn.disabled = false; btn.dataset.done = "1"; btn.innerHTML = `${icon("cards")} Ôn ngay`;
+        } catch (err) { if (el.isConnected) { $("#fcStatus", el).innerHTML = `<span class="err">${esc(sampleErr(err))}</span>`; btn.disabled = false; } }
+      });
+    } });
+}
 
-// ---------- Flashcards (SM-2) ----------
+// ================= flashcards (SM-2) =================
+const FR = "francais";
 function addCards(deckId, cards) {
   const t = todayISO();
   (state.decks[deckId] ||= []).push(...cards.map((k) => ({ id: uid8(), front: String(k.front), back: String(k.back), mnemonic: String(k.mnemonic || ""), ef: 2.5, interval: 0, reps: 0, lapses: 0, due: t })));
-  saveDeck(deckId); renderHome();
+  saveDeck(deckId);
+  renderBadges();
 }
 function grade(card, g) {
-  if (g < 3) { card.reps = 0; card.interval = 0; card.lapses++; }
-  else { card.reps++; card.interval = card.reps === 1 ? 1 : card.reps === 2 ? 4 : Math.round(Math.max(1, card.interval) * card.ef); if (g === 5) card.interval = Math.round(card.interval * 1.3); }
+  if (g < 3) { card.reps = 0; card.interval = 0; card.lapses = (card.lapses || 0) + 1; }
+  else {
+    card.reps++;
+    card.interval = card.reps === 1 ? 1 : card.reps === 2 ? 4 : Math.round(Math.max(1, card.interval) * card.ef);
+    if (g === 5) card.interval = Math.max(card.interval + 1, Math.round(card.interval * 1.3));
+  }
   card.ef = Math.max(1.3, card.ef + (0.1 - (5 - g) * (0.08 + (5 - g) * 0.02)));
   card.due = addDays(todayISO(), card.interval);
 }
-const rv = { deck: null, queue: [], card: null };
-function deckList() { return [{ id: "francais", title: "🇫🇷 Ngữ pháp tiếng Pháp" }, ...state.courses.map((c) => ({ id: c.id, title: c.title }))]; }
-function renderDecks() {
-  $("#decks").innerHTML = deckList().map((d) => { const all = (state.decks[d.id] || []).length, due = dueCards(d.id).length;
-    return `<button class="deck" data-deck="${esc(d.id)}" ${due ? "" : "disabled"}><span class="n">${due}</span><span>${esc(d.title)}</span><span class="small muted">${all} thẻ</span></button>`; }).join("");
+const ivLabel = (n) => (n === 0 ? "ngay" : n < 30 ? `${n} ngày` : n < 365 ? `${Math.round(n / 30)} tháng` : `${Math.round(n / 365)} năm`);
+function dueCards(deckId) { const t = todayISO(); return (state.decks[deckId] || []).filter((c) => c.due <= t); }
+function deckList() {
+  return [{ id: FR, title: "Ngữ pháp tiếng Pháp" }, ...state.courses.map((c) => ({ id: c.id, title: c.title }))]
+    .map((d) => ({ ...d, total: (state.decks[d.id] || []).length, due: dueCards(d.id).length }));
 }
-$("#decks").addEventListener("click", (e) => { const b = e.target.closest(".deck"); if (!b) return; rv.deck = b.dataset.deck; rv.queue = dueCards(rv.deck).sort(() => Math.random() - 0.5); $("#rvDone").hidden = true; nextCard(); });
-function nextCard() {
-  rv.card = rv.queue.shift();
-  $("#review").hidden = !rv.card; $("#decks").hidden = !!rv.card;
-  if (!rv.card) { $("#rvDone").hidden = !rv.deck; renderDecks(); renderHome(); return; }
-  $("#rvMeta").textContent = `Còn ${rv.queue.length} thẻ · đã ôn ${rv.card.reps} lần`;
-  setMd($("#rvFront"), rv.card.front);
-  $("#rvBack").innerHTML = md(rv.card.back) + (rv.card.mnemonic ? `<div class="mnemo">💡 ${md(rv.card.mnemonic)}</div>` : "");
-  $("#rvBack").hidden = true; $("#rvGrades").hidden = true; $("#rvShow").hidden = false;
-}
-$("#rvShow").addEventListener("click", () => { $("#rvBack").hidden = false; typeset($("#rvBack")); $("#rvGrades").hidden = false; $("#rvShow").hidden = true; });
-$("#rvGrades").addEventListener("click", (e) => { const b = e.target.closest("button[data-g]"); if (!b) return; const g = +b.dataset.g; grade(rv.card, g); if (g < 3) rv.queue.push(rv.card); saveDeck(rv.deck); nextCard(); });
-$("#rvExit").addEventListener("click", () => { rv.queue = []; rv.deck = null; nextCard(); });
+const totalDue = () => deckList().reduce((n, d) => n + d.due, 0);
+function renderBadges() { const n = totalDue(), b = $("#tabDue"); b.hidden = !n; b.textContent = n > 99 ? "99+" : n; }
 
-// ---------- điều hướng ----------
-const VIEWS = ["home", "study", "cards", "agenda", "inbox"];
-function show(v) {
-  if (!VIEWS.includes(v)) v = "home";
-  VIEWS.forEach((x) => ($("#v-" + x).hidden = x !== v));
-  $$("nav.tabs button").forEach((b) => (b.dataset.v === v ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
-  if (location.hash.slice(1) !== v) history.replaceState(null, "", "#" + v);
-  window.scrollTo(0, 0);
+// ================= phiên ôn =================
+const sess = { queue: null, total: 0, done: 0, cur: null, flipped: false };
+function startSession(deckIds) {
+  const items = [];
+  for (const id of deckIds) for (const card of dueCards(id)) items.push({ deck: id, card });
+  if (!items.length) return toast("Không có thẻ nào cần ôn lúc này");
+  for (let i = items.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [items[i], items[j]] = [items[j], items[i]]; }
+  Object.assign(sess, { queue: items, total: items.length, done: 0, cur: null });
+  $("#sCardWrap").hidden = false; $("#sDone").hidden = true;
+  show("session");
+  nextCard();
 }
-$$("nav.tabs button").forEach((b) => b.addEventListener("click", () => show(b.dataset.v)));
-window.addEventListener("hashchange", () => show(location.hash.slice(1)));
-function renderAll() { renderHome(); renderAgenda(); renderCourses(); renderMail(); if (!rv.card) renderDecks(); }
-show(location.hash.slice(1) || "home");
-renderAll();
+function deckTitle(id) { return id === FR ? "Ngữ pháp tiếng Pháp" : state.courses.find((c) => c.id === id)?.title || ""; }
+function nextCard() {
+  sess.cur = sess.queue?.shift() || null;
+  $("#sProg").style.width = (sess.total ? Math.round((sess.done / sess.total) * 100) : 0) + "%";
+  $("#sCount").textContent = `${Math.min(sess.done + 1, sess.total)}/${sess.total}`;
+  if (!sess.cur) {
+    $("#sCardWrap").hidden = true; $("#sDone").hidden = false;
+    $("#sDoneMascot").innerHTML = mascot("lg");
+    $("#sDoneText").textContent = `Bạn đã ôn ${sess.total} thẻ. Những thẻ khó sẽ quay lại sớm hơn. Hẹn gặp lại ngày mai nhé.`;
+    $("#sCount").textContent = `${sess.total}/${sess.total}`;
+    renderBadges();
+    return;
+  }
+  const { deck, card } = sess.cur;
+  sess.flipped = false;
+  $("#flash").classList.remove("flipped");
+  $("#sDeck").textContent = deckTitle(deck);
+  setMd($("#sFront"), card.front);
+  setMd($("#sBack"), card.back);
+  $("#sMnemo").hidden = !card.mnemonic;
+  if (card.mnemonic) { $("#sMnemo").innerHTML = icon("bulb") + `<div class="md">${md(card.mnemonic)}</div>`; typeset($("#sMnemo")); }
+  $$("#sGrades .grade").forEach((b) => { const copy = { ...card }; grade(copy, +b.dataset.g); b.querySelector("span").textContent = ivLabel(copy.interval); });
+  $("#sGrades").hidden = true; $("#sFlip").hidden = false;
+}
+function flipCard() {
+  if (!sess.cur || sess.flipped) return;
+  sess.flipped = true;
+  $("#flash").classList.add("flipped");
+  $("#sGrades").hidden = false; $("#sFlip").hidden = true;
+}
+function gradeCur(g) {
+  if (!sess.cur || !sess.flipped) return;
+  const { deck, card } = sess.cur;
+  grade(card, g); saveDeck(deck);
+  if (g < 3) sess.queue.push(sess.cur); else sess.done++;
+  nextCard();
+}
+function renderReview() {
+  const decks = deckList(), total = decks.reduce((n, d) => n + d.total, 0), due = decks.reduce((n, d) => n + d.due, 0);
+  $("#rSub").textContent = total ? (due ? `Hôm nay có ${due} thẻ cần ôn` : "Hôm nay ôn xong rồi, giỏi quá!") : "Lặp lại ngắt quãng giúp nhớ lâu";
+  if (!total) {
+    $("#rList").innerHTML = `<div class="empty">${mascot("lg")}<h3>Chưa có thẻ nào</h3><p>Trong màn Học, bấm ⋯ → “Tạo flashcards”. Khi bạn viết tiếng Pháp sai, lỗi cũng tự thành thẻ ở đây.</p><button class="btn soft" data-go="study">Đi tới Học</button></div>`;
+    return;
+  }
+  $("#rList").innerHTML = (due ? `<button class="btn primary block lg" data-act="review-all">${icon("cards")} Ôn tất cả · ${due} thẻ</button>` : "")
+    + decks.filter((d) => d.total).map((d) => `<div class="deck-row">${d.id === FR ? `<span class="fr-glyph">Fr</span>` : resistor(d.id)}<div><strong>${esc(d.title)}</strong><span class="faint small">${d.total} thẻ · ${d.due ? d.due + " cần ôn" : "đã ôn xong"}</span></div><button class="btn sm ${d.due ? "soft" : "ghost"}" data-act="deck-start" data-deck="${esc(d.id)}" ${d.due ? "" : "disabled"}>Ôn</button></div>`).join("")
+    + `<p class="faint small center">Thẻ nhớ tốt quay lại sau 1, 4, 10… ngày. Thẻ quên quay lại ngay trong phiên.</p>`;
+}
+
+// ================= điện trở: màu riêng cho mỗi môn =================
+const BANDS = ["#8a5a3c", "#e05547", "#f08a3c", "#e9b93f", "#43a971", "#4c7fe0", "#8b6ae6", "#9a98a8"];
+function resistor(id) {
+  let h = 0; for (const ch of String(id)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return `<span class="res" aria-hidden="true"><i style="--b1:${BANDS[h % 8]};--b2:${BANDS[(h >>> 3) % 8]};--b3:${BANDS[(h >>> 6) % 8]}"></i></span>`;
+}
+
+// ================= màn Hôm nay =================
+function renderHome() {
+  $("#hGreet").textContent = greeting();
+  $("#hDate").textContent = longDate(todayISO());
+  if (!$("#hMascot").firstChild) $("#hMascot").innerHTML = mascot();
+  // campus
+  const s = state.status, fresh = s && s.date === todayISO(), v = VERDICT[fresh ? s.verdict : "unknown"] || VERDICT.unknown;
+  const steps = `<ol class="steps"><li><b>Chép lệnh</b> có sẵn lịch của bạn</li><li><b>Dán vào Claude</b>, bật Tìm kiếm web</li><li><b>Dán kết quả</b> vào đây</li></ol>`;
+  $("#hStatus").innerHTML = `
+    <div class="st-head"><span class="label">Campus Jussieu</span><span class="faint small">${s ? (fresh ? "Cập nhật " + hhmm(s.updatedAt) : "Bản tin " + countdown(s.date)) : ""}</span></div>
+    <div class="st-verdict ${v.cls}"><span class="st-dot"></span><strong>${esc(fresh ? v.label : "Hôm nay có cần lên trường không?")}</strong></div>
+    ${fresh && s.headline ? `<p>${esc(s.headline)}</p>` : `<p class="muted small">${s ? "Chưa có bản tin hôm nay. " : ""}Hỏi Claude (có tìm kiếm web) về blocus, biểu tình, giao thông, rồi dán kết quả vào đây.</p>`}
+    ${fresh && s.points?.length ? `<ul class="st-points">${s.points.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>` : steps}
+    <div class="row">
+      <button class="btn ${fresh ? "ghost" : "soft"} sm" data-act="copy-brief">${icon("copy")} Chép lệnh</button>
+      <a class="btn ghost sm" href="https://claude.ai/new" target="_blank" rel="noopener">${icon("external")} Mở Claude</a>
+      <button class="btn ${fresh ? "soft" : "primary"} sm" data-act="paste-brief">${icon("paste")} ${fresh ? "Dán bản mới" : "Dán kết quả"}</button>
+    </div>`;
+  // mail
+  const m = state.mail, imp = m.recent.filter((x) => x.importance === "haute");
+  const shown = (imp.length ? imp : m.recent).slice(0, 2);
+  $("#hMail").innerHTML = `
+    <div class="stack" style="gap:4px"><span class="label">Hộp thư trường</span><span class="small" data-mailmsg></span></div>
+    ${shown.length ? `<ul class="mini-mails">${shown.map((x) => `<li><span class="imp imp-${esc(x.importance)}"></span><div><strong>${esc(x.subject || "(không tiêu đề)")}</strong><p>${esc(x.action || x.resume)}</p></div></li>`).join("")}</ul>`
+      : `<p class="muted small">Mail Moodle, giảng viên và danh sách [etudiants] sẽ được tóm tắt ở đây.</p>`}
+    <div class="row"><button class="btn primary sm" data-act="read-mail">${icon("mail")} Đọc mail mới</button><button class="btn ghost sm" data-go="inbox">Xem tất cả</button></div>`;
+  paintMailMsg();
+  // ôn tập
+  const due = totalDue();
+  $("#hNudge").innerHTML = due ? `<button class="nudge" data-act="review-all">${mascot("sm")}<span><strong>${due} thẻ đang chờ bạn</strong><span class="muted small">Ôn 5 phút cho nhớ lâu</span></span><span class="btn primary sm">Ôn ngay</span></button>` : "";
+  // sắp tới
+  const up = upcoming(14).slice(0, 5);
+  $("#hUpcoming").innerHTML = up.length ? up.map((a) => evRow(a, true)).join("")
+    : `<div class="empty flat"><p>Không có kỳ thi hay hạn nộp nào trong 14 ngày tới. Đọc mail để cập nhật nhé.</p></div>`;
+}
+
+// ================= màn Lịch =================
+function evRow(a, compact = false) {
+  const t = typeOf(a.type), d = a.date ? diffDays(a.date) : null, urgent = d !== null && d >= 0 && d <= 2;
+  const meta = [a.course, a.time, a.location].filter(Boolean).map(esc).join(" · ");
+  return `<article class="ev ${t.cls} ${a.done ? "done" : ""}" data-id="${esc(a.id)}" data-date="${esc(a.date)}"${compact ? ' data-go="agenda"' : ""}>
+    <div class="ev-date">${a.date ? `<span class="dn">${+a.date.slice(8)}</span><span class="wd">${wdOf(a.date)} · th${+a.date.slice(5, 7)}</span>` : `<span class="dn">?</span><span class="wd">chưa rõ</span>`}</div>
+    <div class="ev-body">
+      <div class="ev-top"><span class="tag">${t.label}</span>${a.date ? `<span class="count ${urgent ? "urgent" : ""}">${countdown(a.date)}</span>` : ""}</div>
+      <h4>${esc(a.title)}</h4>
+      ${meta ? `<p class="meta">${meta}</p>` : ""}
+      ${!compact && a.to_submit ? `<p class="det"><b>Cần nộp</b>${esc(a.to_submit)}</p>` : ""}
+      ${!compact && a.exam_content ? `<p class="det"><b>Nội dung thi</b>${esc(a.exam_content)}</p>` : ""}
+      ${!compact && a.presence === "oui" ? `<p class="det"><b>Có mặt</b>Phải lên trường</p>` : ""}
+      ${!compact && a.details ? `<p class="det">${esc(a.details)}</p>` : ""}
+    </div>
+    ${compact ? "" : `<button class="icon-btn" data-act="ev-menu" data-id="${esc(a.id)}" aria-label="Tuỳ chọn">${icon("more")}</button>`}
+  </article>`;
+}
+function renderAgenda() {
+  const t = todayISO();
+  let strip = "";
+  for (let i = 0; i < 14; i++) {
+    const d = addDays(t, i), evs = state.agenda.filter((a) => a.date === d && !a.done);
+    strip += `<button class="day ${i === 0 ? "today" : ""}" data-act="jump-day" data-date="${d}" aria-label="${esc(longDate(d))}"><span class="wd">${i === 0 ? "Nay" : wdOf(d)}</span><span class="dn">${+d.slice(8)}</span><span class="dots">${evs.slice(0, 3).map((a) => `<i class="${typeOf(a.type).cls}"></i>`).join("")}</span></button>`;
+  }
+  $("#aStrip").innerHTML = strip;
+  const groups = { today: [], tomorrow: [], week: [], later: [], nodate: [], past: [] };
+  for (const a of state.agenda) {
+    if (!a.date) { groups.nodate.push(a); continue; }
+    const d = diffDays(a.date);
+    groups[d < 0 ? "past" : d === 0 ? "today" : d === 1 ? "tomorrow" : d <= 7 ? "week" : "later"].push(a);
+  }
+  const names = { today: "Hôm nay", tomorrow: "Ngày mai", week: "7 ngày tới", later: "Sau đó", nodate: "Chưa rõ ngày" };
+  let html = Object.keys(names).filter((k) => groups[k].length).map((k) => `<p class="label group-h">${names[k]}</p>${groups[k].map((a) => evRow(a)).join("")}`).join("");
+  if (!state.agenda.some((a) => !a.date || a.date >= t)) html = `<div class="empty">${mascot("lg")}<h3>Lịch còn trống</h3><p>Đọc mail trường hoặc dán một thông báo vào Hộp thư: app tự lấy ngày thi, hạn nộp. Bạn cũng có thể bấm + để thêm tay.</p></div>`;
+  if (groups.past.length) html += `<details class="card"><summary class="label">Đã qua (${groups.past.length})</summary><div class="list" style="margin-top:10px">${groups.past.reverse().map((a) => evRow(a)).join("")}</div></details>`;
+  $("#aList").innerHTML = html;
+}
+function jumpDay(d) {
+  const el = $(`#aList .ev[data-date="${d}"]`);
+  if (!el) return toast(`${longDate(d)}: trống, thảnh thơi`);
+  el.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+  el.classList.add("flash"); setTimeout(() => el.classList.remove("flash"), 1400);
+}
+function openEvMenu(id) {
+  const a = state.agenda.find((x) => x.id === id); if (!a) return;
+  openSheet({ title: a.title, html: `<div class="menu">
+    <button class="menu-i" data-act="ev-done" data-id="${esc(id)}">${icon("check")}<span><strong>${a.done ? "Bỏ đánh dấu đã xong" : "Đánh dấu đã xong"}</strong></span></button>
+    <button class="menu-i danger" data-act="ev-del" data-id="${esc(id)}">${icon("trash")}<span><strong>Xoá khỏi lịch</strong></span></button></div>` });
+}
+function openAddEvent() {
+  const kinds = ["exam", "deadline", "event", "closure", "holiday"];
+  openSheet({ title: "Thêm mốc thời gian", html: `
+    <div class="type-pick" id="tpick">${kinds.map((k, i) => `<button type="button" class="tag ${TYPE[k].cls}" data-t="${k}" aria-pressed="${i === 0}">${TYPE[k].label}</button>`).join("")}</div>
+    <label class="field"><span>Tiêu đề</span><input type="text" id="aeTitle" placeholder="vd: Partiel d'Électronique"></label>
+    <div class="two"><label class="field"><span>Ngày</span><input type="date" id="aeDate"></label><label class="field"><span>Giờ</span><input type="time" id="aeTime"></label></div>
+    <label class="field"><span>Môn (UE)</span><input type="text" id="aeCourse" placeholder="vd: L1EE001"></label>
+    <label class="field"><span>Cần nộp gì, ở đâu</span><input type="text" id="aeSubmit" placeholder="vd: Compte rendu de TP sur Moodle"></label>
+    <label class="field"><span>Nội dung thi</span><textarea id="aeExam" rows="2" placeholder="vd: Chapitres 1 à 3"></textarea></label>
+    <button class="btn primary block" id="aeGo">Thêm vào lịch</button>`,
+    onMount: (el) => {
+      let kind = "exam";
+      $$("#tpick button", el).forEach((b) => b.addEventListener("click", () => { kind = b.dataset.t; $$("#tpick button", el).forEach((x) => x.setAttribute("aria-pressed", String(x === b))); }));
+      $("#aeGo", el).addEventListener("click", () => {
+        const title = $("#aeTitle", el).value.trim();
+        if (!title) { $("#aeTitle", el).focus(); return toast("Nhập tiêu đề trước nhé"); }
+        const n = mergeEvents([{ type: kind, title, date: $("#aeDate", el).value, time: $("#aeTime", el).value, course: $("#aeCourse", el).value.trim(), to_submit: $("#aeSubmit", el).value.trim(), exam_content: $("#aeExam", el).value.trim() }], "manuel");
+        closeSheet(); render(); toast(n ? "Đã thêm vào lịch" : "Mốc này đã có trong lịch");
+      });
+    } });
+}
+async function openPlan() {
+  const sample = await getSample(); if (!sample) return toast(NEED_CLAUDE);
+  const el = openSheet({ title: "Kế hoạch ôn thi", html: `<div class="md" id="planOut">${thinking("Đang lập kế hoạch…")}</div>` });
+  const out = $("#planOut", el);
+  const courses = state.courses.map((c) => `- ${c.title}${c.examContent ? " — programme : " + c.examContent : ""} (${(state.decks[c.id] || []).length} flashcards)`).join("\n") || "(aucun)";
+  try {
+    const r = await sample(`Tu es un coach de révision pour un·e étudiant·e vietnamien·ne en L1 EEA à Sorbonne Université. Réponds en vietnamien (garde les noms des matières en français).
+Date du jour : ${todayISO()}.
+Échéances :\n${agendaText(state.agenda.filter((a) => !a.done && (!a.date || a.date >= todayISO())))}
+Cours importés :\n${courses}
+Fais un plan de révision réaliste jusqu'au dernier examen : sessions de 25-50 min, répétition espacée (J+1, J+3, J+7), priorités selon les dates et le programme. Markdown court, un tableau par semaine, ton motivant et un peu drôle.`,
+      { onText: ({ text }) => { if (out.isConnected) out.innerHTML = md(text); }, cache: false });
+    if (out.isConnected) setMd(out, r.text);
+  } catch (err) { if (out.isConnected) out.innerHTML = (err?.text ? md(err.text) : "") + `<p class="err">${esc(sampleErr(err))}</p>`; }
+}
+
+// ================= màn Học (danh sách) =================
+function renderStudy() {
+  const el = $("#sList");
+  if (!state.courses.length) {
+    el.innerHTML = `<div class="empty">${mascot("lg")}<h3>Chưa có tài liệu nào</h3><p>Thêm slide hoặc giáo trình (PDF, ảnh). Gia sư giảng từng ý bằng ví dụ vui, rồi để bạn tự giảng lại.</p><button class="btn primary" data-act="add-course">${icon("upload")} Thêm tài liệu</button></div>`;
+    return;
+  }
+  const sorted = [...state.courses].sort((a, b) => (b.lastStudied || b.createdAt || "").localeCompare(a.lastStudied || a.createdAt || ""));
+  el.innerHTML = sorted.map((c) => {
+    const n = (state.decks[c.id] || []).length;
+    const meta = [`${c.pageCount} trang`, n ? `${n} thẻ` : "", c.lastStudied ? "học " + timeAgo(c.lastStudied) : "chưa học"].filter(Boolean).join(" · ");
+    return `<button class="course-card" data-act="open-course" data-id="${esc(c.id)}">${resistor(c.id)}<span class="cc-body"><span class="cc-title">${esc(c.title)}</span><span class="cc-meta">${esc(meta)}</span>${c.examContent ? `<span class="cc-exam">Thi: ${esc(c.examContent)}</span>` : ""}</span>${icon("chevron", "faint")}</button>`;
+  }).join("") + `<button class="btn ghost block" data-act="add-course">${icon("plus")} Thêm tài liệu</button>`;
+}
+
+// ================= màn Hộp thư =================
+function mailHtml(m) {
+  return `<article class="mail"><div class="mail-top"><span class="imp imp-${esc(m.importance)}"></span><strong>${esc(m.subject || "(không tiêu đề)")}</strong><span class="faint small mono">${esc(shortDT(m.date))}</span></div>
+    <p class="faint small">${esc(m.from)}</p>
+    ${m.resume ? `<p>${esc(m.resume)}</p>` : ""}
+    ${m.action ? `<p class="todo">${icon("arrow")}<span>${esc(m.action)}</span></p>` : ""}
+    ${m.url ? `<a class="small" href="${esc(m.url)}" target="_blank" rel="noopener">Mở trong Gmail ${icon("external", "xs")}</a>` : ""}</article>`;
+}
+function renderInbox() {
+  $$("#iSeg button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.seg === state.seg)));
+  $("#iMail").hidden = state.seg !== "mail"; $("#iCheck").hidden = state.seg !== "check";
+  const days = lsGet("mailDays", "7");
+  $$("#mDays button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.d === days)));
+  $("#mList").innerHTML = state.mail.recent.length ? state.mail.recent.map(mailHtml).join("")
+    : `<div class="empty">${mascot()}<h3>Chưa có mail nào</h3><p>Bấm “Đọc mail mới”: app đọc mail trường đã chuyển sang Gmail, tóm tắt và tìm ngày thi, hạn nộp.</p></div>`;
+  paintMailMsg();
+}
+let ckFiles = [], ckUrls = [], lastCheck = { prompt: "", events: [] };
+function renderThumbs() {
+  ckUrls.forEach((u) => URL.revokeObjectURL(u));
+  ckUrls = ckFiles.map((f) => URL.createObjectURL(f));
+  $("#ckThumbs").innerHTML = ckUrls.map((u) => `<img alt="" src="${u}">`).join("");
+  $("#ckDropText").textContent = ckFiles.length ? `${ckFiles.length} ảnh đã chọn · chạm để đổi` : "Thêm ảnh chụp màn hình";
+}
+async function runCheck(btn) {
+  const sample = await getSample(); if (!sample) return toast(NEED_CLAUDE);
+  const text = $("#ckText").value.trim();
+  const max = (await getLimits())?.images?.maxCount || 0;
+  const files = ckFiles.slice(0, max);
+  if (!text && !files.length) return toast("Dán nội dung hoặc chọn ảnh trước nhé");
+  const out = $("#ckOut");
+  out.innerHTML = `<div class="card">${thinking("Claude đang đọc…")}</div>`;
+  btn.disabled = true;
+  try {
+    const r = await sample.json(`Tu aides un·e étudiant·e vietnamien·ne de L1 EEA à Sorbonne Université (campus Pierre et Marie Curie, Jussieu). Date du jour : ${todayISO()}.
+Analyse le contenu ci-dessous${files.length ? " et les captures d'écran jointes (mails, stories Instagram, posts, articles)" : ""}. Tu n'as PAS accès au web : n'invente rien, signale ce qui doit être vérifié.
+Réponds UNIQUEMENT avec un objet JSON :
+{"resume_vi": "résumé clair en vietnamien, 3-6 phrases",
+ "date_publication": "date de la publication si visible, sinon ''",
+ "fiabilite": "officiel|probable|rumeur|inconnu",
+ "points_a_verifier": ["affirmation à vérifier", ...],
+ "impact_vi": "ce que ça change pour l'étudiant (aller au campus ? rendre quelque chose ?), en vietnamien",
+ "events": [${EVENT_JSON}]}
+Convertis les dates relatives en dates absolues.
+
+Contenu :
+${text || "(voir images)"}`, { images: files.length ? files : undefined, cache: false });
+    const evs = cleanEvents(r?.events), checks = Array.isArray(r?.points_a_verifier) ? r.points_a_verifier.map(String) : [];
+    const rel = { officiel: ["c-holiday", "Nguồn chính thức"], probable: ["c-event", "Có vẻ đáng tin"], rumeur: ["c-exam", "Tin đồn"] }[r?.fiabilite] || ["", "Chưa rõ nguồn"];
+    lastCheck = { events: evs, prompt: `Vérifie avec la recherche web (date du jour ${todayISO()}) ces affirmations concernant Sorbonne Université / campus Jussieu, en priorisant les sources officielles, puis la presse, puis Instagram (@sorbonne_univ, @sorbonne_sciences_vieetudiante) et Facebook. Vérifie la date (vieille info recyclée ?). Verdict pour chacune : ✅ Đúng · ⚠️ Một phần · ❌ Sai · ❓ Chưa xác minh được, avec sources. Réponds en vietnamien.\n\n${checks.map((p) => "- " + p).join("\n")}\n\nContenu original :\n${text || r?.resume_vi || ""}` };
+    out.innerHTML = `<article class="card">
+      <div class="row"><span class="tag ${rel[0]}">${rel[1]}</span>${r?.date_publication ? `<span class="faint small">đăng ngày ${esc(r.date_publication)}</span>` : ""}</div>
+      <div class="md">${md(r?.resume_vi || "")}</div>
+      ${r?.impact_vi ? `<p class="todo">${icon("arrow")}<span>${esc(r.impact_vi)}</span></p>` : ""}
+      ${checks.length ? `<div class="stack"><span class="label">Cần kiểm chứng</span><ul class="st-points">${checks.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>
+        <div class="row"><button class="btn soft sm" data-act="copy-check">${icon("copy")} Chép lệnh kiểm chứng</button><a class="btn ghost sm" href="https://claude.ai/new" target="_blank" rel="noopener">${icon("external")} Mở Claude</a></div></div>` : ""}
+      ${evs.length ? `<button class="btn primary block" data-act="add-found">${icon("calendar")} Thêm ${evs.length} mốc vào lịch</button>` : ""}
+    </article>`;
+    typeset(out);
+    $("#ckText").value = ""; ckFiles = []; $("#ckFiles").value = ""; renderThumbs();
+  } catch (err) { out.innerHTML = `<div class="card"><span class="err">${esc(sampleErr(err))}</span></div>`; }
+  finally { btn.disabled = false; }
+}
+
+// ================= điều hướng =================
+const TABS = ["home", "study", "review", "agenda", "inbox"];
+const IMMERSIVE = ["course", "session"];
+const START = location.hash.slice(1);
+function show(v) {
+  if (v === "course" && !curCourse()) v = "study";
+  if (v === "session" && !sess.queue) v = "review";
+  if (![...TABS, ...IMMERSIVE].includes(v)) v = "home";
+  if (state.view === "course" && v !== "course" && chatAbort) chatAbort.abort();
+  state.view = v;
+  const imm = IMMERSIVE.includes(v);
+  TABS.forEach((x) => ($("#v-" + x).hidden = x !== v));
+  IMMERSIVE.forEach((x) => ($("#v-" + x).hidden = x !== v));
+  $("#main").hidden = imm; $(".tabbar").hidden = imm;
+  document.body.classList.toggle("immersive", imm);
+  $$(".tab").forEach((b) => (b.dataset.v === v ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
+  if (location.hash.slice(1) !== v) history.replaceState(null, "", "#" + v);
+  if (v !== "session") render(v);
+  if (v === "course") requestAnimationFrame(() => scrollToEnd(false)); else window.scrollTo(0, 0);
+}
+function render(v = state.view) {
+  renderBadges();
+  if (v === "home") renderHome();
+  else if (v === "study") renderStudy();
+  else if (v === "review") renderReview();
+  else if (v === "agenda") renderAgenda();
+  else if (v === "inbox") renderInbox();
+  else if (v === "course" && !chatAbort) renderCourse();
+}
+window.addEventListener("hashchange", () => { const v = location.hash.slice(1); if (v && v !== state.view) show(v); });
+
+// ================= hành động (một bộ lắng nghe cho cả trang) =================
+const ACTIONS = {
+  "copy-brief": () => copyText(briefingPrompt(), "lệnh briefing"),
+  "paste-brief": openPasteBrief,
+  "read-mail": () => runMail(+lsGet("mailDays", "7") || 7),
+  "review-all": () => startSession(deckList().map((d) => d.id)),
+  "deck-start": (el) => startSession([el.dataset.deck]),
+  "add-course": openAddCourse,
+  "open-course": (el) => { state.cur = el.dataset.id; lsSet("cur", state.cur); show("course"); },
+  "add-event": openAddEvent,
+  "plan": openPlan,
+  "ev-menu": (el) => openEvMenu(el.dataset.id),
+  "ev-done": (el) => { const a = state.agenda.find((x) => x.id === el.dataset.id); if (a) { a.done = !a.done; saveAgenda(); } closeSheet(); render(); },
+  "ev-del": (el) => {
+    const a = state.agenda.find((x) => x.id === el.dataset.id); if (!a) return;
+    openConfirm({ title: "Xoá mốc này?", text: `“${a.title}” sẽ bị xoá khỏi lịch.`, yes: "Xoá", danger: true,
+      onYes: () => { state.agenda = state.agenda.filter((x) => x.id !== a.id); saveAgenda(); render(); toast("Đã xoá khỏi lịch"); } });
+  },
+  "jump-day": (el) => jumpDay(el.dataset.date),
+  "starter": (el) => send(STARTERS[+el.dataset.i].q, { canned: true }),
+  "suggest": (el) => send(SUGGEST[+el.dataset.i][1], { canned: true }),
+  "c-menu": openCourseMenu,
+  "c-cards": openCardsSheet,
+  "c-range": openRangeSheet,
+  "c-exam": openExamSheet,
+  "c-reset": () => openConfirm({ title: "Bắt đầu buổi học mới?", text: "Cuộc trò chuyện hiện tại sẽ bị xoá. Flashcards vẫn giữ nguyên.", yes: "Buổi mới",
+    onYes: () => { const c = curCourse(); if (!c) return; state.chats[c.id] = { turns: [] }; saveChat(c.id); renderCourse(); } }),
+  "c-delete": () => {
+    const c = curCourse(); if (!c) return;
+    const n = (state.decks[c.id] || []).length;
+    openConfirm({ title: "Xoá tài liệu này?", text: `“${c.title}”, cuộc trò chuyện${n ? ` và ${n} flashcards` : ""} của nó sẽ bị xoá vĩnh viễn.`, yes: "Xoá", danger: true,
+      onYes: () => { deleteCourse(c); show("study"); toast("Đã xoá tài liệu"); } });
+  },
+  "copy-check": () => copyText(lastCheck.prompt, "lệnh kiểm chứng"),
+  "add-found": () => lastCheck.events.length && openEventsSheet(lastCheck.events, "kiểm tra"),
+};
+document.addEventListener("click", (e) => {
+  const go = e.target.closest("[data-go]");
+  if (go && !e.target.closest("[data-act]")) { closeSheet(); show(go.dataset.go); return; }
+  const a = e.target.closest("[data-act]");
+  if (a && !a.disabled && ACTIONS[a.dataset.act]) ACTIONS[a.dataset.act](a, e);
+});
+$$(".tab").forEach((b) => b.addEventListener("click", () => show(b.dataset.v)));
+
+// học
+$("#suggest").innerHTML = SUGGEST.map(([l], i) => `<button class="chip" data-act="suggest" data-i="${i}">${esc(l)}</button>`).join("");
+$("#chatIn").addEventListener("input", () => { autoGrow(); updateComposer(); });
+$("#chatIn").addEventListener("keydown", (e) => { if (finePointer && e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); send($("#chatIn").value); } });
+$("#sendBtn").addEventListener("click", () => send($("#chatIn").value));
+$("#stopBtn").addEventListener("click", () => chatAbort?.abort());
+$("#feynBtn").addEventListener("click", () => { setFeyn(!feynOn); $("#chatIn").focus(); });
+$("#feynOff").addEventListener("click", () => setFeyn(false));
+$$("#cLang button").forEach((b) => b.addEventListener("click", () => {
+  const c = curCourse(); if (!c) return;
+  lsSet("lang:" + c.id, b.dataset.lang); lsSet("lang", b.dataset.lang);
+  $$("#cLang button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  toast(b.dataset.lang === "vi" ? "Gia sư sẽ giảng bằng tiếng Việt" : "Gia sư giảng bằng tiếng Pháp");
+}));
+// ôn
+$("#flash").addEventListener("click", flipCard);
+$("#flash").addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flipCard(); } });
+$("#sFlip").addEventListener("click", flipCard);
+$$("#sGrades .grade").forEach((b) => b.addEventListener("click", () => gradeCur(+b.dataset.g)));
+document.addEventListener("keydown", (e) => {
+  if (state.view !== "session" || !sheetRoot.hidden || e.target.closest("input, textarea")) return;
+  const map = { 1: 0, 2: 3, 3: 4, 4: 5 };
+  if (sess.flipped && map[e.key] !== undefined) gradeCur(map[e.key]);
+});
+$("#sExit").addEventListener("click", () => { sess.queue = null; sess.cur = null; show("review"); });
+// hộp thư
+$$("#iSeg button").forEach((b) => b.addEventListener("click", () => { state.seg = b.dataset.seg; renderInbox(); }));
+$$("#mDays button").forEach((b) => b.addEventListener("click", () => { lsSet("mailDays", b.dataset.d); renderInbox(); }));
+$("#ckFiles").addEventListener("change", (e) => { ckFiles = [...e.target.files]; renderThumbs(); });
+$("#ckGo").addEventListener("click", (e) => runCheck(e.currentTarget));
+getLimits().then((l) => { if (!l?.images) { $("#ckDrop").hidden = true; } else $("#ckFiles").accept = l.images.mediaTypes.join(","); });
+
+show(START || "home");
 loadData();
 })();
 </script>
