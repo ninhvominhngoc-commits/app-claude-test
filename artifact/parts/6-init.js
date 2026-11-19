@@ -1,23 +1,26 @@
 
 // ================= điều hướng =================
 const TABS = ["home", "study", "review", "agenda", "inbox"];
-const IMMERSIVE = ["course", "session"];
+const MAIN = [...TABS, "lab"];
+const IMMERSIVE = ["course", "session", "focus"];
 const START = location.hash.slice(1);
 function show(v) {
   if (v === "course" && !curCourse()) { const id = lsGet("cur"); if (state.courses.some((c) => c.id === id)) state.cur = id; else v = "study"; }
   if (v === "session" && !sess.queue) v = "review";
-  if (![...TABS, ...IMMERSIVE].includes(v)) v = "home";
+  if (![...MAIN, ...IMMERSIVE].includes(v)) v = "home";
   if (state.view === "course" && v !== "course" && chatAbort) chatAbort.abort();
   state.view = v;
   const imm = IMMERSIVE.includes(v);
-  TABS.forEach((x) => ($("#v-" + x).hidden = x !== v));
+  MAIN.forEach((x) => ($("#v-" + x).hidden = x !== v));
   IMMERSIVE.forEach((x) => ($("#v-" + x).hidden = x !== v));
   $("#main").hidden = imm; $(".tabbar").hidden = imm;
   document.body.classList.toggle("immersive", imm);
-  $$(".tab").forEach((b) => (b.dataset.v === v ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
+  const tabV = v === "lab" ? "home" : v;
+  $$(".tab").forEach((b) => (b.dataset.v === tabV ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
   if (location.hash.slice(1) !== v) history.replaceState(null, "", "#" + v);
   if (v !== "session") render(v);
   if (v === "course") requestAnimationFrame(() => scrollToEnd(false)); else window.scrollTo(0, 0);
+  kickAtoms();
 }
 function render(v = state.view) {
   renderBadges();
@@ -26,6 +29,8 @@ function render(v = state.view) {
   else if (v === "review") renderReview();
   else if (v === "agenda") renderAgenda();
   else if (v === "inbox") renderInbox();
+  else if (v === "lab") renderLab();
+  else if (v === "focus") renderFocus();
   else if (v === "course" && !chatAbort) renderCourse();
 }
 window.addEventListener("hashchange", () => { const v = location.hash.slice(1); if (v && v !== state.view) show(v); });
@@ -64,6 +69,10 @@ const ACTIONS = {
       onYes: () => { chatAbort?.abort(); deleteCourse(c); show("study"); toast("Đã xoá tài liệu"); } });
   },
   "copy-check": () => copyText(lastCheck.prompt, "lệnh kiểm chứng"),
+  "focus-open": openFocus,
+  "focus-subj": (el) => { focusPick.subject = el.dataset.id; lsSet("focusSubj", el.dataset.id); openFocus(); },
+  "el-info": (el) => openElement(+el.dataset.z),
+  "go-study": () => show("study"),
   "add-found": () => lastCheck.events.length && openEventsSheet(lastCheck.events, "kiểm tra"),
 };
 document.addEventListener("click", (e) => {
@@ -100,6 +109,15 @@ document.addEventListener("keydown", (e) => {
   else if (sess.flipped && map[e.key] !== undefined) gradeCur(map[e.key]);
 });
 $("#sExit").addEventListener("click", () => { sess.queue = null; sess.cur = null; show("review"); });
+// tập trung
+$("#fSubj").addEventListener("click", (e) => { const b = e.target.closest("[data-subj]"); if (!b) return; focusPick.subject = b.dataset.subj; renderFocus(); });
+$("#fDur").addEventListener("click", (e) => { const b = e.target.closest("[data-dur]"); if (!b) return; focusPick.dur = +b.dataset.dur; renderFocus(); });
+$("#fStart").addEventListener("click", startFocus);
+$("#fStop").addEventListener("click", () => {
+  const f = state.focus; if (!f?.endAt) return;
+  const m = Math.min(f.dur, Math.floor((Date.now() - f.start) / 60000));
+  openConfirm({ title: "Dừng sớm?", text: m >= 5 ? `Bạn đã tập trung ${m} phút và vẫn nhận ${Math.floor(m / 5)} electron.` : `Mới ${m} phút, chưa đủ 5 phút cho 1 electron. Cố thêm chút nữa nhé?`, yes: "Dừng", danger: m < 5, onYes: () => finishFocus(false) });
+});
 // hộp thư
 $$("#iSeg button").forEach((b) => b.addEventListener("click", () => { state.seg = b.dataset.seg; renderInbox(); }));
 $$("#mDays button").forEach((b) => b.addEventListener("click", () => { lsSet("mailDays", b.dataset.d); renderInbox(); }));

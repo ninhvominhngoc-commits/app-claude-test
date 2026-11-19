@@ -115,7 +115,7 @@ async function copyText(text, label) {
 }
 
 // ================= dữ liệu (riêng tư theo người dùng) =================
-const state = { agenda: [], courses: [], decks: {}, chats: {}, mail: { seen: [], recent: [], lastRun: "" }, status: null, stats: { days: {} }, cur: null, view: "home", seg: "mail", mailMsg: null };
+const state = { agenda: [], courses: [], decks: {}, chats: {}, mail: { seen: [], recent: [], lastRun: "" }, status: null, stats: { days: {} }, atoms: {}, focus: {}, facts: {}, cur: null, view: "home", seg: "mail", mailMsg: null };
 let base = null;
 const writeQueue = new Map();
 function queue(docId, op) {
@@ -136,10 +136,10 @@ const saveMail = () => save("mail", state.mail);
 const saveStatus = () => save("status", state.status || {});
 const saveStats = () => save("stats", state.stats);
 // ghi lại hoạt động trong ngày: r = thẻ đã ôn, m = tin nhắn với gia sư
-function bump(kind) {
+function bump(kind, n = 1) {
   const t = todayISO(), days = state.stats.days;
-  (days[t] ||= { r: 0, m: 0 })[kind] = (days[t][kind] || 0) + 1;
-  const keep = addDays(t, -70);
+  (days[t] ||= { r: 0, m: 0 })[kind] = (days[t][kind] || 0) + n;
+  const keep = addDays(t, -120);
   for (const d of Object.keys(days)) if (d < keep) delete days[d];
   saveStats();
 }
@@ -173,6 +173,9 @@ async function loadData() {
       else if (d.id === "mail") state.mail = { seen: v.seen || [], recent: v.recent || [], lastRun: v.lastRun || "" };
       else if (d.id === "status") state.status = v.date ? v : null;
       else if (d.id === "stats") state.stats = { days: v.days || {} };
+      else if (d.id === "atoms") state.atoms = v.list || {};
+      else if (d.id === "focus") state.focus = v.endAt ? v : {};
+      else if (d.id === "facts") state.facts = v.list || {};
     }
     showNotice("");
   } catch (e) {
@@ -182,6 +185,7 @@ async function loadData() {
     clearTimeout(timer);
     const cur = lsGet("cur");
     if (cur && state.courses.some((c) => c.id === cur)) state.cur = cur;
+    if (state.focus?.endAt && state.focus.endAt <= Date.now()) finishFocus(true);
     if (START === "course" && state.cur && state.view !== "course") show("course"); else render();
   }
 }

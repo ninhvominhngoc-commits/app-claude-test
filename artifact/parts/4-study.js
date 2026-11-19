@@ -289,6 +289,7 @@ async function send(text, { canned = false } = {}) {
     saveChat(c.id);
     c.lastStudied = new Date().toISOString(); saveCourses();
     bump("m");
+    if (feyn) { bump("fe"); checkGold(); }
   }
   if (fix && uEl.isConnected) uEl.insertAdjacentHTML("beforeend", fixHtml(fix, true));
   updateComposer();

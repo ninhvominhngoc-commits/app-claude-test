@@ -1,0 +1,93 @@
+
+/* ===== trò chơi: mỗi môn là một nguyên tử — thế giới không gian, luôn tối (màu khai báo cố định) ===== */
+.space {
+  --sp-ink: #f1eeff; --sp-ink-2: #cfc8f2; --sp-ink-3: #9d96c8; --sp-line: rgba(255, 255, 255, .1); --sp-fill: rgba(255, 255, 255, .07);
+  --sp-green: #7fd9ab; --sp-gold: #f1c75e; --sp-rose: #ff9bb7; --sp-violet: #b8adff;
+  background-color: #12112a;
+  background-image: radial-gradient(130% 100% at 88% -10%, #2f2660 0%, rgba(22, 20, 45, 0) 60%), linear-gradient(180deg, #17153a 0%, #0e0d1f 100%);
+  color: var(--sp-ink);
+}
+.widgets { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.widget { position: relative; overflow: hidden; isolation: isolate; border-radius: 26px; padding: 14px 15px; min-height: 164px; display: flex; flex-direction: column; justify-content: space-between; gap: 8px; border: 1px solid rgba(255, 255, 255, .07); box-shadow: 0 14px 30px -16px rgba(20, 10, 60, .55); text-align: left; font: inherit; color: var(--sp-ink); cursor: pointer; transition: transform .12s ease; min-width: 0; }
+button.widget:active, .widget[data-act]:active { transform: scale(.975); }
+.widget.wide { grid-column: 1 / -1; min-height: 0; cursor: default; }
+.widget > *:not(canvas) { position: relative; z-index: 1; }
+.atom-cv { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+.w-title { font: 650 18px/1.15 var(--display); letter-spacing: -.01em; }
+.w-sub { font: 800 11.5px/1.3 var(--font); color: var(--sp-ink-3); }
+.w-big { font: 650 30px/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.w-foot { font: 700 12.5px var(--font); color: var(--sp-ink-2); }
+.w-foot b { font: 650 20px var(--display); color: var(--sp-ink); margin-right: 3px; }
+.w-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; }
+.play { width: 46px; height: 46px; border-radius: 50%; background: var(--sp-green); color: #0e0d1f; display: grid; place-items: center; flex: none; box-shadow: 0 0 0 6px rgba(127, 217, 171, .16), 0 8px 20px -6px rgba(127, 217, 171, .6); }
+.play.on { background: var(--sp-gold); box-shadow: 0 0 0 6px rgba(241, 199, 94, .16), 0 8px 20px -6px rgba(241, 199, 94, .6); }
+.play .i { width: 20px; height: 20px; }
+.sym-chip { display: inline-grid; place-items: center; min-width: 30px; height: 30px; padding: 0 6px; border-radius: 9px; background: rgba(255, 255, 255, .12); font: 650 15px var(--display); }
+/* lịch nhiệt */
+.heat-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.heat { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.heat span { font: 800 9.5px var(--font); color: var(--sp-ink-3); text-align: center; }
+.heat i { aspect-ratio: 1; border-radius: 6px; background: var(--sp-fill); }
+.heat i.pad { background: none; }
+.heat i.l1 { background: rgba(255, 155, 183, .32); } .heat i.l2 { background: rgba(255, 155, 183, .62); } .heat i.l3 { background: #ff9bb7; }
+.heat i.gold { box-shadow: inset 0 0 0 2px var(--sp-gold); }
+.heat i.today { outline: 2px solid #fff; outline-offset: 1px; }
+.flame { display: inline-flex; align-items: center; gap: 4px; font: 800 13px var(--font); color: var(--sp-gold); }
+.flame .i { width: 16px; height: 16px; }
+/* nhiệm vụ & cấp độ */
+.quests { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.quests li { display: flex; align-items: center; gap: 10px; font: 700 13.5px/1.3 var(--font); min-width: 0; }
+.quests li > span:nth-child(2) { flex: 1; min-width: 0; }
+.quests small { display: block; font: 700 11px var(--font); color: var(--sp-ink-3); }
+.qdot { width: 22px; height: 22px; border-radius: 50%; flex: none; display: grid; place-items: center; background: conic-gradient(var(--sp-green) calc(var(--p) * 1turn), rgba(255, 255, 255, .12) 0); }
+.qdot::after { content: ""; width: 14px; height: 14px; border-radius: 50%; background: #17153a; }
+.qdot.done { background: var(--sp-green); color: #0e0d1f; }
+.qdot.done::after { display: none; }
+.qdot .i { width: 14px; height: 14px; }
+.quests .btn { padding: 6px 10px; font-size: 12px; border-radius: 10px; }
+.btn.space-btn { background: rgba(255, 255, 255, .12); color: var(--sp-ink); border-color: transparent; }
+.lvl { display: grid; gap: 6px; }
+.lvl-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font: 800 12.5px var(--font); color: var(--sp-ink-2); }
+.lvl-top b { font: 650 16px var(--display); color: var(--sp-ink); }
+.xp { height: 8px; border-radius: 999px; background: rgba(255, 255, 255, .1); overflow: hidden; }
+.xp i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--sp-violet), var(--sp-rose), var(--sp-gold)); }
+/* phòng thí nghiệm */
+.atoms { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.atom-card { min-height: 200px; }
+.atom-card .w-row { align-items: center; }
+.ptable { overflow-x: auto; border-radius: 22px; padding: 12px; -webkit-overflow-scrolling: touch; }
+.pt { display: grid; grid-template-columns: repeat(18, 34px); grid-template-rows: repeat(7, 38px) 8px repeat(2, 38px); gap: 3px; width: max-content; }
+.el { border: 0; border-radius: 8px; display: grid; place-items: center; align-content: center; gap: 0; background: var(--sp-fill); color: var(--sp-ink-3); font: 800 11.5px/1 var(--font); cursor: pointer; padding: 0; }
+.el small { font: 700 7.5px/1 var(--font); opacity: .8; }
+.el.on { background: var(--cat); color: #0e0d1f; }
+.el.last { box-shadow: 0 0 0 2px #fff, 0 0 14px var(--cat); }
+.pt-gap { grid-column: 1 / -1; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 10px; font: 700 11px var(--font); color: var(--sp-ink-2); margin-top: 10px; }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.legend i { width: 10px; height: 10px; border-radius: 3px; background: var(--cat); }
+/* thẻ nguyên tố */
+.elem-tile { width: 150px; height: 160px; margin: 4px auto; border-radius: 26px; background: var(--cat); color: #0e0d1f; display: grid; grid-template-rows: auto 1fr auto; padding: 12px 14px; box-shadow: 0 18px 40px -14px var(--cat); animation: pop .6s cubic-bezier(.2, 1.4, .4, 1); }
+.elem-tile .z { font: 800 14px var(--font); }
+.elem-tile .s { font: 650 64px/1 var(--display); align-self: center; text-align: center; }
+.elem-tile .n { font: 800 14px var(--font); text-align: center; }
+@keyframes pop { from { transform: scale(.4) rotate(-8deg); opacity: 0; } to { transform: none; opacity: 1; } }
+.reward { text-align: center; display: grid; gap: 8px; justify-items: center; }
+.reward .gain { font: 650 30px var(--display); color: var(--accent); }
+/* màn tập trung */
+.focus-view { position: relative; }
+.focus-view .fbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 10px; }
+.focus-view .icon-btn { color: var(--sp-ink-2); }
+.focus-view .icon-btn:hover { background: rgba(255, 255, 255, .08); }
+.focus-in { flex: 1; display: grid; align-content: center; gap: 18px; padding-block: 10px calc(24px + env(safe-area-inset-bottom, 0px)); text-align: center; }
+.stage { position: relative; height: min(52vh, 380px); border-radius: 30px; overflow: hidden; }
+.stage .stage-label { position: absolute; left: 0; right: 0; bottom: 14px; z-index: 1; display: grid; gap: 2px; justify-items: center; }
+.f-time { font: 650 64px/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: -.03em; }
+.f-pick { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; justify-content: flex-start; }
+.f-pick::-webkit-scrollbar { display: none; }
+.f-pick button { flex: none; border: 1px solid var(--sp-line); background: var(--sp-fill); color: var(--sp-ink-2); border-radius: 999px; padding: 8px 13px; font: 800 13px var(--font); cursor: pointer; }
+.f-pick button[aria-pressed="true"] { background: var(--sp-ink); color: #12112a; border-color: var(--sp-ink); }
+.f-hint { font: 700 13px/1.45 var(--font); color: var(--sp-ink-3); }
+.btn.go { background: var(--sp-green); color: #0e0d1f; border-color: transparent; box-shadow: 0 10px 26px -10px rgba(127, 217, 171, .8); }
+.btn.quiet { background: rgba(255, 255, 255, .08); color: var(--sp-ink-2); border-color: transparent; }
+@media (max-width: 380px) { .widgets, .atoms { grid-template-columns: 1fr; } }
+</style>

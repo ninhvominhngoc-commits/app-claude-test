@@ -87,7 +87,7 @@ function flipCard() {
 function gradeCur(g) {
   if (!sess.cur || !sess.flipped) return;
   const { deck, card } = sess.cur;
-  grade(card, g); saveDeck(deck); bump("r");
+  grade(card, g); saveDeck(deck); bump("r"); rewardReview(deck); checkGold();
   if (g < 3) sess.queue.push(sess.cur); else sess.done++;
   nextCard();
 }
@@ -137,20 +137,7 @@ function renderHome() {
       <a class="btn glass sm" href="https://claude.ai/new" target="_blank" rel="noopener">${icon("external")} Mở Claude</a>
       <button class="btn primary sm" data-act="paste-brief">${icon("paste")} ${fresh ? "Dán bản mới" : "Dán kết quả"}</button>
     </div>`;
-  // ôn tập: vòng tiến độ hôm nay
-  const due = totalDue(), done = state.stats.days[todayISO()]?.r || 0, pct = due + done ? done / (due + done) : 1, C = 2 * Math.PI * 30;
-  $("#hReview").innerHTML = `
-    <span class="label">Ôn tập</span>
-    <div class="row" style="gap:12px; flex-wrap:nowrap"><div class="ring"><svg viewBox="0 0 74 74"><circle class="tr" cx="37" cy="37" r="30"/><circle class="pg" cx="37" cy="37" r="30" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C * (1 - pct)).toFixed(1)}"/></svg><b>${due}</b></div>
-    <span class="small muted" style="font-weight:700">${due ? "thẻ chờ ôn" : done ? "Xong hết, giỏi quá!" : "Chưa có thẻ"}</span></div>
-    ${due ? `<button class="btn primary sm block" data-act="review-all">Ôn ngay</button>` : `<button class="btn glass sm block" data-go="review">Xem bộ thẻ</button>`}`;
-  // chuỗi ngày học
-  const n = streak(), t = todayISO();
-  const week = Array.from({ length: 7 }, (_, k) => addDays(t, k - 6));
-  $("#hStreak").innerHTML = `
-    <span class="label">Chuỗi ngày học</span>
-    <p class="tile-num">${n}<small>ngày</small></p>
-    <div class="week">${week.map((d) => `<span><i class="${activeOn(d) ? "on" : ""} ${d === t ? "today" : ""}"></i>${wdOf(d)}</span>`).join("")}</div>`;
+  renderWidgets();
   // mail
   const m = state.mail, imp = m.recent.filter((x) => x.importance === "haute");
   const shown = (imp.length ? imp : m.recent).slice(0, 2);

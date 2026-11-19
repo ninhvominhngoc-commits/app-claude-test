@@ -2,7 +2,7 @@
 const { chromium, devices } = require("playwright");
 const fs = require("fs"), path = require("path");
 const LIB = path.resolve(__dirname, "node_modules");
-const SHOTS = path.resolve(__dirname, "shots"); fs.mkdirSync(SHOTS, { recursive: true }); // ảnh chụp kiểm tra (không commit)
+const SHOTS = path.resolve(__dirname, "shots"); fs.mkdirSync(SHOTS, { recursive: true });
 const HTML = fs.readFileSync(path.join(__dirname, "..", "sorbonne-copilot.html"), "utf8");
 const DOC = `<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style></head><body>${HTML}</body></html>`;
 const LIBMAP = {
@@ -54,8 +54,10 @@ async function axe(p, label) {
     const p = await open();
     check("Mới: lời chào hiển thị", /Chào buổi|Khuya rồi/.test(await txt(p, "#hGreet")));
     check("Mới: ô campus ở trạng thái chưa rõ", (await p.getAttribute("#hStatus", "class")).includes("v-unknown"));
-    check("Mới: ô ôn tập báo chưa có thẻ", /Chưa có thẻ/.test(await txt(p, "#hReview")));
-    check("Mới: chuỗi ngày = 0", /^0/.test((await txt(p, "#hStreak .tile-num")).trim()));
+    check("Mới: có 4 widget (tập trung, nguyên tử, lịch nhiệt, nhiệm vụ)", (await p.$$("#hWidgets .widget")).length === 4);
+    check("Mới: 3 nhiệm vụ hôm nay, 0/3", (await p.$$("#hWidgets .quests li")).length === 3 && /0\/3/.test(await txt(p, "#hWidgets")));
+    check("Mới: chuỗi ngày = 0", /0 ngày liên tiếp/.test(await txt(p, "#hWidgets .flame")));
+    check("Mới: nguyên tử chưa có electron", /Chưa có electron/.test(await txt(p, "#wAtom")));
     check("Mới: mail 'Chưa đọc lần nào'", /Chưa đọc lần nào/.test(await txt(p, "#hMail")));
     for (const v of ["study", "review", "agenda", "inbox"]) { await tab(p, v); check(`Mới: tab ${v} có màn trống thân thiện`, await vis(p, `#v-${v} .empty`)); }
     await tab(p, "home");
@@ -73,7 +75,7 @@ async function axe(p, label) {
     const dates = await p.$$eval("#hUpcoming .ev", (els) => els.map((e) => e.dataset.date));
     check("Hôm nay: 'Sắp tới' xếp đúng thứ tự ngày", dates.length === 2 && dates[0] < dates[1], dates.join(","));
     check("Hôm nay: không hiện mốc đã qua", !(await txt(p, "#hUpcoming")).includes("Toussaint"));
-    check("Hôm nay: ô ôn tập có 1 thẻ", (await txt(p, "#hReview .ring b")).trim() === "1");
+    check("Hôm nay: nhiệm vụ ôn thẻ có nút 'Ôn'", await vis(p, '#hWidgets [data-act="review-all"]'));
     check("Tab Ôn tập có huy hiệu 1", (await txt(p, "#tabDue")).trim() === "1");
     await tab(p, "agenda");
     check("Lịch: dải 14 ngày", (await p.$$("#aStrip .day")).length === 14);
@@ -203,9 +205,9 @@ async function axe(p, label) {
     await p.click('#sDone [data-go="review"]');
     check("Ôn tập: bộ thẻ môn đã ôn xong", /đã ôn xong/.test(await txt(p, "#rList")));
     await tab(p, "home");
-    check("Hôm nay: chuỗi ngày = 1", /^1/.test((await txt(p, "#hStreak .tile-num")).trim()));
+    check("Hôm nay: chuỗi ngày = 1", /1 ngày liên tiếp/.test(await txt(p, "#hWidgets .flame")));
     // thoát giữa phiên
-    await p.click('#hReview [data-act="review-all"]'); await p.click("#sExit");
+    await p.click('#hWidgets [data-act="review-all"]'); await p.click("#sExit");
     check("Phiên ôn: thoát giữa chừng về Ôn tập", await vis(p, "#v-review"));
     // xoá tài liệu
     await tab(p, "study"); await p.click(".course-card"); await p.click('[data-act="c-menu"]'); await p.click('[data-act="c-delete"]'); await p.click("#cfYes"); await p.waitForTimeout(300);
@@ -327,17 +329,106 @@ async function axe(p, label) {
     await r.close();
   }
 
+
+  // ---------- 11. Trò chơi: tập trung, nguyên tử, bảng tuần hoàn ----------
+  {
+    const today = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Paris" }).format(new Date());
+    const setStore = (p, kv) => p.evaluate((kv) => { for (const [k, v] of Object.entries(kv)) window.__store.set(k, v); sessionStorage.setItem("__store", JSON.stringify([...window.__store])); }, kv);
+    const p = await open({ seed: true });
+    const painted = await p.$eval("#wFocus canvas", (c) => { const d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data; let n = 0; for (let i = 3; i < d.length; i += 4) if (d[i] > 0) n++; return c.width > 0 && n > 50; });
+    check("Widget: nguyên tử được vẽ trên canvas", painted);
+    await p.click("#wFocus");
+    check("Tập trung: mở màn toàn màn hình", await vis(p, "#v-focus") && !(await vis(p, ".tabbar")));
+    check("Tập trung: chọn được 3 môn (1 tài liệu + Tiếng Pháp + Tự học)", (await p.$$("#fSubj button")).length === 3);
+    await p.click('#fSubj button[data-subj="free"]'); await p.click('#fDur button[data-dur="15"]');
+    check("Tập trung: gợi ý phần thưởng +3 e⁻ → Lithium", /\+3 e⁻ → Lithium \(Li\)/.test(await txt(p, "#fHint")), await txt(p, "#fHint"));
+    await p.click("#fStart"); await p.waitForTimeout(1200);
+    check("Tập trung: đồng hồ đếm ngược chạy", /^1[45]:\d\d$/.test((await txt(p, "#fTime")).trim()), await txt(p, "#fTime"));
+    let st = await store(p);
+    check("Tập trung: phiên đang chạy được lưu", st["data/users/u1/focus"]?.subject === "free" && st["data/users/u1/focus"].dur === 15);
+    await p.click('#v-focus [data-go="home"]'); await p.waitForTimeout(1100);
+    check("Widget: hiện 'Đang tập trung' và thời gian còn lại", /Đang tập trung/.test(await txt(p, "#wFocus")) && /1[45]:\d\d/.test(await txt(p, "#wFocus [data-left]")));
+    await p.reload({ waitUntil: "load" }); await p.waitForTimeout(800);
+    check("Tải lại: phiên tập trung vẫn tiếp tục", /Đang tập trung/.test(await txt(p, "#wFocus")));
+    await p.click("#wFocus"); await p.click("#fStop");
+    check("Dừng sớm (< 5 phút): hỏi lại trước khi dừng", /chưa đủ 5 phút/.test(await txt(p, "#sheetRoot")));
+    await p.click("#cfYes"); await p.waitForTimeout(200);
+    st = await store(p);
+    check("Dừng sớm: xoá phiên, không cộng electron", !st["data/users/u1/focus"]?.endAt && !(st["data/users/u1/atoms"]?.list?.free?.e));
+    // phiên đã hết giờ trong lúc đóng app -> tự hoàn thành khi mở lại
+    const now = Date.now();
+    await setStore(p, { "data/users/u1/focus": { subject: "free", start: now - 26 * 60000, endAt: now - 60000, dur: 25 } });
+    await p.reload({ waitUntil: "load" }); await p.waitForTimeout(900);
+    check("Hoàn thành: mở lại app thì nhận thưởng", /Hoàn thành phiên tập trung/.test(await txt(p, "#sheetRoot")) && /\+5 e⁻/.test(await txt(p, "#sheetRoot")));
+    check("Hoàn thành: thẻ nguyên tố mới là Bore (B)", (await txt(p, "#sheetRoot .elem-tile .s")).trim() === "B");
+    st = await store(p);
+    check("Hoàn thành: lưu 5 e⁻ và 25 phút", st["data/users/u1/atoms"].list.free.e === 5 && st["data/users/u1/atoms"].list.free.min === 25);
+    check("Thống kê: 25 phút tập trung hôm nay", st["data/users/u1/stats"].days[today()].f === 25);
+    await p.keyboard.press("Escape");
+    if (await vis(p, "#v-focus")) await p.click('#v-focus [data-go="home"]');
+    check("Nhiệm vụ 1 (tập trung 25 phút) hoàn thành", /1\/3/.test(await txt(p, "#hWidgets")));
+    // phòng thí nghiệm
+    await p.click("#wAtom");
+    check("Lab: mở từ widget nguyên tử", await vis(p, "#v-lab"));
+    check("Lab: bảng tuần hoàn đủ 118 ô", (await p.$$("#pt .el")).length === 118);
+    check("Lab: đã tổng hợp 5/118", /5\/118/.test(await txt(p, "#ptCount")));
+    check("Lab: 5 ô đầu sáng lên, Bo là ô mới nhất", (await p.$$("#pt .el.on")).length === 5 && (await p.$eval("#pt .el.last", (e) => e.dataset.z)) === "5");
+    check("Lab: Oganesson ở hàng 7 cột 18", await p.$eval('#pt .el[data-z="118"]', (e) => e.style.gridRow === "7" && e.style.gridColumn.startsWith("18")));
+    check("Lab: Lantan ở hàng riêng (9)", await p.$eval('#pt .el[data-z="57"]', (e) => e.style.gridRow === "9"));
+    check("Lab: mỗi môn một thẻ nguyên tử", (await p.$$("#labAtoms .atom-card canvas")).length === 3);
+    await p.click('#pt .el[data-z="6"]');
+    check("Lab: ô khoá cho biết cần thêm bao nhiêu", /Carbone/.test(await txt(p, "#sheetRoot")) && /cần thêm 1 electron/.test(await txt(p, "#sheetRoot")));
+    await p.click("#elAsk"); await p.waitForTimeout(900);
+    st = await store(p);
+    check("Lab: chuyện thú vị được lưu lại", !!st["data/users/u1/facts"]?.list?.["6"] && (await vis(p, "#elFact strong")));
+    await p.keyboard.press("Escape");
+    await p.click('#labAtoms [data-act="focus-subj"][data-id="francais"]');
+    check("Lab: nút tập trung chọn đúng môn", await p.$eval('#fSubj button[data-subj="francais"]', (b) => b.getAttribute("aria-pressed") === "true"));
+    await p.close();
+    // ôn 10 thẻ -> +1 electron; ngày hoàn hảo
+    const q = await open({ seed: true });
+    const cards = Array.from({ length: 10 }, (_, i) => ({ id: "x" + i, front: "Q" + i, back: "A" + i, mnemonic: "", ef: 2.5, interval: 0, reps: 0, lapses: 0, due: today() }));
+    await setStore(q, { "data/users/u1/deck-francais": { cards }, "data/users/u1/stats": { days: { [today()]: { r: 0, m: 0, f: 25 } } } });
+    await q.reload({ waitUntil: "load" }); await q.waitForTimeout(700);
+    await q.click('#hWidgets [data-act="review-all"]');
+    for (let i = 0; i < 10; i++) { await q.keyboard.press("Space"); await q.keyboard.press("3"); }
+    await q.waitForTimeout(200);
+    let s2 = await store(q);
+    check("Ôn 10 thẻ: thưởng 1 electron cho Tiếng Pháp", s2["data/users/u1/atoms"]?.list?.francais?.e === 1);
+    await q.click('#sDone [data-go="review"]'); await tab(q, "study"); await q.click(".course-card");
+    await q.click("#feynBtn"); await q.fill("#chatIn", "La diode laisse passer le courant dans un seul sens"); await q.click("#sendBtn");
+    await q.waitForSelector("#sendBtn:not([hidden])", { timeout: 6000 }); await q.waitForTimeout(400);
+    s2 = await store(q);
+    check("Ngày hoàn hảo: đủ 3 nhiệm vụ thì được đánh dấu vàng", s2["data/users/u1/stats"].days[today()].gold === 1 && s2["data/users/u1/stats"].days[today()].fe === 1);
+    await q.click('#v-course [data-go="study"]'); await tab(q, "home");
+    check("Lịch nhiệt: hôm nay có viền vàng", await q.$eval("#hWidgets .heat i.today", (e) => e.classList.contains("gold")));
+    check("Nhiệm vụ: 3/3", /3\/3/.test(await txt(q, "#hWidgets")));
+    await q.close();
+    // cấp độ
+    const r = await open({ seed: true });
+    await setStore(r, { "data/users/u1/atoms": { list: { free: { e: 12, min: 60, n: 2, rc: 0 } } } });
+    await r.reload({ waitUntil: "load" }); await r.waitForTimeout(700);
+    check("Cấp độ: 12 e⁻ = cấp 2 'Proton tò mò'", /Cấp 2 · Proton tò mò/.test(await txt(r, "#hWidgets")));
+    await r.close();
+  }
+
   // ---------- 10. Bố cục ở nhiều cỡ màn hình, sáng/tối, truy cập ----------
   for (const scheme of ["light", "dark"]) {
     for (const width of [320, 390, 820]) {
       const p = await open({ seed: true, scheme, width, mobile: width < 700 });
-      for (const v of ["home", "study", "review", "agenda", "inbox"]) {
-        await tab(p, v); await p.waitForTimeout(80);
+      for (const v of ["home", "study", "review", "agenda", "inbox", "lab"]) {
+        if (v === "lab") { await tab(p, "home"); await p.click("#wAtom"); } else await tab(p, v);
+        await p.waitForTimeout(80);
         const o = await overflow(p);
         check(`Bố cục ${scheme} ${width}px ${v}: không tràn ngang`, o <= 0, `tràn ${o}px`);
         if (width === 390) await axe(p, `${scheme} ${v}`);
         if (width === 320) await p.screenshot({ path: `${SHOTS}/${scheme}-${width}-${v}.png`, fullPage: true });
       }
+      await p.click('#v-lab [data-go="home"]'); await p.click("#wFocus"); await p.waitForTimeout(300);
+      check(`Bố cục ${scheme} ${width}px focus: không tràn ngang`, (await overflow(p)) <= 0);
+      if (width === 390) await axe(p, `${scheme} focus`);
+      if (width === 320) await p.screenshot({ path: `${SHOTS}/${scheme}-${width}-focus.png` });
+      await p.click('#v-focus [data-go="home"]');
       await tab(p, "study"); await p.click(".course-card"); await p.waitForTimeout(300);
       check(`Bố cục ${scheme} ${width}px course: không tràn ngang`, (await overflow(p)) <= 0);
       if (width === 390) await axe(p, `${scheme} course`);
@@ -355,4 +446,4 @@ async function axe(p, label) {
   console.log(`\n=== ${results.length - fail.length}/${results.length} PASS ===`);
   fs.writeFileSync(path.join(__dirname, "results.json"), JSON.stringify(results, null, 1));
   await browser.close();
-})().catch(async (e) => { console.error("CRASH", e); console.log(`\n=== ${results.filter((r) => r.ok).length}/${results.length} PASS before crash ===`); await browser?.close(); process.exit(1); });
+})().catch(async (e) => { console.error("CRASH", e); console.log("ERRORS", errors); console.log(`\n=== ${results.filter((r) => r.ok).length}/${results.length} PASS before crash ===`); await browser?.close(); process.exit(1); });
