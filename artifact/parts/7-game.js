@@ -90,14 +90,18 @@ function checkGold() {
   const d = state.stats.days[todayISO()];
   if (!d || d.gold || !quests().every((q) => q.p >= 1)) return;
   d.gold = 1; saveStats();
-  confetti(); toast("Ngày hoàn hảo! Cả 3 nhiệm vụ đã xong", 4000);
+  confetti(); sfx("unlock"); toast("Ngày hoàn hảo! Cả 3 nhiệm vụ đã xong", 4000);
 }
 
-// --- vẽ nguyên tử (canvas, chuyển động nhẹ) ---
-const SPACE = { lav: "#b8adff", sky: "#93b6ff", mint: "#7fd9ab", peach: "#ffb38a", rose: "#ff9bb7", butter: "#f1c75e" };
+// --- vẽ nguyên tử kiểu vẽ tay (canvas, chuyển động nhẹ) ---
+const BODY = { lav: "#ebe5fb", sky: "#d9ecf7", mint: "#d8f0de", peach: "#ffe2c9", rose: "#ffdde5", butter: "#ffeaa8" };
+const ELEC = { lav: "#8f7ff0", sky: "#5aa3dd", mint: "#4fb37b", peach: "#ef9258", rose: "#ea6f93", butter: "#e0ae22" };
 const SHELLS = [2, 8, 18, 32, 32, 18, 8];
 const atomViews = new Set();
-let atomRaf = 0;
+let atomRaf = 0, inkCache = "";
+const ink = () => (inkCache ||= getComputedStyle(document.documentElement).getPropertyValue("--outline").trim() || "#6b4a3a");
+new MutationObserver(() => { inkCache = ""; kickAtoms(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "class", "style"] });
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { inkCache = ""; kickAtoms(); });
 function mountAtom(host, { z, tint = "lav", seed = "x", scale = 1, cx = 0.5, cy = 0.55 }) {
   if (!host) return;
   host.querySelector(":scope > .atom-cv")?.remove();
@@ -105,7 +109,7 @@ function mountAtom(host, { z, tint = "lav", seed = "x", scale = 1, cx = 0.5, cy 
   host.prepend(cv);
   let h = hashOf(seed) || 7;
   const rnd = () => ((h = (Math.imul(h, 1103515245) + 12345) >>> 0) / 4294967296);
-  atomViews.add({ cv, z, color: SPACE[tint] || SPACE.lav, scale, cx, cy, stars: Array.from({ length: 46 }, () => [rnd(), rnd(), rnd()]), t0: performance.now() - rnd() * 10000 });
+  atomViews.add({ cv, z, tint: BODY[tint] ? tint : "lav", scale, cx, cy, sparks: Array.from({ length: 9 }, () => [rnd(), rnd(), rnd()]), t0: performance.now() - rnd() * 10000 });
   kickAtoms();
 }
 function kickAtoms() { if (!atomRaf) atomRaf = requestAnimationFrame(frameAtoms); }
@@ -120,51 +124,53 @@ function frameAtoms(now) {
   }
   if (live && !reduceMotion) atomRaf = requestAnimationFrame(frameAtoms);
 }
+function spark(g, x, y, r) { g.beginPath(); g.moveTo(x, y - r); g.quadraticCurveTo(x, y, x + r, y); g.quadraticCurveTo(x, y, x, y + r); g.quadraticCurveTo(x, y, x - r, y); g.quadraticCurveTo(x, y, x, y - r); g.fill(); }
 function drawAtom(v, t) {
   const cv = v.cv, w = cv.clientWidth, hgt = cv.clientHeight;
   if (!w || !hgt) return;
   const dpr = Math.min(2, window.devicePixelRatio || 1);
   if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(hgt * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(hgt * dpr); }
-  const g = cv.getContext("2d");
+  const g = cv.getContext("2d"), INK = ink(), body = BODY[v.tint], elec = ELEC[v.tint];
   g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, hgt);
-  for (const [x, y, s] of v.stars) {
-    g.globalAlpha = 0.18 + 0.55 * Math.abs(Math.sin(t * (0.4 + s) + s * 20));
-    g.fillStyle = "#ffffff"; const d = s > 0.88 ? 1.8 : 1; g.fillRect(x * w, y * hgt, d, d);
-  }
+  g.fillStyle = "#f2c94c";
+  for (const [x, y, s] of v.sparks) { g.globalAlpha = 0.25 + 0.55 * Math.abs(Math.sin(t * (0.6 + s) + s * 20)); spark(g, x * w, y * hgt, 2.5 + s * 3); }
   g.globalAlpha = 1;
   const z = v.z, shells = [];
   let left = z;
   for (const cap of SHELLS) { if (left <= 0) break; shells.push(Math.min(cap, left)); left -= cap; }
-  const cx = w * v.cx, cy = hgt * v.cy, tilt = -0.34, sq = 0.36;
-  const maxR = Math.min(w * 0.47, hgt * 1.05) * v.scale;
-  const nucR = Math.max(5, Math.min(17, 4 + Math.sqrt(z + 1) * 1.35)) * Math.max(0.75, v.scale) * (1 + 0.04 * Math.sin(t * 2));
+  const cx = w * v.cx, cy = hgt * v.cy + Math.sin(t * 1.6) * 2, tilt = -0.32, sq = 0.38;
+  const maxR = Math.min(w * 0.46, hgt * 1.05) * v.scale;
+  const size = clamp(Math.min(w, hgt) / 170, 0.8, 2.2);
+  const R = Math.max(10, Math.min(26, 9 + Math.sqrt(z + 1) * 2.1)) * Math.max(0.75, v.scale) * size;
   const span = Math.max(shells.length, 2.4);
-  const radii = shells.map((_, i) => nucR * 1.9 + (maxR - nucR * 1.9) * ((i + 1) / span));
-  const ct = Math.cos(tilt), st = Math.sin(tilt);
-  const pts = [];
+  const radii = shells.map((_, i) => R * 1.6 + (maxR - R * 1.6) * ((i + 1) / span));
+  const ct = Math.cos(tilt), st = Math.sin(tilt), pts = [];
+  g.setLineDash([4, 5]); g.lineWidth = 1.6; g.strokeStyle = INK;
   shells.forEach((n, i) => {
-    const R = radii[i], dir = i % 2 ? -1 : 1, sp = 0.85 / (i + 1);
-    g.beginPath(); g.ellipse(cx, cy, R, R * sq, tilt, 0, Math.PI * 2);
-    g.strokeStyle = v.color; g.globalAlpha = 0.22; g.lineWidth = 1; g.stroke(); g.globalAlpha = 1;
+    const r = radii[i], dir = i % 2 ? -1 : 1, sp = 0.8 / (i + 1);
+    g.globalAlpha = 0.45; g.beginPath(); g.ellipse(cx, cy, r, r * sq, tilt, 0, Math.PI * 2); g.stroke();
     for (let k = 0; k < n; k++) {
-      const a = (k / n) * Math.PI * 2 + i * 0.7 + t * sp * dir;
-      const ex = R * Math.cos(a), ey = R * sq * Math.sin(a);
+      const a = (k / n) * Math.PI * 2 + i * 0.7 + t * sp * dir, ex = r * Math.cos(a), ey = r * sq * Math.sin(a);
       pts.push({ x: cx + ex * ct - ey * st, y: cy + ex * st + ey * ct, front: Math.sin(a) > 0 });
     }
   });
-  const dot = (p) => { g.beginPath(); g.arc(p.x, p.y, (p.front ? 2.5 : 1.9) * Math.max(0.8, v.scale), 0, Math.PI * 2); g.fill(); };
-  g.fillStyle = v.color; g.shadowColor = v.color; g.shadowBlur = 8;
-  g.globalAlpha = 0.5; pts.filter((p) => !p.front).forEach(dot);
-  g.globalAlpha = 1; g.shadowBlur = 0;
-  const glow = g.createRadialGradient(cx, cy, 0, cx, cy, nucR * 3.4);
-  glow.addColorStop(0, v.color); glow.addColorStop(0.35, v.color + "55"); glow.addColorStop(1, v.color + "00");
-  g.fillStyle = glow; g.beginPath(); g.arc(cx, cy, nucR * 3.4, 0, Math.PI * 2); g.fill();
-  const core = g.createRadialGradient(cx - nucR * 0.35, cy - nucR * 0.35, nucR * 0.1, cx, cy, nucR);
-  core.addColorStop(0, "#ffffff"); core.addColorStop(0.55, v.color); core.addColorStop(1, v.color + (z ? "ee" : "66"));
-  g.fillStyle = core; g.beginPath(); g.arc(cx, cy, nucR, 0, Math.PI * 2); g.fill();
-  g.fillStyle = "#ffffff"; g.shadowColor = v.color; g.shadowBlur = 10;
+  g.setLineDash([]); g.globalAlpha = 1;
+  const er = 3.6 * Math.max(0.8, v.scale) * Math.min(1.6, size);
+  const dot = (p) => { g.beginPath(); g.arc(p.x, p.y, p.front ? er : er * 0.8, 0, Math.PI * 2); g.fillStyle = elec; g.fill(); g.lineWidth = 1.4; g.strokeStyle = INK; g.stroke(); };
+  g.globalAlpha = 0.55; pts.filter((p) => !p.front).forEach(dot); g.globalAlpha = 1;
+  // hạt nhân: bé tròn có mặt
+  g.beginPath(); g.ellipse(cx, cy + R * 0.95, R * 0.8, R * 0.18, 0, 0, Math.PI * 2); g.fillStyle = "rgba(60, 40, 25, .14)"; g.fill();
+  g.beginPath(); g.arc(cx, cy, R, 0, Math.PI * 2); g.fillStyle = body; g.fill(); g.lineWidth = 2.2; g.strokeStyle = INK; g.stroke();
+  g.beginPath(); g.arc(cx - R * 0.35, cy - R * 0.4, R * 0.22, 0, Math.PI * 2); g.fillStyle = "rgba(255,255,255,.7)"; g.fill();
+  const face = "#3a2a20", ex = R * 0.34, ey = cy - R * 0.05, blink = !reduceMotion && (t % 5.5) > 5.3;
+  g.fillStyle = face; g.strokeStyle = face; g.lineWidth = Math.max(1.3, R * 0.09); g.lineCap = "round";
+  if (!z || blink) { for (const sx of [-1, 1]) { g.beginPath(); g.arc(cx + sx * ex, ey, R * 0.12, 0.15 * Math.PI, 0.85 * Math.PI); g.stroke(); } }
+  else for (const sx of [-1, 1]) { g.beginPath(); g.arc(cx + sx * ex, ey, R * 0.11, 0, Math.PI * 2); g.fill(); }
+  g.beginPath(); g.arc(cx, cy + R * 0.18, R * 0.18, 0.15 * Math.PI, 0.85 * Math.PI); g.stroke();
+  g.fillStyle = "rgba(255, 140, 160, .55)";
+  for (const sx of [-1, 1]) { g.beginPath(); g.ellipse(cx + sx * R * 0.58, cy + R * 0.2, R * 0.16, R * 0.1, 0, 0, Math.PI * 2); g.fill(); }
   pts.filter((p) => p.front).forEach(dot);
-  g.shadowBlur = 0;
+  if (!z) { g.fillStyle = INK; g.globalAlpha = 0.6; g.font = `800 ${Math.round(R * 0.55)}px Nunito, sans-serif`; g.fillText("z", cx + R * 0.9, cy - R * 0.8); g.fillText("z", cx + R * 1.25, cy - R * 1.25); g.globalAlpha = 1; }
 }
 
 // --- widget ở màn Hôm nay ---
@@ -175,35 +181,33 @@ function renderWidgets() {
   const subj = f ? subjOf(f.subject) : lastSubject();
   const z = zOf(subj.id), a = state.atoms[subj.id] || { min: 0 };
   const lv = levelInfo(), n = streak(), t = todayISO();
-  // lịch nhiệt tháng này
   const first = t.slice(0, 8) + "01", pad = (new Date(first + "T12:00:00Z").getUTCDay() + 6) % 7;
   const days = new Date(Date.UTC(+t.slice(0, 4), +t.slice(5, 7), 0)).getUTCDate();
-  let heat = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"].map((d) => `<span>${d}</span>`).join("") + "<i class=\"pad\"></i>".repeat(pad);
+  let heat = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"].map((d) => `<span>${d}</span>`).join("") + '<i class="pad"></i>'.repeat(pad);
   for (let d = 1; d <= days; d++) {
     const iso = t.slice(0, 8) + String(d).padStart(2, "0"), x = state.stats.days[iso] || {};
     const score = (x.f || 0) + (x.r || 0) + (x.m || 0) * 2;
     heat += `<i class="${score >= 50 ? "l3" : score >= 20 ? "l2" : score > 0 ? "l1" : ""} ${x.gold ? "gold" : ""} ${iso === t ? "today" : ""}" title="${iso}"></i>`;
   }
-  const q = quests(), done = q.filter((x) => x.p >= 1).length;
+  const q = quests(), done = q.filter((x) => x.p >= 1).length, best = bestStreak();
   box.innerHTML = `
-    <button class="widget space" data-act="focus-open" id="wFocus" aria-label="${f ? "Đang tập trung, mở đồng hồ" : "Bắt đầu một phiên tập trung"}">
-      <div><p class="w-title">${f ? "Đang tập trung" : "Tập trung"}</p><p class="w-sub">${esc(f ? subj.name : "Pomodoro · 1 e⁻ mỗi 5 phút")}</p></div>
-      <div class="w-row"><span class="w-big" data-left>${f ? fmtLeft(f.endAt - Date.now()) : "25:00"}</span><span class="play ${f ? "on" : ""}">${icon(f ? "stop" : "play")}</span></div>
-    </button>
     <button class="widget space" data-go="lab" id="wAtom" aria-label="Mở phòng thí nghiệm">
       <div><p class="w-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(subj.name)}</p><p class="w-sub">${z ? esc(EL_FR[z - 1]) : "Chưa có electron"}</p></div>
       <div class="w-row"><span class="w-foot"><b>${(a.min / 60).toFixed(1)}</b>giờ</span><span class="sym-chip">${z ? EL_SYM[z - 1] : "·"}</span></div>
     </button>
-    <div class="widget space wide">
-      <div class="heat-head"><p class="w-title">Tháng ${+t.slice(5, 7)}</p><span class="flame">${icon("flame")} ${n} ngày liên tiếp</span></div>
-      <div class="heat">${heat}</div>
-    </div>
+    <button class="widget space" data-go="stats" id="wStreak" aria-label="Mở thống kê">
+      <div><p class="w-title">Chuỗi ngày</p><p class="w-sub">Kỷ lục ${best} ngày</p></div>
+      <div class="w-row"><span class="w-big">${n}<span class="w-sub" style="margin-left:4px">ngày</span></span><span class="sym-chip" style="background:var(--t-butter)">${icon("flame")}</span></div>
+    </button>
     <div class="widget space wide">
       <div class="heat-head"><p class="w-title">Nhiệm vụ hôm nay</p><span class="w-sub">${done}/3</span></div>
       <ul class="quests">${q.map((x) => `<li><span class="qdot ${x.p >= 1 ? "done" : ""}" style="--p:${x.p.toFixed(2)}">${x.p >= 1 ? icon("check") : ""}</span><span>${esc(x.t)}<small>${esc(x.v)}</small></span>${x.act && x.p < 1 ? `<button class="btn space-btn" data-act="${x.act[0]}">${x.act[1]}</button>` : ""}</li>`).join("")}</ul>
       <button class="lvl" data-go="lab" style="all:unset;cursor:pointer;display:grid;gap:6px"><span class="lvl-top"><span>Cấp ${lv.n} · <b>${esc(lv.title)}</b></span><span>${lv.t} e⁻${lv.next ? " / " + lv.next : ""}</span></span><span class="xp"><i style="width:${Math.round(lv.pct * 100)}%"></i></span></button>
+    </div>
+    <div class="widget space wide">
+      <div class="heat-head"><p class="w-title">Tháng ${+t.slice(5, 7)}</p><span class="flame">${icon("flame")} ${n} ngày liên tiếp</span></div>
+      <div class="heat">${heat}</div>
     </div>`;
-  mountAtom($("#wFocus"), { z: Math.max(z, 1), tint: subj.tint, seed: "f" + subj.id, scale: 0.55, cx: 0.72, cy: 0.42 });
   mountAtom($("#wAtom"), { z, tint: subj.tint, seed: subj.id, scale: 0.62, cx: 0.66, cy: 0.5 });
 }
 
@@ -252,22 +256,11 @@ function openElement(z) {
 
 // --- phiên tập trung (Pomodoro) ---
 const DURS = [15, 25, 45, 60];
-let focusPick = { subject: null, dur: 25 }, wakeLock = null, audio = null;
-function chime() {
-  try {
-    if (!audio) return;
-    const now = audio.currentTime;
-    [[660, 0], [880, 0.18], [1320, 0.36]].forEach(([fq, d]) => {
-      const o = audio.createOscillator(), gn = audio.createGain();
-      o.type = "sine"; o.frequency.value = fq;
-      gn.gain.setValueAtTime(0.0001, now + d); gn.gain.exponentialRampToValueAtTime(0.22, now + d + 0.02); gn.gain.exponentialRampToValueAtTime(0.0001, now + d + 0.6);
-      o.connect(gn).connect(audio.destination); o.start(now + d); o.stop(now + d + 0.65);
-    });
-  } catch {}
-}
+let focusPick = { subject: null, dur: 0 }, wakeLock = null;
 function renderFocus() {
   const f = state.focus?.endAt ? state.focus : null;
   if (!focusPick.subject || !subjects().some((s) => s.id === focusPick.subject)) focusPick.subject = lastSubject().id;
+  if (!focusPick.dur) focusPick.dur = prefs().dur;
   const subj = subjOf(f ? f.subject : focusPick.subject), z = zOf(subj.id), lv = levelInfo();
   $("#fLevel").textContent = `Cấp ${lv.n} · ${lv.title}`;
   $("#fSetup").hidden = !!f; $("#fRun").hidden = !f;
@@ -288,8 +281,8 @@ async function startFocus() {
   const subj = subjOf(focusPick.subject);
   state.focus = { subject: subj.id, start: Date.now(), endAt: Date.now() + focusPick.dur * 60000, dur: focusPick.dur };
   save("focus", state.focus); lsSet("focusSubj", subj.id);
-  try { const AC = window.AudioContext || window.webkitAudioContext; if (AC) { audio ||= new AC(); audio.resume?.(); } } catch {}
-  try { wakeLock = await navigator.wakeLock?.request("screen"); } catch { wakeLock = null; }
+  audioCtx(); sfx("tick");
+  if (prefs().wake) { try { wakeLock = await navigator.wakeLock?.request("screen"); } catch { wakeLock = null; } }
   renderFocus();
 }
 function tickFocus() {
@@ -300,6 +293,7 @@ function tickFocus() {
   const s = fmtLeft(left);
   if (state.view === "focus") $("#fTime").textContent = s;
   $$("[data-left]").forEach((el) => (el.textContent = s));
+  if (state.view === "home" && $("#wFocusLabel").textContent !== "Đang tập trung") renderHero();
 }
 function finishFocus(complete) {
   const f = state.focus; if (!f?.endAt) return;
@@ -307,10 +301,15 @@ function finishFocus(complete) {
   state.focus = {}; save("focus", {});
   try { wakeLock?.release?.(); } catch {} wakeLock = null;
   const a = atomOf(f.subject); a.min += minutes; a.n = (a.n || 0) + (minutes >= 5 ? 1 : 0);
-  if (minutes > 0) bump("f", minutes);
+  if (minutes > 0) {
+    bump("f", minutes);
+    state.sessions.push({ s: f.start, m: minutes, subj: f.subject });
+    if (state.sessions.length > 3000) state.sessions.splice(0, state.sessions.length - 3000);
+    save("sessions", { list: state.sessions });
+  }
   const res = addElectrons(f.subject, Math.floor(minutes / 5));
   saveAtoms();
-  if (complete) chime();
+  if (res.news.length) sfx("unlock"); else if (complete) sfx("chime");
   const subj = subjOf(f.subject), gain = Math.floor(minutes / 5);
   if (state.view === "focus") renderFocus(); else render();
   if (gain) {
@@ -331,5 +330,5 @@ setInterval(tickFocus, 1000);
 document.addEventListener("visibilitychange", async () => {
   if (document.visibilityState !== "visible") return;
   tickFocus(); kickAtoms();
-  if (state.focus?.endAt && !wakeLock) { try { wakeLock = await navigator.wakeLock?.request("screen"); } catch {} }
+  if (state.focus?.endAt && !wakeLock && prefs().wake) { try { wakeLock = await navigator.wakeLock?.request("screen"); } catch {} }
 });

@@ -335,7 +335,7 @@ async function axe(p, label) {
     const today = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Paris" }).format(new Date());
     const setStore = (p, kv) => p.evaluate((kv) => { for (const [k, v] of Object.entries(kv)) window.__store.set(k, v); sessionStorage.setItem("__store", JSON.stringify([...window.__store])); }, kv);
     const p = await open({ seed: true });
-    const painted = await p.$eval("#wFocus canvas", (c) => { const d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data; let n = 0; for (let i = 3; i < d.length; i += 4) if (d[i] > 0) n++; return c.width > 0 && n > 50; });
+    const painted = await p.$eval("#wAtom canvas", (c) => { const d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data; let n = 0; for (let i = 3; i < d.length; i += 4) if (d[i] > 0) n++; return c.width > 0 && n > 50; });
     check("Widget: nguyên tử được vẽ trên canvas", painted);
     await p.click("#wFocus");
     check("Tập trung: mở màn toàn màn hình", await vis(p, "#v-focus") && !(await vis(p, ".tabbar")));
@@ -412,19 +412,77 @@ async function axe(p, label) {
     await r.close();
   }
 
+
+  // ---------- 12. Cozy: bé electron, cài đặt, thống kê, tập trung nghiêm ----------
+  {
+    const today = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Paris" }).format(new Date());
+    const setStore = (p, kv) => p.evaluate((kv) => { for (const [k, v] of Object.entries(kv)) window.__store.set(k, v); sessionStorage.setItem("__store", JSON.stringify([...window.__store])); }, kv);
+    const p = await open({ seed: true });
+    check("Hero: bé electron và lời thoại", (await vis(p, "#buddy svg")) && (await txt(p, "#hBubble")).length > 10);
+    const b1 = await txt(p, "#hBubble"); await p.click("#buddy"); const b2 = await txt(p, "#hBubble");
+    check("Hero: chạm bé electron đổi lời thoại", b1 !== b2, b1 + " | " + b2);
+    check("Hero: lời thoại nhắc thẻ cần ôn hoặc hạn nộp", /thẻ đang chờ|Sắp tới hạn|Sắp thi|electron/.test(b1 + b2));
+    check("Hero: đồng hồ giờ Paris", /^\d\d:\d\d · /.test(await txt(p, "#hClock")));
+    await p.click('.hero .name-pill');
+    await p.fill("#stName", "Mít"); await p.click('#stDur button[data-d="45"]'); await p.click("#stSfx"); await p.click("#stStrict"); await p.click("#stSave");
+    let st = await store(p);
+    check("Cài đặt: lưu tên, thời gian, âm thanh, tập trung nghiêm", st["data/users/u1/prefs"]?.name === "Mít" && st["data/users/u1/prefs"].dur === 45 && st["data/users/u1/prefs"].sfx === false && st["data/users/u1/prefs"].strict === true, JSON.stringify(st["data/users/u1/prefs"]));
+    check("Cài đặt: tên mới hiện trên nhãn", (await txt(p, "#buddyName")) === "Mít");
+    check("Cài đặt: nút tập trung theo thời gian mặc định", /45:00 · \+9 e⁻/.test(await txt(p, "#wFocus")));
+    await p.click("#wFocus");
+    check("Tập trung: chọn sẵn 45 phút", await p.$eval('#fDur button[data-dur="45"]', (b) => b.getAttribute("aria-pressed") === "true"));
+    await p.click("#fStart"); await p.waitForTimeout(300);
+    await p.evaluate(() => { Object.defineProperty(document, "visibilityState", { configurable: true, get: () => "hidden" }); document.dispatchEvent(new Event("visibilitychange")); });
+    await p.waitForTimeout(15600);
+    await p.evaluate(() => { Object.defineProperty(document, "visibilityState", { configurable: true, get: () => "visible" }); document.dispatchEvent(new Event("visibilitychange")); });
+    await p.waitForTimeout(300);
+    check("Tập trung nghiêm: rời app > 15 giây thì phiên bị huỷ", /chạy mất rồi/.test(await txt(p, "#sheetRoot")) && !(await store(p))["data/users/u1/focus"]?.endAt);
+    await p.keyboard.press("Escape");
+    // thống kê sau một phiên đã hoàn thành
+    const now = Date.now();
+    await setStore(p, { "data/users/u1/focus": { subject: "c1", start: now - 26 * 60000, endAt: now - 60000, dur: 25 } });
+    await p.goto("https://app.test/#home", { waitUntil: "load" }); await p.reload({ waitUntil: "load" }); await p.waitForTimeout(900);
+    await p.keyboard.press("Escape");
+    st = await store(p);
+    check("Nhật ký phiên: lưu phiên vừa xong", st["data/users/u1/sessions"]?.list?.length === 1 && st["data/users/u1/sessions"].list[0].m === 25);
+    await p.click('.hero [data-go="stats"]');
+    check("Thống kê: tổng quan có biểu đồ và kỷ lục", (await vis(p, "#stChart svg .ln")) && /25 phút/.test(await txt(p, "#stRec")), (await vis(p, "#stChart svg .ln")) + " | " + (await txt(p, "#stRec")) + " | " + (await p.$eval("#stChart", (e) => e.innerHTML.slice(0, 300)).catch(() => "no chart")));
+    await p.click('#stTabs [data-st="day"]');
+    check("Thống kê ngày: 24 cột theo giờ, tổng 25 phút", (await p.$$("#stChart .bar")).length === 24 && /25 phút/.test(await txt(p, "#stMain .big-stat")));
+    const hour = await p.$$eval("#stChart .bar", (bars) => bars.map((b) => !b.classList.contains("zero")).filter(Boolean).length);
+    check("Thống kê ngày: phút nằm đúng khung giờ", hour >= 1 && hour <= 2, hour);
+    await p.hover("#stChart .hit:nth-of-type(1)").catch(() => {});
+    const hit = await p.$$eval("#stChart .hit", (hs) => hs.findIndex((h) => h.nextElementSibling && !h.nextElementSibling.classList.contains("zero")));
+    await p.click(`#stChart .hit[data-i="${hit}"]`, { force: true });
+    check("Thống kê: chạm cột hiện số phút", /phút/.test(await txt(p, "#stTip")));
+    check("Thống kê: có bảng số liệu thay cho biểu đồ", (await p.$$("#stMain .data-table tr")).length >= 1);
+    check("Thống kê: theo môn hiện tên tài liệu", /Électronique/.test(await txt(p, "#stSubj")));
+    await p.click('#stTabs [data-st="week"]');
+    check("Thống kê tuần: 7 cột", (await p.$$("#stChart .bar")).length === 7);
+    await p.click("#stPrev");
+    check("Thống kê: lùi về tuần trước, nút tới được bật", !(await p.$eval("#stNext", (b) => b.disabled)) && /0 phút/.test(await txt(p, "#stMain .big-stat")));
+    await p.click('#stTabs [data-st="month"]');
+    check("Thống kê tháng: đủ số ngày", [28, 29, 30, 31].includes((await p.$$("#stChart .bar")).length));
+    await p.click('#stTabs [data-st="year"]');
+    check("Thống kê năm: 12 cột", (await p.$$("#stChart .bar")).length === 12);
+    await p.close();
+  }
+
   // ---------- 10. Bố cục ở nhiều cỡ màn hình, sáng/tối, truy cập ----------
   for (const scheme of ["light", "dark"]) {
     for (const width of [320, 390, 820]) {
       const p = await open({ seed: true, scheme, width, mobile: width < 700 });
-      for (const v of ["home", "study", "review", "agenda", "inbox", "lab"]) {
-        if (v === "lab") { await tab(p, "home"); await p.click("#wAtom"); } else await tab(p, v);
+      for (const v of ["home", "study", "review", "agenda", "inbox", "lab", "stats"]) {
+        if (v === "lab") { await tab(p, "home"); await p.click("#wAtom"); }
+        else if (v === "stats") { await tab(p, "home"); await p.click('.hero [data-go="stats"]'); }
+        else await tab(p, v);
         await p.waitForTimeout(80);
         const o = await overflow(p);
         check(`Bố cục ${scheme} ${width}px ${v}: không tràn ngang`, o <= 0, `tràn ${o}px`);
         if (width === 390) await axe(p, `${scheme} ${v}`);
         if (width === 320) await p.screenshot({ path: `${SHOTS}/${scheme}-${width}-${v}.png`, fullPage: true });
       }
-      await p.click('#v-lab [data-go="home"]'); await p.click("#wFocus"); await p.waitForTimeout(300);
+      await p.click('#v-stats [data-go="home"]'); await p.click("#wFocus"); await p.waitForTimeout(300);
       check(`Bố cục ${scheme} ${width}px focus: không tràn ngang`, (await overflow(p)) <= 0);
       if (width === 390) await axe(p, `${scheme} focus`);
       if (width === 320) await p.screenshot({ path: `${SHOTS}/${scheme}-${width}-focus.png` });

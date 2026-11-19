@@ -33,6 +33,11 @@
   <symbol id="i-half" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"/></symbol>
   <symbol id="i-question" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.5a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.8v.5"/><circle cx="12" cy="17" r=".9" fill="currentColor" stroke="none"/></symbol>
   <symbol id="i-flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c3.6 0 6-2.4 6-5.8 0-3.1-2-5-3.3-6.9-.5 1.6-1.4 2.6-2.4 3C12.7 8 11.4 5.4 9.3 3.5c0 3.2-3.3 5.6-3.3 10 0 4.3 2.7 7.5 6 7.5z"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.8 12h2.4M18.8 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/><circle cx="12" cy="12" r="6.4"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><rect x="5.5" y="11" width="3.2" height="7" rx="1"/><rect x="10.4" y="6" width="3.2" height="12" rx="1"/><rect x="15.3" y="13.5" width="3.2" height="4.5" rx="1"/></symbol>
+  <symbol id="i-volume" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3"/><circle cx="12" cy="15.5" r="1.3" fill="currentColor"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M8.5 5.8v12.4a.8.8 0 0 0 1.2.7l9.6-6.2a.8.8 0 0 0 0-1.4L9.7 5.1a.8.8 0 0 0-1.2.7z" fill="currentColor"/></symbol>
   <symbol id="i-atom" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><ellipse cx="12" cy="12" rx="9.5" ry="3.8"/><ellipse cx="12" cy="12" rx="9.5" ry="3.8" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9.5" ry="3.8" transform="rotate(120 12 12)"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></symbol>
   <symbol id="i-map" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5 4 7v12l5-2 6 2 5-2V5l-5 2z"/><path d="M9 5v12M15 7v12"/></symbol>
@@ -45,8 +50,21 @@
   <section id="v-home" class="view">
     <header class="hello">
       <div class="hello-txt"><p class="eyebrow" id="hDate"></p><h1 id="hGreet">Chào bạn</h1><p class="muted small" id="hSub"></p></div>
-      <div class="hello-mascot" id="hMascot"></div>
     </header>
+    <section class="hero" aria-label="Bé electron và nút tập trung">
+      <div class="hero-top">
+        <button class="name-pill" data-act="settings" aria-label="Đổi tên bé electron"><span id="buddyName">Elec</span><svg class="i"><use href="#i-pencil"></use></svg></button>
+        <span class="clock" id="hClock"></span>
+        <button class="icon-btn" data-act="settings" aria-label="Cài đặt"><svg class="i"><use href="#i-gear"></use></svg></button>
+      </div>
+      <p class="bubble" id="hBubble" aria-live="polite"></p>
+      <div class="scene"><span class="cloud c1"></span><span class="cloud c2"></span><span class="cloud c3"></span><button class="buddy" id="buddy" data-act="buddy" aria-label="Chạm vào bé electron"></button></div>
+      <div class="hero-actions">
+        <button class="side-btn" data-go="stats"><svg class="i"><use href="#i-chart"></use></svg>Thống kê</button>
+        <button class="main-btn" id="wFocus" data-act="focus-open"><svg class="sprout" viewBox="0 0 34 20" aria-hidden="true"><path d="M17 20V9" style="stroke: var(--outline); fill: none" stroke-width="2.2" stroke-linecap="round"/><path d="M17 10C14 3 7 2 3 4c2 6 9 8 14 6z" style="fill: #8fc45a; stroke: var(--outline)" stroke-width="2"/><path d="M17 10c3-7 10-8 14-6-2 6-9 8-14 6z" style="fill: #b3dc72; stroke: var(--outline)" stroke-width="2"/></svg><span id="wFocusLabel">Tập trung</span><small data-left>25:00 · +5 e⁻</small></button>
+        <button class="side-btn" data-go="lab"><svg class="i"><use href="#i-atom"></use></svg>Phòng lab</button>
+      </div>
+    </section>
     <div class="widgets" id="hWidgets"></div>
     <article class="tile tinted" id="hStatus"></article>
     <article class="tile" id="hMail"></article>
@@ -110,6 +128,19 @@
       <div id="ckOut" class="stack"></div>
     </div>
   </section>
+  <!-- THỐNG KÊ -->
+  <section id="v-stats" class="view" hidden>
+    <header class="page-h">
+      <div><h1>Thống kê</h1><p class="muted">Câu chuyện tập trung của bạn</p></div>
+      <button class="icon-btn" data-go="home" aria-label="Về Hôm nay"><svg class="i"><use href="#i-back"></use></svg></button>
+    </header>
+    <div class="stats-tabs" id="stTabs" role="tablist"></div>
+    <div class="period" id="stPeriod"><button class="icon-btn" id="stPrev" aria-label="Khoảng trước"><svg class="i"><use href="#i-back"></use></svg></button><strong id="stLabel"></strong><button class="icon-btn" id="stNext" aria-label="Khoảng sau"><svg class="i"><use href="#i-chevron"></use></svg></button></div>
+    <article class="card" id="stMain"></article>
+    <div class="records" id="stRec"></div>
+    <article class="card" id="stSubj"></article>
+  </section>
+
   <!-- PHÒNG THÍ NGHIỆM -->
   <section id="v-lab" class="view" hidden>
     <header class="page-h">

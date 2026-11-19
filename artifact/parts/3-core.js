@@ -115,7 +115,7 @@ async function copyText(text, label) {
 }
 
 // ================= dữ liệu (riêng tư theo người dùng) =================
-const state = { agenda: [], courses: [], decks: {}, chats: {}, mail: { seen: [], recent: [], lastRun: "" }, status: null, stats: { days: {} }, atoms: {}, focus: {}, facts: {}, cur: null, view: "home", seg: "mail", mailMsg: null };
+const state = { agenda: [], courses: [], decks: {}, chats: {}, mail: { seen: [], recent: [], lastRun: "" }, status: null, stats: { days: {} }, atoms: {}, focus: {}, facts: {}, prefs: {}, sessions: [], cur: null, view: "home", seg: "mail", mailMsg: null };
 let base = null;
 const writeQueue = new Map();
 function queue(docId, op) {
@@ -176,6 +176,8 @@ async function loadData() {
       else if (d.id === "atoms") state.atoms = v.list || {};
       else if (d.id === "focus") state.focus = v.endAt ? v : {};
       else if (d.id === "facts") state.facts = v.list || {};
+      else if (d.id === "prefs") state.prefs = v || {};
+      else if (d.id === "sessions") state.sessions = Array.isArray(v.list) ? v.list : [];
     }
     showNotice("");
   } catch (e) {

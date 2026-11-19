@@ -2,179 +2,174 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,500..800,100;1,9..144,500..800,100&family=Nunito:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;500;600;700;800&display=swap">
 <style>
-/* Layout: sổ tay học tập — nền giấy chấm, một cột 680px, ô pastel kiểu bento ở Hôm nay; Học và Ôn tập mở toàn màn hình như trang ghi chú */
+/* Layout: sổ tay cozy vẽ tay — nền kem, viền nâu mực, nút "dày" có bóng đáy; Hôm nay mở đầu bằng cảnh trời với bé electron; Học, Ôn, Tập trung là màn toàn màn hình */
 :root {
-  --bg: #f7f6fb;
-  --grid: rgba(106, 90, 230, .10);
-  --surface: #ffffff;
-  --surface-2: #f2f0f8;
-  --ink: #221f2e;
-  --ink-2: #4f4b62;
-  --ink-3: #6c6781;
-  --line: #e9e6f2;
-  --accent: #5f4fe0;
-  --accent-2: #7262ea;
-  --accent-ink: #ffffff;
-  --accent-soft: #efecfd;
-  --hl: rgba(255, 204, 77, .48);
+  --bg: #fbf3e4;
+  --grid: rgba(120, 80, 50, .07);
+  --surface: #fffaf1;
+  --surface-2: #f6ead6;
+  --ink: #4a3428;
+  --ink-2: #6a5042;
+  --ink-3: #7d6253;
+  --line: #ead9bf;
+  --outline: #6b4a3a;
+  --chunk: #e2cba6;            /* bóng đáy của nút/thẻ kem */
+  --accent: #52701a;           /* chữ, link, biểu tượng màu matcha */
+  --accent-btn: #bcd76b;       /* nền nút chính */
+  --accent-chunk: #8ba446;     /* bóng đáy nút chính */
+  --accent-ink: #3a2a20;       /* chữ trên nút chính */
+  --accent-soft: #eaf2cf;
+  --chart: #6f9530;
+  --hl: rgba(255, 205, 80, .5);
   --blush: #ff9fb0;
   --res-body: #ecdfc6;
-  --danger: #d4473b; --danger-ink: #ffffff;
-  --t-lav: #efeafd; --k-lav: #5a49d6;
-  --t-peach: #ffeee5; --k-peach: #a04716;
-  --t-mint: #e3f6ec; --k-mint: #1d7a50;
-  --t-sky: #e7f0ff; --k-sky: #2b5cc0;
-  --t-butter: #fff4d1; --k-butter: #7a5700;
-  --t-rose: #ffe9ef; --k-rose: #a82c51;
-  --shadow-card: 0 1px 2px rgba(34, 31, 46, .04), 0 8px 22px -10px rgba(60, 40, 140, .16);
-  --shadow-float: 0 2px 6px rgba(34, 31, 46, .06), 0 20px 44px -14px rgba(60, 40, 140, .30);
+  --danger: #c6402f; --danger-ink: #ffffff; --danger-chunk: #8f2a1d;
+  --t-lav: #ebe5fb; --k-lav: #5440b5;
+  --t-peach: #ffe2c9; --k-peach: #9a4416;
+  --t-mint: #d8f0de; --k-mint: #1f6b44;
+  --t-sky: #d9ecf7; --k-sky: #22598a;
+  --t-butter: #ffeaa8; --k-butter: #6e4e00;
+  --t-rose: #ffdde5; --k-rose: #a02a52;
+  --sky-1: #cfe8f6; --sky-2: #eef6e2; --sky-ink: #4a3428; --sky-ink-2: #5d4639; --cloud: #ffffff;
+  --shadow-card: 0 4px 0 var(--chunk);
+  --shadow-float: 0 3px 0 var(--chunk), 0 18px 36px -18px rgba(90, 60, 30, .45);
   --font: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --display: "Fraunces", "Nunito", Georgia, serif;
+  --display: "Baloo 2", "Nunito", system-ui, sans-serif;
   --r-m: 18px; --r-l: 24px;
-  --tabbar-h: 66px;
+  --tabbar-h: 68px;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #121119; --grid: rgba(169, 156, 255, .075); --surface: #1b1a24; --surface-2: #25232f; --ink: #eeedf5; --ink-2: #c6c3d6; --ink-3: #9a95b0; --line: #2d2b3a;
-  --accent: #a99cff; --accent-2: #c6bcff; --accent-ink: #15131d; --accent-soft: #2a2645; --hl: rgba(255, 204, 77, .24); --blush: #ff8aa0; --res-body: #5c5343;
-  --danger: #ff8f86; --danger-ink: #1b1219;
-  --t-lav: #26213f; --k-lav: #b8adff; --t-peach: #33241c; --k-peach: #ffb38a; --t-mint: #142c22; --k-mint: #7fd9ab;
-  --t-sky: #182439; --k-sky: #93b6ff; --t-butter: #2f2812; --k-butter: #f1c75e; --t-rose: #341d27; --k-rose: #ff9bb7;
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, .35); --shadow-float: 0 20px 44px -12px rgba(0, 0, 0, .65);
+  --bg: #221a16; --grid: rgba(255, 230, 200, .05); --surface: #2e2420; --surface-2: #3a2e28; --ink: #f6ead8; --ink-2: #e0cfb9; --ink-3: #bba691; --line: #4a3b33;
+  --outline: #120c09; --chunk: #160f0c; --accent: #c9e27f; --accent-btn: #b4cf62; --accent-chunk: #5f7426; --accent-ink: #241a13; --accent-soft: #38411f;
+  --chart: #82a33f; --hl: rgba(255, 205, 80, .26); --blush: #ff8aa0; --res-body: #5c5343;
+  --danger: #ff8f80; --danger-ink: #241713; --danger-chunk: #7a2b20;
+  --t-lav: #332b4d; --k-lav: #cdc2ff; --t-peach: #4a3022; --k-peach: #ffc29a; --t-mint: #1f3a2b; --k-mint: #a3e3b9;
+  --t-sky: #1e3345; --k-sky: #abd4f2; --t-butter: #463a1c; --k-butter: #f6d27a; --t-rose: #47262f; --k-rose: #ffb3c4;
+  --sky-1: #1b2742; --sky-2: #2c2236; --sky-ink: #f6ead8; --sky-ink-2: #d9c9e8; --cloud: #3b3552;
+  --shadow-card: 0 4px 0 var(--chunk); --shadow-float: 0 3px 0 var(--chunk), 0 18px 36px -14px rgba(0, 0, 0, .7);
   color-scheme: dark; } }
 :root[data-theme="dark"] {
-  --bg: #121119; --grid: rgba(169, 156, 255, .075); --surface: #1b1a24; --surface-2: #25232f; --ink: #eeedf5; --ink-2: #c6c3d6; --ink-3: #9a95b0; --line: #2d2b3a;
-  --accent: #a99cff; --accent-2: #c6bcff; --accent-ink: #15131d; --accent-soft: #2a2645; --hl: rgba(255, 204, 77, .24); --blush: #ff8aa0; --res-body: #5c5343;
-  --danger: #ff8f86; --danger-ink: #1b1219;
-  --t-lav: #26213f; --k-lav: #b8adff; --t-peach: #33241c; --k-peach: #ffb38a; --t-mint: #142c22; --k-mint: #7fd9ab;
-  --t-sky: #182439; --k-sky: #93b6ff; --t-butter: #2f2812; --k-butter: #f1c75e; --t-rose: #341d27; --k-rose: #ff9bb7;
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, .35); --shadow-float: 0 20px 44px -12px rgba(0, 0, 0, .65);
+  --bg: #221a16; --grid: rgba(255, 230, 200, .05); --surface: #2e2420; --surface-2: #3a2e28; --ink: #f6ead8; --ink-2: #e0cfb9; --ink-3: #bba691; --line: #4a3b33;
+  --outline: #120c09; --chunk: #160f0c; --accent: #c9e27f; --accent-btn: #b4cf62; --accent-chunk: #5f7426; --accent-ink: #241a13; --accent-soft: #38411f;
+  --chart: #82a33f; --hl: rgba(255, 205, 80, .26); --blush: #ff8aa0; --res-body: #5c5343;
+  --danger: #ff8f80; --danger-ink: #241713; --danger-chunk: #7a2b20;
+  --t-lav: #332b4d; --k-lav: #cdc2ff; --t-peach: #4a3022; --k-peach: #ffc29a; --t-mint: #1f3a2b; --k-mint: #a3e3b9;
+  --t-sky: #1e3345; --k-sky: #abd4f2; --t-butter: #463a1c; --k-butter: #f6d27a; --t-rose: #47262f; --k-rose: #ffb3c4;
+  --sky-1: #1b2742; --sky-2: #2c2236; --sky-ink: #f6ead8; --sky-ink-2: #d9c9e8; --cloud: #3b3552;
+  --shadow-card: 0 4px 0 var(--chunk); --shadow-float: 0 3px 0 var(--chunk), 0 18px 36px -14px rgba(0, 0, 0, .7);
   color-scheme: dark; }
 
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; }
-body { margin: 0; color: var(--ink); font: 500 15px/1.55 var(--font); -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
-  background-color: var(--bg); background-image: radial-gradient(var(--grid) 1.1px, transparent 1.4px); background-size: 22px 22px; background-position: 11px 11px; }
+body { margin: 0; color: var(--ink); font: 600 15px/1.55 var(--font); -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
+  background-color: var(--bg); background-image: radial-gradient(var(--grid) 1.2px, transparent 1.5px); background-size: 24px 24px; background-position: 12px 12px; }
 body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 40; background: var(--bg); }
 body.noscroll { overflow: hidden; }
 button, input, textarea, select { font: inherit; color: inherit; }
 button { -webkit-user-select: none; user-select: none; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 a { color: var(--accent); }
 h1, h2, h3, h4 { margin: 0; text-wrap: balance; }
 p { margin: 0; }
-.display { font-family: var(--display); font-weight: 650; letter-spacing: -.01em; }
+.display { font-family: var(--display); font-weight: 800; }
 .muted { color: var(--ink-2); } .faint { color: var(--ink-3); } .small { font-size: 13px; }
 .center { text-align: center; }
-.err { color: var(--danger); font-weight: 700; font-size: 14px; }
-.label { font: 800 11px/1.2 var(--font); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
-.eyebrow { font: 800 12px/1.2 var(--font); letter-spacing: .04em; color: var(--ink-3); }
+.err { color: var(--danger); font-weight: 800; font-size: 14px; }
+.label { font: 800 12px/1.2 var(--font); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.eyebrow { font: 800 12.5px/1.2 var(--font); color: var(--ink-3); }
 .vh { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; clip: rect(0 0 0 0); }
 
-.wrap { max-width: 680px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px calc(var(--tabbar-h) + 44px + env(safe-area-inset-bottom, 0px)); }
-.view { display: grid; gap: 14px; }
+.wrap { max-width: 680px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px calc(var(--tabbar-h) + 46px + env(safe-area-inset-bottom, 0px)); }
+.view { display: grid; gap: 16px; }
 .stack { display: grid; gap: 10px; }
 .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.notice { background: var(--t-butter); color: var(--ink); border-radius: 16px; padding: 10px 14px; font-size: 13.5px; margin-bottom: 12px; }
+.notice { background: var(--t-butter); color: var(--ink); border: 2px solid var(--outline); border-radius: 16px; padding: 10px 14px; font-size: 13.5px; margin-bottom: 12px; }
 
-/* tiêu đề trang */
-.hello { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 2px 4px; }
-.hello-txt { display: grid; gap: 4px; min-width: 0; }
-.hello h1 { font: 650 30px/1.08 var(--display); letter-spacing: -.015em; }
-.hello h1 em { font-style: italic; color: var(--accent); }
-.hello-mascot { flex: none; }
-.page-h { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding-block: 2px; }
-.page-h h1 { font: 650 32px/1.05 var(--display); letter-spacing: -.015em; }
-.page-h p { margin-top: 6px; }
+/* tiêu đề trang: nhãn tròn kiểu dán */
+.hello { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.hello-txt { display: grid; gap: 2px; min-width: 0; }
+.hello h1 { font: 800 28px/1.1 var(--display); }
+.hello h1 em { font-style: normal; color: var(--accent); }
+.page-h { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 2px; }
+.page-h h1 { display: inline-block; font: 800 26px/1.15 var(--display); background: var(--accent-btn); color: var(--accent-ink); border: 2.5px solid var(--outline); border-radius: 999px; padding: 4px 18px 2px; box-shadow: 0 4px 0 var(--accent-chunk); }
+.page-h p { margin-top: 10px; }
 .sec-head { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
-.link { border: 0; background: none; color: var(--accent); font: 800 13px var(--font); cursor: pointer; padding: 4px 2px; }
+.link { border: 0; background: none; color: var(--accent); font: 800 13.5px var(--font); cursor: pointer; padding: 4px 2px; }
 
-/* linh vật: electron nhỏ biết chớp mắt */
+/* linh vật: bé electron viền mực */
 .mascot { width: 48px; height: 48px; flex: none; overflow: visible; }
-.mascot.sm { width: 40px; height: 40px; } .mascot.md { width: 64px; height: 64px; } .mascot.lg { width: 92px; height: 92px; } .mascot.xs { width: 20px; height: 20px; }
-.m-orbit { fill: none; stroke: var(--accent); stroke-width: 1.6; opacity: .45; }
-.m-e { fill: var(--accent); }
-.m-body { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
-.m-eye { fill: var(--ink); transform-box: fill-box; transform-origin: center; animation: blink 5.5s infinite; }
-.m-line { fill: none; stroke: var(--ink); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.m-mouth { fill: var(--ink); }
-.m-blush { fill: var(--blush); opacity: .75; }
+.mascot.sm { width: 40px; height: 40px; } .mascot.md { width: 64px; height: 64px; } .mascot.lg { width: 96px; height: 96px; } .mascot.xl { width: 128px; height: 128px; } .mascot.xs { width: 20px; height: 20px; }
+.m-orbit { fill: none; stroke: var(--outline); stroke-width: 1.6; stroke-dasharray: 3 3; opacity: .55; }
+.m-e { fill: var(--k-peach); stroke: var(--outline); stroke-width: 1.2; }
+.m-body { fill: #ffe9b8; stroke: var(--outline); stroke-width: 2.2; }
+.m-eye { fill: #3a2a20; transform-box: fill-box; transform-origin: center; animation: blink 5.5s infinite; }
+.m-line { fill: none; stroke: #3a2a20; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.m-mouth { fill: #3a2a20; }
+.m-blush { fill: var(--blush); opacity: .8; }
 .m-spark { fill: var(--k-butter); }
 .m-z { fill: var(--ink-3); font: 800 9px var(--font); }
 @keyframes blink { 0%, 93%, 100% { transform: scaleY(1); } 96% { transform: scaleY(.1); } }
 
-/* nút */
-.btn { font: 800 14px/1.1 var(--font); border-radius: 14px; padding: 11px 15px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); display: inline-flex; gap: 7px; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; transition: transform .1s ease, filter .15s ease; }
-.btn:active:not(:disabled) { transform: scale(.96); }
-.btn:disabled { opacity: .45; cursor: default; }
-.btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: var(--accent-ink); border-color: transparent; box-shadow: 0 6px 16px -8px var(--accent); }
-.btn.soft { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
-.btn.ghost { background: transparent; border-color: transparent; color: var(--ink-2); }
-.btn.glass { background: color-mix(in srgb, var(--surface) 70%, transparent); border-color: transparent; color: var(--ink); }
-.btn.danger { background: var(--danger); color: var(--danger-ink); border-color: transparent; }
-.btn.sm { padding: 8px 12px; font-size: 13px; border-radius: 12px; }
-.btn.lg { padding: 14px 18px; font-size: 15px; border-radius: 16px; }
+/* nút "dày" có bóng đáy */
+.btn { font: 800 14.5px/1.1 var(--font); border-radius: 16px; padding: 11px 16px; border: 2px solid var(--outline); background: var(--surface); color: var(--ink); display: inline-flex; gap: 7px; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; box-shadow: 0 4px 0 var(--chunk); transition: transform .08s ease, box-shadow .08s ease; position: relative; }
+.btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 var(--chunk); }
+.btn:disabled { opacity: .5; cursor: default; }
+.btn.primary { background: var(--accent-btn); color: var(--accent-ink); box-shadow: 0 4px 0 var(--accent-chunk); }
+.btn.primary:active:not(:disabled) { box-shadow: 0 1px 0 var(--accent-chunk); }
+.btn.soft { background: var(--accent-soft); color: var(--ink); }
+.btn.ghost { background: transparent; border-color: transparent; color: var(--ink-2); box-shadow: none; }
+.btn.glass { background: var(--surface); }
+.btn.danger { background: var(--danger); color: var(--danger-ink); box-shadow: 0 4px 0 var(--danger-chunk); }
+.btn.sm { padding: 7px 12px; font-size: 13px; border-radius: 13px; box-shadow: 0 3px 0 var(--chunk); }
+.btn.primary.sm { box-shadow: 0 3px 0 var(--accent-chunk); }
+.btn.ghost.sm { box-shadow: none; }
+.btn.lg { padding: 14px 20px; font-size: 16px; border-radius: 20px; }
 .btn.block { width: 100%; }
 .i { width: 20px; height: 20px; flex: none; }
 .i.xs { width: 14px; height: 14px; vertical-align: -2px; }
 .btn .i { width: 18px; height: 18px; }
-.icon-btn { width: 40px; height: 40px; border-radius: 13px; border: 0; background: transparent; color: var(--ink-2); display: grid; place-items: center; cursor: pointer; flex: none; transition: transform .1s; }
+.icon-btn { width: 42px; height: 42px; border-radius: 14px; border: 0; background: transparent; color: var(--ink-2); display: grid; place-items: center; cursor: pointer; flex: none; transition: transform .1s; }
 .icon-btn:hover { background: var(--surface-2); }
 .icon-btn:active { transform: scale(.92); }
-.icon-btn.solid { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: var(--accent-ink); border-radius: 16px; width: 46px; height: 46px; box-shadow: 0 8px 18px -8px var(--accent); }
-.badge-ic { width: 34px; height: 34px; border-radius: 12px; display: grid; place-items: center; background: var(--tint, var(--accent-soft)); color: var(--tk, var(--accent)); flex: none; }
+.icon-btn.solid { background: var(--accent-btn); color: var(--accent-ink); border: 2px solid var(--outline); border-radius: 16px; width: 48px; height: 48px; box-shadow: 0 4px 0 var(--accent-chunk); }
+.icon-btn.solid:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--accent-chunk); }
+.badge-ic { width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center; background: var(--tint, var(--accent-soft)); color: var(--tk, var(--accent)); border: 2px solid var(--outline); flex: none; }
 .badge-ic .i { width: 18px; height: 18px; }
 .typing { display: inline-flex; gap: 4px; align-items: center; color: var(--ink-3); font-size: 13.5px; }
-.typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); opacity: .6; animation: bob 1s infinite ease-in-out; }
+.typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); opacity: .6; animation: bob 1s infinite ease-in-out; }
 .typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
 .typing span { margin-left: 6px; }
 @keyframes bob { 0%, 80%, 100% { transform: translateY(0); opacity: .35; } 40% { transform: translateY(-4px); opacity: 1; } }
 
-/* ô (tile) & thẻ */
-.tile, .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-l); padding: 16px; display: grid; gap: 12px; min-width: 0; box-shadow: var(--shadow-card); }
-.tile.tinted { background: var(--tint); border-color: transparent; }
+/* thẻ (tile) có viền mực và đường chỉ khâu */
+.tile, .card { position: relative; background: var(--surface); border: 2px solid var(--outline); border-radius: var(--r-l); padding: 16px; display: grid; gap: 12px; min-width: 0; box-shadow: var(--shadow-card); }
+.tile.tinted { background: var(--tint); }
+.tile.tinted::after { content: ""; position: absolute; inset: 6px; border: 1.5px dashed color-mix(in srgb, var(--outline) 30%, transparent); border-radius: 18px; pointer-events: none; }
 .tile-head { display: flex; align-items: center; gap: 10px; }
 .tile-head > div { flex: 1; min-width: 0; display: grid; gap: 1px; }
-.bento { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.empty { text-align: center; display: grid; justify-items: center; gap: 10px; padding: 26px 18px; background: var(--surface); border: 1.5px dashed var(--line); border-radius: var(--r-l); }
-.empty h3 { font: 650 19px/1.2 var(--display); }
+.empty { text-align: center; display: grid; justify-items: center; gap: 10px; padding: 26px 18px; background: var(--surface); border: 2px dashed var(--outline); border-radius: var(--r-l); }
+.empty h3 { font: 800 19px/1.2 var(--display); }
 .empty p { color: var(--ink-2); max-width: 38ch; font-size: 14px; }
-.empty.flat { padding: 16px; box-shadow: none; } .empty.flat p { font-size: 13.5px; }
+.empty.flat { padding: 16px; } .empty.flat p { font-size: 13.5px; }
 
 /* ô tình hình campus */
 .v-go { --tint: var(--t-sky); --tk: var(--k-sky); }
 .v-stay { --tint: var(--t-mint); --tk: var(--k-mint); }
 .v-partial { --tint: var(--t-butter); --tk: var(--k-butter); }
 .v-unknown { --tint: var(--t-lav); --tk: var(--k-lav); }
-.verdict { font: 650 24px/1.15 var(--display); letter-spacing: -.01em; color: var(--ink); }
+.verdict { font: 800 23px/1.15 var(--display); color: var(--ink); }
 .verdict-sub { color: var(--ink-2); font-size: 14.5px; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.chips span { background: color-mix(in srgb, var(--surface) 72%, transparent); border-radius: 999px; padding: 6px 11px; font: 700 12.5px/1.25 var(--font); color: var(--ink); }
+.chips span { background: var(--surface); border: 1.5px solid var(--outline); border-radius: 999px; padding: 5px 11px; font: 700 12.5px/1.25 var(--font); color: var(--ink); }
 .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; counter-reset: s; }
-.steps li { counter-increment: s; background: color-mix(in srgb, var(--surface) 72%, transparent); border-radius: 14px; padding: 9px 10px; font-size: 12px; line-height: 1.35; color: var(--ink-2); min-width: 0; }
-.steps li::before { content: counter(s); display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--tk); color: var(--surface); font: 800 11px var(--font); margin-bottom: 5px; }
+.steps li { counter-increment: s; background: var(--surface); border: 1.5px solid var(--outline); border-radius: 14px; padding: 9px 10px; font-size: 12px; line-height: 1.35; color: var(--ink-2); min-width: 0; }
+.steps li::before { content: counter(s); display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--accent-btn); color: var(--accent-ink); border: 1.5px solid var(--outline); font: 800 11px var(--font); margin-bottom: 5px; }
 .steps b { color: var(--ink); font-weight: 800; }
-
-/* ô ôn tập & chuỗi ngày */
-.ring { position: relative; width: 74px; height: 74px; flex: none; }
-.ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-.ring circle { fill: none; stroke-width: 8; }
-.ring .tr { stroke: color-mix(in srgb, var(--surface) 65%, transparent); }
-.ring .pg { stroke: var(--tk); stroke-linecap: round; transition: stroke-dashoffset .6s ease; }
-.ring b { position: absolute; inset: 0; display: grid; place-items: center; font: 650 22px var(--display); color: var(--ink); }
-.tile-num { font: 650 34px/1 var(--display); color: var(--ink); letter-spacing: -.02em; }
-.tile-num small { font: 800 13px var(--font); color: var(--ink-2); margin-left: 4px; letter-spacing: 0; }
-.week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-.week span { display: grid; justify-items: center; gap: 4px; font: 800 10px var(--font); color: var(--ink-3); }
-.week i { width: 14px; height: 14px; border-radius: 50%; background: color-mix(in srgb, var(--surface) 65%, transparent); }
-.week i.on { background: var(--tk); }
-.week i.today { box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px var(--tk); }
-.tile.mini { gap: 10px; align-content: space-between; }
-.tile.mini .label { color: var(--tk); }
 
 /* mail */
 .mini-mails { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
@@ -184,7 +179,7 @@ p { margin: 0; }
 .mini-mails p { color: var(--ink-2); font-size: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .imp { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: none; background: var(--ink-3); }
 .imp-haute { background: var(--k-rose); } .imp-moyenne { background: var(--k-butter); }
-.mail { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-m); padding: 13px 14px; display: grid; gap: 5px; min-width: 0; box-shadow: var(--shadow-card); }
+.mail { background: var(--surface); border: 2px solid var(--outline); border-radius: var(--r-m); padding: 13px 14px; display: grid; gap: 5px; min-width: 0; box-shadow: var(--shadow-card); }
 .mail-top { display: flex; gap: 8px; align-items: baseline; }
 .mail-top strong { flex: 1; min-width: 0; font-weight: 800; overflow-wrap: anywhere; }
 .mail-top .imp { margin-top: 0; align-self: center; }
@@ -193,13 +188,13 @@ p { margin: 0; }
 
 /* lịch */
 .list { display: grid; gap: 9px; }
-.ev { display: grid; grid-template-columns: 54px minmax(0, 1fr) auto; gap: 12px; align-items: start; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-m); padding: 12px; box-shadow: var(--shadow-card); transition: box-shadow .3s, transform .1s; }
+.ev { display: grid; grid-template-columns: 54px minmax(0, 1fr) auto; gap: 12px; align-items: start; background: var(--surface); border: 2px solid var(--outline); border-radius: var(--r-m); padding: 12px; box-shadow: var(--shadow-card); transition: box-shadow .3s, transform .1s; }
 .ev[data-go] { cursor: pointer; grid-template-columns: 54px minmax(0, 1fr); }
 .ev[data-go]:active { transform: scale(.99); }
 .ev.flash { box-shadow: 0 0 0 2px var(--accent); }
 .ev.done { opacity: .5; } .ev.done h4 { text-decoration: line-through; }
-.ev-date { display: grid; justify-items: center; background: var(--ev-bg); color: var(--ev-fg); border-radius: 14px; padding: 8px 0 7px; }
-.ev-date .dn { font: 650 22px/1 var(--display); font-variant-numeric: tabular-nums; }
+.ev-date { display: grid; justify-items: center; background: var(--ev-bg); color: var(--ev-fg); border: 2px solid var(--outline); border-radius: 14px; padding: 8px 0 7px; }
+.ev-date .dn { font: 800 22px/1 var(--display); font-variant-numeric: tabular-nums; }
 .ev-date .wd { font: 800 10px/1.3 var(--font); margin-top: 3px; white-space: nowrap; }
 .ev-body { min-width: 0; display: grid; gap: 3px; }
 .ev-top { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -215,32 +210,32 @@ p { margin: 0; }
 .c-closure { --ev-bg: var(--t-peach); --ev-fg: var(--k-peach); }
 .c-holiday { --ev-bg: var(--t-mint); --ev-fg: var(--k-mint); }
 .c-event { --ev-bg: var(--t-sky); --ev-fg: var(--k-sky); }
-.tag { font: 800 11px/1 var(--font); padding: 5px 9px; border-radius: 999px; background: var(--ev-bg, var(--surface-2)); color: var(--ev-fg, var(--ink-2)); white-space: nowrap; }
+.tag { font: 800 11px/1 var(--font); padding: 4px 9px; border: 1.5px solid var(--outline); border-radius: 999px; background: var(--ev-bg, var(--surface-2)); color: var(--ev-fg, var(--ink-2)); white-space: nowrap; }
 .group-h { margin: 10px 2px 0; }
 .strip { display: grid; grid-auto-flow: column; grid-auto-columns: 48px; gap: 6px; overflow-x: auto; padding: 2px 2px 8px; scrollbar-width: none; }
 .strip::-webkit-scrollbar { display: none; }
-.day { border: 1px solid var(--line); background: var(--surface); border-radius: 16px; padding: 9px 0 8px; display: grid; justify-items: center; gap: 4px; cursor: pointer; color: var(--ink); box-shadow: var(--shadow-card); }
+.day { border: 2px solid var(--outline); background: var(--surface); border-radius: 16px; padding: 9px 0 8px; display: grid; justify-items: center; gap: 4px; cursor: pointer; color: var(--ink); box-shadow: var(--shadow-card); }
 .day .wd { font: 800 10px var(--font); color: var(--ink-3); }
-.day .dn { font: 650 18px/1 var(--display); font-variant-numeric: tabular-nums; }
+.day .dn { font: 800 18px/1 var(--display); font-variant-numeric: tabular-nums; }
 .day .dots { display: flex; gap: 2px; height: 5px; }
 .day .dots i { width: 5px; height: 5px; border-radius: 50%; background: var(--ev-fg); }
-.day.today { background: linear-gradient(160deg, var(--accent), var(--accent-2)); border-color: transparent; color: var(--accent-ink); }
+.day.today { background: var(--accent-btn); border-color: var(--outline); color: var(--accent-ink); box-shadow: 0 4px 0 var(--accent-chunk); }
 .day.today .wd { color: inherit; opacity: .85; }
 .day.today .dots i { background: var(--accent-ink); }
 
 /* học */
-.course-card { display: flex; align-items: center; gap: 13px; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-l); padding: 12px; cursor: pointer; color: var(--ink); box-shadow: var(--shadow-card); transition: transform .1s; }
+.course-card { display: flex; align-items: center; gap: 13px; width: 100%; text-align: left; background: var(--surface); border: 2px solid var(--outline); border-radius: var(--r-l); padding: 12px; cursor: pointer; color: var(--ink); box-shadow: var(--shadow-card); transition: transform .1s; }
 .course-card:active { transform: scale(.985); }
-.cover { width: 58px; height: 58px; border-radius: 18px; background: var(--tint); display: grid; place-items: center; flex: none; position: relative; overflow: hidden; }
+.cover { width: 58px; height: 58px; border-radius: 18px; background: var(--tint); border: 2px solid var(--outline); display: grid; place-items: center; flex: none; position: relative; overflow: hidden; }
 .cover::before { content: ""; position: absolute; left: 7px; right: 7px; top: 50%; height: 2px; margin-top: -1px; background: var(--tk); opacity: .45; border-radius: 2px; }
 .cover i { position: relative; width: 28px; height: 14px; border-radius: 7px; background: linear-gradient(90deg, transparent 6px, var(--b1) 6px 9px, transparent 9px 12.5px, var(--b2) 12.5px 15.5px, transparent 15.5px 19px, var(--b3) 19px 22px, transparent 22px), var(--res-body); box-shadow: 0 2px 4px rgba(0, 0, 0, .12); }
 .cc-body { flex: 1; min-width: 0; display: grid; gap: 3px; }
-.cc-title { font: 650 17px/1.25 var(--display); overflow-wrap: anywhere; }
+.cc-title { font: 800 17px/1.25 var(--display); overflow-wrap: anywhere; }
 .cc-meta { font-size: 12.5px; color: var(--ink-3); font-weight: 700; }
 .bar { height: 6px; border-radius: 999px; background: var(--surface-2); overflow: hidden; margin-top: 4px; }
 .bar i { display: block; height: 100%; border-radius: inherit; background: var(--tk, var(--accent)); }
-.fr-glyph { width: 46px; height: 46px; border-radius: 15px; background: var(--t-sky); color: var(--k-sky); display: grid; place-items: center; font: italic 650 17px var(--display); flex: none; }
-.deck-row { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-m); padding: 12px; box-shadow: var(--shadow-card); }
+.fr-glyph { width: 46px; height: 46px; border-radius: 15px; background: var(--t-sky); color: var(--k-sky); display: grid; place-items: center; font: 800 18px var(--display); border: 2px solid var(--outline); flex: none; }
+.deck-row { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 2px solid var(--outline); border-radius: var(--r-m); padding: 12px; box-shadow: var(--shadow-card); }
 .deck-row .cover { width: 46px; height: 46px; border-radius: 15px; }
 .deck-row .cover i { transform: scale(.85); }
 .deck-row > div { flex: 1; min-width: 0; display: grid; gap: 2px; }
@@ -252,23 +247,23 @@ p { margin: 0; }
 .topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bg); background: color-mix(in srgb, var(--bg) 82%, transparent); -webkit-backdrop-filter: blur(16px) saturate(1.4); backdrop-filter: blur(16px) saturate(1.4); border-bottom: 1px solid var(--line); }
 .topbar .bar-in { display: flex; align-items: center; gap: 6px; padding-block: 8px; }
 .tb-title { flex: 1; min-width: 0; display: grid; }
-.tb-title strong { font: 650 16.5px/1.25 var(--display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tb-title strong { font: 800 16.5px/1.25 var(--display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tb-sub { border: 0; background: none; padding: 0; text-align: left; color: var(--ink-3); font: 800 12px var(--font); cursor: pointer; display: inline-flex; gap: 4px; align-items: center; justify-self: start; }
 .tb-sub .i { width: 13px; height: 13px; }
-.seg { display: inline-flex; background: var(--surface-2); border-radius: 12px; padding: 3px; flex: none; }
-.seg button { border: 0; background: none; font: 800 12px/1 var(--font); padding: 7px 10px; border-radius: 9px; color: var(--ink-3); cursor: pointer; }
-.seg button[aria-pressed="true"] { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: var(--accent-ink); }
+.seg { display: inline-flex; background: var(--surface-2); border: 2px solid var(--outline); border-radius: 13px; padding: 2px; flex: none; }
+.seg button { border: 0; background: none; font: 800 12px/1 var(--font); padding: 7px 10px; border-radius: 10px; color: var(--ink-2); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent-btn); color: var(--accent-ink); }
 .thread-wrap { flex: 1; }
 .thread { display: flex; flex-direction: column; gap: 18px; padding-block: 20px 14px; }
 .msg { min-width: 0; }
 .msg.a { display: grid; gap: 7px; }
 .msg.a .who { display: flex; align-items: center; gap: 6px; font: 800 12px/1 var(--font); color: var(--ink-3); }
-.msg.a .md { background: var(--surface); border: 1px solid var(--line); border-radius: 22px 22px 22px 8px; padding: 14px 16px; font-size: 16px; line-height: 1.68; box-shadow: var(--shadow-card); }
+.msg.a .md { background: var(--surface); border: 2px solid var(--outline); border-radius: 22px 22px 22px 8px; padding: 14px 16px; font-size: 16px; line-height: 1.68; box-shadow: var(--shadow-card); }
 .msg.u { align-self: flex-end; max-width: 86%; display: grid; justify-items: end; gap: 6px; }
-.msg.u .bubble { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: var(--accent-ink); padding: 10px 15px; border-radius: 22px 22px 8px 22px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 15.5px; font-weight: 600; box-shadow: 0 8px 18px -10px var(--accent); }
+.msg.u .bubble { background: var(--accent-btn); color: var(--accent-ink); padding: 10px 15px; border-radius: 22px 22px 8px 22px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 15.5px; font-weight: 700; border: 2px solid var(--outline); box-shadow: 0 3px 0 var(--accent-chunk); }
 .msg.u .mode { display: inline-flex; gap: 4px; align-items: center; font: 800 11.5px var(--font); color: var(--accent); }
 .msg.u .mode .i { width: 14px; height: 14px; }
-.fix { background: var(--t-butter); border-radius: 16px; padding: 9px 13px; font-size: 14px; max-width: 100%; }
+.fix { background: var(--t-butter); border: 1.5px dashed var(--outline); border-radius: 16px; padding: 9px 13px; font-size: 14px; max-width: 100%; }
 .fix summary { cursor: pointer; font-weight: 800; color: var(--k-butter); list-style: none; display: flex; gap: 6px; align-items: center; }
 .fix summary::-webkit-details-marker { display: none; }
 .fix summary .i { width: 15px; height: 15px; }
@@ -277,9 +272,9 @@ p { margin: 0; }
 .fix s { color: var(--k-rose); }
 .fix .vi, .fix .tip { color: var(--ink-2); } .fix .tip { font-style: italic; }
 .starter { display: grid; justify-items: center; text-align: center; gap: 8px; padding-block: 22px 8px; }
-.starter h2 { font: 650 23px/1.2 var(--display); }
+.starter h2 { font: 800 23px/1.2 var(--display); }
 .starter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-top: 10px; }
-.starter-grid button { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: var(--r-m); padding: 13px; cursor: pointer; display: grid; gap: 6px; color: var(--ink); box-shadow: var(--shadow-card); transition: transform .1s; }
+.starter-grid button { text-align: left; border: 2px solid var(--outline); background: var(--surface); border-radius: var(--r-m); padding: 13px; cursor: pointer; display: grid; gap: 6px; color: var(--ink); box-shadow: var(--shadow-card); transition: transform .1s; }
 .starter-grid button:active { transform: scale(.97); }
 .starter-grid strong { font-weight: 800; font-size: 14px; }
 .starter-grid span { font-size: 12.5px; color: var(--ink-2); }
@@ -287,51 +282,51 @@ p { margin: 0; }
 .composer .bar-in { display: grid; gap: 8px; padding-top: 14px; }
 .suggest { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
 .suggest::-webkit-scrollbar { display: none; }
-.chip { flex: none; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 7px 13px; font: 800 13px var(--font); color: var(--ink-2); cursor: pointer; box-shadow: var(--shadow-card); }
+.chip { flex: none; border: 2px solid var(--outline); background: var(--surface); border-radius: 999px; padding: 7px 13px; font: 800 13px var(--font); color: var(--ink-2); cursor: pointer; box-shadow: var(--shadow-card); }
 .chip:active { transform: scale(.95); }
 .mode-banner { display: flex; align-items: center; gap: 8px; background: var(--accent-soft); color: var(--accent); border-radius: 14px; padding: 6px 6px 6px 12px; font: 700 13px/1.35 var(--font); }
 .mode-banner span { flex: 1; }
 .mode-banner .icon-btn { width: 30px; height: 30px; color: var(--accent); }
-.input-row { display: flex; align-items: flex-end; gap: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 5px; box-shadow: var(--shadow-float); }
+.input-row { display: flex; align-items: flex-end; gap: 4px; background: var(--surface); border: 2px solid var(--outline); border-radius: 24px; padding: 5px; box-shadow: var(--shadow-float); }
 .input-row:focus-within, .input-row.feyn-on { border-color: var(--accent); }
 .input-row textarea { flex: 1; min-width: 0; border: 0; background: transparent; resize: none; font: 500 16px/1.45 var(--font); padding: 8px 4px; max-height: 160px; outline: none; box-shadow: none; }
 .input-row .icon-btn { width: 38px; height: 38px; border-radius: 50%; }
 .input-row .icon-btn[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
-.send { width: 38px; height: 38px; border-radius: 50%; border: 0; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: var(--accent-ink); display: grid; place-items: center; cursor: pointer; flex: none; transition: transform .1s, opacity .15s; }
+.send { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--outline); background: var(--accent-btn); color: var(--accent-ink); display: grid; place-items: center; cursor: pointer; flex: none; transition: transform .1s, opacity .15s; }
 .send:active:not(:disabled) { transform: scale(.9); }
 .send:disabled { opacity: .3; cursor: default; }
 
 /* thẻ ôn */
 .session-in { flex: 1; display: grid; align-content: center; gap: 16px; padding-block: 20px calc(20px + env(safe-area-inset-bottom, 0px)); }
-.progress { flex: 1; height: 8px; background: var(--surface-2); border-radius: 999px; overflow: hidden; }
-.progress i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: inherit; transition: width .35s ease; }
+.progress { flex: 1; height: 12px; background: var(--surface-2); border: 2px solid var(--outline); border-radius: 999px; overflow: hidden; }
+.progress i { display: block; height: 100%; width: 0; background: var(--accent-btn); border-radius: inherit; transition: width .35s ease; }
 .flash { display: grid; perspective: 1400px; cursor: pointer; outline-offset: 4px; border-radius: 28px; }
-.flash .face { grid-area: 1 / 1; background-color: var(--surface); background-image: radial-gradient(var(--grid) 1px, transparent 1.3px); background-size: 18px 18px; border: 1px solid var(--line); border-radius: 28px; padding: 22px 20px; min-height: 320px; display: grid; align-content: center; gap: 14px; backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: transform .5s cubic-bezier(.2, .75, .2, 1); box-shadow: var(--shadow-float); min-width: 0; }
+.flash .face { grid-area: 1 / 1; background-color: var(--surface); background-image: radial-gradient(var(--grid) 1px, transparent 1.3px); background-size: 18px 18px; border: 2px solid var(--outline); border-radius: 28px; padding: 22px 20px; min-height: 320px; display: grid; align-content: center; gap: 14px; backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: transform .5s cubic-bezier(.2, .75, .2, 1); box-shadow: var(--shadow-float); min-width: 0; }
 .flash .back { transform: rotateY(180deg); }
 .flash.flipped .front { transform: rotateY(-180deg); }
 .flash.flipped .back { transform: rotateY(0deg); }
-.face .md { font: 650 21px/1.4 var(--display); text-align: center; overflow-wrap: anywhere; }
+.face .md { font: 800 21px/1.4 var(--display); text-align: center; overflow-wrap: anywhere; }
 .face.back .md { font: 500 16px/1.6 var(--font); text-align: left; }
 .deck-name { justify-self: center; text-align: center; background: var(--accent-soft); color: var(--accent); padding: 5px 11px; border-radius: 999px; letter-spacing: .06em; }
 .hint { text-align: center; color: var(--ink-3); font-size: 12.5px; font-weight: 700; }
 .mnemo { background: var(--t-butter); color: var(--ink); border-radius: 16px; padding: 10px 12px; font-size: 14px; display: flex; gap: 8px; align-items: flex-start; }
 .mnemo .i { color: var(--k-butter); width: 18px; height: 18px; margin-top: 2px; }
 .grades { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-.grade { border: 0; background: var(--tint); border-radius: 18px; padding: 12px 4px; display: grid; justify-items: center; gap: 3px; cursor: pointer; color: var(--tk); transition: transform .1s; }
-.grade:active { transform: scale(.94); }
+.grade { border: 2px solid var(--outline); box-shadow: 0 4px 0 var(--chunk); background: var(--tint); border-radius: 18px; padding: 12px 4px; display: grid; justify-items: center; gap: 3px; cursor: pointer; color: var(--tk); transition: transform .1s; }
+.grade:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--chunk); }
 .grade strong { font: 800 14.5px var(--font); }
 .grade span { font: 700 11.5px var(--font); font-variant-numeric: tabular-nums; }
 .grade.g0 { --tint: var(--t-rose); --tk: var(--k-rose); } .grade.g3 { --tint: var(--t-butter); --tk: var(--k-butter); }
 .grade.g4 { --tint: var(--t-sky); --tk: var(--k-sky); } .grade.g5 { --tint: var(--t-mint); --tk: var(--k-mint); }
 
 /* hộp thư */
-.segmented { display: grid; grid-template-columns: 1fr 1fr; background: var(--surface-2); padding: 4px; border-radius: 16px; }
-.segmented button { border: 0; background: none; padding: 9px; border-radius: 12px; font: 800 13.5px var(--font); color: var(--ink-3); cursor: pointer; }
-.segmented button[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-card); }
+.segmented { display: grid; grid-template-columns: 1fr 1fr; background: var(--surface-2); border: 2px solid var(--outline); padding: 4px; border-radius: 18px; }
+.segmented button { border: 0; background: none; padding: 9px; border-radius: 14px; font: 800 13.5px var(--font); color: var(--ink-2); cursor: pointer; }
+.segmented button[aria-selected="true"] { background: var(--accent-btn); color: var(--accent-ink); box-shadow: inset 0 0 0 2px var(--outline); }
 .pills { display: inline-flex; gap: 5px; flex-wrap: wrap; }
-.pills button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 12px; font: 800 12.5px var(--font); color: var(--ink-2); cursor: pointer; }
+.pills button { border: 2px solid var(--outline); background: var(--surface); border-radius: 999px; padding: 6px 12px; font: 800 12.5px var(--font); color: var(--ink-2); cursor: pointer; }
 .pills button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-.drop { display: flex; align-items: center; gap: 10px; border: 1.5px dashed color-mix(in srgb, var(--accent) 45%, var(--line)); background: var(--accent-soft); border-radius: 18px; padding: 13px; cursor: pointer; color: var(--accent); font-weight: 800; font-size: 14px; position: relative; }
+.drop { display: flex; align-items: center; gap: 10px; border: 2px dashed var(--outline); background: var(--accent-soft); border-radius: 18px; padding: 13px; cursor: pointer; color: var(--ink); font-weight: 800; font-size: 14px; position: relative; }
 .drop:focus-within { border-color: var(--accent); }
 .thumbs { display: flex; gap: 6px; flex-wrap: wrap; }
 .thumbs img { width: 54px; height: 54px; object-fit: cover; border-radius: 12px; border: 1px solid var(--line); }
@@ -339,7 +334,7 @@ p { margin: 0; }
 /* ô nhập */
 .field { display: grid; gap: 6px; min-width: 0; }
 .field > span { font: 800 12px var(--font); color: var(--ink-2); }
-input[type="text"], input[type="date"], input[type="time"], input[type="number"], textarea, select { width: 100%; min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 11px 13px; font: 500 16px/1.4 var(--font); color: var(--ink); }
+input[type="text"], input[type="date"], input[type="time"], input[type="number"], textarea, select { width: 100%; min-width: 0; background: var(--surface); border: 2px solid var(--outline); border-radius: 14px; padding: 11px 13px; font: 500 16px/1.4 var(--font); color: var(--ink); }
 textarea { resize: vertical; }
 input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 .type-pick { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -348,13 +343,13 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--a
 
 /* bảng trượt */
 #sheetRoot { position: fixed; inset: 0; z-index: 50; }
-.backdrop { position: absolute; inset: 0; background: rgba(20, 14, 40, .42); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); opacity: 0; transition: opacity .22s; }
-.sheet { position: absolute; left: 0; right: 0; bottom: 0; margin: 0 auto; max-width: 620px; max-height: 88vh; max-height: 88dvh; display: flex; flex-direction: column; background: var(--surface); border-radius: 28px 28px 0 0; box-shadow: var(--shadow-float); transform: translateY(100%); transition: transform .32s cubic-bezier(.2, .85, .2, 1); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.backdrop { position: absolute; inset: 0; background: rgba(60, 40, 25, .45); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); opacity: 0; transition: opacity .22s; }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; margin: 0 auto; max-width: 620px; max-height: 88vh; max-height: 88dvh; display: flex; flex-direction: column; background: var(--surface); border: 2.5px solid var(--outline); border-bottom: 0; border-radius: 28px 28px 0 0; box-shadow: var(--shadow-float); transform: translateY(100%); transition: transform .32s cubic-bezier(.2, .85, .2, 1); padding-bottom: env(safe-area-inset-bottom, 0px); }
 #sheetRoot.open .backdrop { opacity: 1; }
 #sheetRoot.open .sheet { transform: translateY(0); }
 .grab { width: 40px; height: 5px; border-radius: 999px; background: var(--line); margin: 9px auto 0; flex: none; }
 .sheet-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px max(10px, env(safe-area-inset-right, 0px)) 2px max(20px, env(safe-area-inset-left, 0px)); }
-.sheet-h h3 { font: 650 20px/1.25 var(--display); min-width: 0; overflow-wrap: anywhere; }
+.sheet-h h3 { font: 800 21px/1.25 var(--display); min-width: 0; overflow-wrap: anywhere; }
 .sheet-b { overflow-y: auto; padding: 6px max(20px, env(safe-area-inset-right, 0px)) 22px max(20px, env(safe-area-inset-left, 0px)); display: grid; gap: 12px; }
 @media (min-width: 700px) {
   .sheet { bottom: auto; top: 50%; border-radius: 28px; opacity: 0; transform: translateY(-46%) scale(.98); transition: transform .22s, opacity .22s; }
@@ -368,17 +363,17 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--a
 .menu-i.danger { --tint: var(--t-rose); --tk: var(--k-rose); }
 .menu-i.danger strong { color: var(--danger); }
 .pick { display: grid; gap: 6px; }
-.pick-row { display: flex; align-items: center; gap: 10px; padding: 11px; border: 1px solid var(--line); border-radius: 16px; cursor: pointer; }
+.pick-row { display: flex; align-items: center; gap: 10px; padding: 11px; border: 2px solid var(--outline); border-radius: 16px; cursor: pointer; }
 .pick-row input { width: 20px; height: 20px; accent-color: var(--accent); flex: none; }
 .pick-t { display: grid; min-width: 0; }
 .pick-t strong { overflow-wrap: anywhere; }
 
 /* tab bar nổi */
 .tabbar { position: fixed; z-index: 25; left: 0; right: 0; bottom: 0; padding: 0 max(12px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); pointer-events: none; }
-.tabbar .in { pointer-events: auto; max-width: 520px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); background: var(--surface); background: color-mix(in srgb, var(--surface) 86%, transparent); -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5); border: 1px solid var(--line); border-radius: 26px; box-shadow: var(--shadow-float); padding: 6px; }
-.tab { border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 7px 0 6px; border-radius: 20px; color: var(--ink-3); font: 800 11px/1 var(--font); cursor: pointer; position: relative; transition: color .15s, background .15s; }
+.tabbar .in { pointer-events: auto; max-width: 520px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); background: var(--surface); background: color-mix(in srgb, var(--surface) 86%, transparent); -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5); border: 2.5px solid var(--outline); border-radius: 26px; box-shadow: var(--shadow-float); padding: 6px; }
+.tab { border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 7px 0 6px; border-radius: 20px; color: var(--ink-2); font: 800 11px/1 var(--font); cursor: pointer; position: relative; transition: color .15s, background .15s; }
 .tab .i { width: 22px; height: 22px; }
-.tab[aria-current="page"] { color: var(--accent); background: var(--accent-soft); }
+.tab[aria-current="page"] { color: var(--accent-ink); background: var(--accent-btn); box-shadow: inset 0 0 0 2px var(--outline); }
 .badge { position: absolute; top: 3px; left: calc(50% + 6px); min-width: 17px; height: 17px; padding: 0 4px; border-radius: 999px; background: var(--danger); color: var(--danger-ink); font: 800 10px/17px var(--font); text-align: center; box-shadow: 0 0 0 2px var(--surface); }
 #toast { position: fixed; z-index: 60; left: 50%; bottom: calc(var(--tabbar-h) + 28px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 11px 17px; border-radius: 16px; font: 700 14px/1.35 var(--font); max-width: calc(100vw - 32px); width: max-content; box-shadow: var(--shadow-float); }
 body.immersive #toast { bottom: calc(130px + env(safe-area-inset-bottom, 0px)); }
@@ -387,7 +382,7 @@ body.immersive #toast { bottom: calc(130px + env(safe-area-inset-bottom, 0px)); 
 /* chữ dạng ghi chú: tiêu đề mềm, chữ đậm tô dạ quang, công thức trong ô */
 .md > :first-child { margin-top: 0; } .md > :last-child { margin-bottom: 0; }
 .md p { margin: .55em 0; }
-.md h1, .md h2, .md h3, .md h4 { font: 650 1.15em/1.3 var(--display); margin: 1em 0 .35em; letter-spacing: -.005em; color: var(--ink); }
+.md h1, .md h2, .md h3, .md h4 { font: 800 1.15em/1.3 var(--display); margin: 1em 0 .35em; letter-spacing: -.005em; color: var(--ink); }
 .md ul, .md ol { padding-left: 1.35em; margin: .5em 0; } .md li { margin: .3em 0; }
 .md ul { list-style: none; } .md ul > li { position: relative; }
 .md ul > li::before { content: ""; position: absolute; left: -1em; top: .66em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); opacity: .85; }
@@ -408,97 +403,173 @@ mjx-container { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
 @media (max-width: 380px) { .steps { grid-template-columns: 1fr; } .starter-grid { grid-template-columns: 1fr; } .bento { grid-template-columns: 1fr; } }
 
 
-/* ===== trò chơi: mỗi môn là một nguyên tử — thế giới không gian, luôn tối (màu khai báo cố định) ===== */
+/* ===== cảnh trời ở màn Hôm nay ===== */
+.hero { position: relative; isolation: isolate; overflow: hidden; border: 2.5px solid var(--outline); border-radius: 30px; background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 100%); color: var(--sky-ink); box-shadow: var(--shadow-float); padding: 12px 14px 16px; display: grid; gap: 8px; }
+.hero-top { display: flex; align-items: center; gap: 8px; }
+.name-pill { display: inline-flex; gap: 6px; align-items: center; background: var(--surface); color: var(--ink); border: 2px solid var(--outline); border-radius: 999px; padding: 4px 12px; font: 800 14px var(--font); box-shadow: 0 3px 0 var(--chunk); cursor: pointer; max-width: 46%; }
+.name-pill span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.name-pill .i { width: 15px; height: 15px; flex: none; }
+.clock { font: 800 13px var(--font); color: var(--sky-ink-2); margin-right: auto; white-space: nowrap; }
+.hero .icon-btn { color: var(--sky-ink); background: var(--surface); border: 2px solid var(--outline); box-shadow: 0 3px 0 var(--chunk); width: 40px; height: 40px; color: var(--ink); }
+.bubble { position: relative; z-index: 2; justify-self: center; max-width: 94%; background: var(--surface); color: var(--ink); border: 2px solid var(--outline); border-radius: 18px; padding: 8px 14px; font: 700 14px/1.4 var(--font); text-align: center; box-shadow: 0 3px 0 var(--chunk); margin-top: 4px; }
+.bubble::after { content: ""; position: absolute; left: 50%; bottom: -9px; width: 14px; height: 14px; background: var(--surface); border-right: 2px solid var(--outline); border-bottom: 2px solid var(--outline); transform: translateX(-50%) rotate(45deg); }
+.scene { position: relative; height: 176px; display: grid; place-items: center; }
+.cloud { position: absolute; z-index: -1; width: 84px; height: 26px; border-radius: 999px; background: var(--cloud); opacity: .92; }
+.cloud::before, .cloud::after { content: ""; position: absolute; background: inherit; border-radius: 50%; }
+.cloud::before { width: 38px; height: 38px; left: 12px; top: -18px; }
+.cloud::after { width: 28px; height: 28px; left: 42px; top: -12px; }
+.cloud.c1 { top: 22px; left: 4%; animation: drift 26s linear infinite; }
+.cloud.c2 { top: 70px; right: 2%; transform: scale(.8); animation: drift 34s linear infinite reverse; }
+.cloud.c3 { bottom: 16px; left: 30%; transform: scale(.6); opacity: .7; }
+@keyframes drift { 0%, 100% { translate: 0 0; } 50% { translate: 18px 0; } }
+.buddy { position: relative; display: grid; justify-items: center; border: 0; background: none; padding: 0; cursor: pointer; }
+.buddy .mascot { animation: float 3.2s ease-in-out infinite; }
+.buddy::after { content: ""; width: 64px; height: 10px; margin-top: 2px; border-radius: 50%; background: rgba(60, 40, 25, .18); animation: shade 3.2s ease-in-out infinite; }
+.buddy.hop .mascot { animation: hop .5s ease; }
+@keyframes float { 50% { transform: translateY(-8px); } }
+@keyframes shade { 50% { transform: scaleX(.8); opacity: .7; } }
+@keyframes hop { 30% { transform: translateY(-22px) scale(1.06, .94); } 60% { transform: translateY(0) scale(.95, 1.05); } }
+.hero-actions { display: grid; grid-template-columns: 1fr 2.1fr 1fr; gap: 10px; align-items: end; }
+.side-btn { display: grid; justify-items: center; gap: 2px; background: var(--surface); color: var(--ink); border: 2px solid var(--outline); border-radius: 18px; padding: 9px 2px 7px; font: 800 12px var(--font); box-shadow: 0 4px 0 var(--chunk); cursor: pointer; transition: transform .08s, box-shadow .08s; }
+.side-btn .i { width: 24px; height: 24px; color: var(--accent); }
+.main-btn { position: relative; display: grid; justify-items: center; gap: 2px; background: var(--accent-btn); color: var(--accent-ink); border: 2.5px solid var(--outline); border-radius: 22px; padding: 12px 6px 10px; font: 800 24px/1 var(--display); box-shadow: 0 5px 0 var(--accent-chunk); cursor: pointer; transition: transform .08s, box-shadow .08s; }
+.main-btn small { font: 800 12px/1.2 var(--font); font-variant-numeric: tabular-nums; }
+.main-btn .sprout { position: absolute; top: -17px; left: 50%; width: 34px; height: 20px; transform: translateX(-50%); }
+.side-btn:active, .main-btn:active { transform: translateY(4px); }
+.side-btn:active { box-shadow: 0 0 0 var(--chunk); } .main-btn:active { box-shadow: 0 1px 0 var(--accent-chunk); }
+.main-btn.on { background: var(--t-butter); box-shadow: 0 5px 0 var(--chunk); }
+
+/* ===== thẻ trò chơi: bầu trời vẽ tay ===== */
 .space {
-  --sp-ink: #f1eeff; --sp-ink-2: #cfc8f2; --sp-ink-3: #9d96c8; --sp-line: rgba(255, 255, 255, .1); --sp-fill: rgba(255, 255, 255, .07);
-  --sp-green: #7fd9ab; --sp-gold: #f1c75e; --sp-rose: #ff9bb7; --sp-violet: #b8adff;
-  background-color: #12112a;
-  background-image: radial-gradient(130% 100% at 88% -10%, #2f2660 0%, rgba(22, 20, 45, 0) 60%), linear-gradient(180deg, #17153a 0%, #0e0d1f 100%);
-  color: var(--sp-ink);
+  --sp-ink: var(--sky-ink); --sp-ink-2: var(--sky-ink-2); --sp-ink-3: var(--sky-ink-2);
+  --sp-fill: color-mix(in srgb, var(--sky-ink) 10%, transparent);
+  background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 100%); color: var(--sp-ink);
 }
 .widgets { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.widget { position: relative; overflow: hidden; isolation: isolate; border-radius: 26px; padding: 14px 15px; min-height: 164px; display: flex; flex-direction: column; justify-content: space-between; gap: 8px; border: 1px solid rgba(255, 255, 255, .07); box-shadow: 0 14px 30px -16px rgba(20, 10, 60, .55); text-align: left; font: inherit; color: var(--sp-ink); cursor: pointer; transition: transform .12s ease; min-width: 0; }
-button.widget:active, .widget[data-act]:active { transform: scale(.975); }
+.widget { position: relative; overflow: hidden; isolation: isolate; border-radius: 24px; padding: 14px 15px; min-height: 160px; display: flex; flex-direction: column; justify-content: space-between; gap: 8px; border: 2.5px solid var(--outline); box-shadow: var(--shadow-card); text-align: left; font: inherit; color: var(--sp-ink); cursor: pointer; transition: transform .08s ease, box-shadow .08s; min-width: 0; }
+button.widget:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--chunk); }
 .widget.wide { grid-column: 1 / -1; min-height: 0; cursor: default; }
 .widget > *:not(canvas) { position: relative; z-index: 1; }
 .atom-cv { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
-.w-title { font: 650 18px/1.15 var(--display); letter-spacing: -.01em; }
-.w-sub { font: 800 11.5px/1.3 var(--font); color: var(--sp-ink-3); }
-.w-big { font: 650 30px/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
-.w-foot { font: 700 12.5px var(--font); color: var(--sp-ink-2); }
-.w-foot b { font: 650 20px var(--display); color: var(--sp-ink); margin-right: 3px; }
+.w-title { font: 800 19px/1.15 var(--display); }
+.w-sub { font: 800 12px/1.3 var(--font); color: var(--sp-ink-3); }
+.w-big { font: 800 30px/1 var(--display); font-variant-numeric: tabular-nums; }
+.w-foot { font: 800 12.5px var(--font); color: var(--sp-ink-2); }
+.w-foot b { font: 800 21px var(--display); color: var(--sp-ink); margin-right: 3px; }
 .w-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; }
-.play { width: 46px; height: 46px; border-radius: 50%; background: var(--sp-green); color: #0e0d1f; display: grid; place-items: center; flex: none; box-shadow: 0 0 0 6px rgba(127, 217, 171, .16), 0 8px 20px -6px rgba(127, 217, 171, .6); }
-.play.on { background: var(--sp-gold); box-shadow: 0 0 0 6px rgba(241, 199, 94, .16), 0 8px 20px -6px rgba(241, 199, 94, .6); }
+.play { width: 46px; height: 46px; border-radius: 50%; background: var(--accent-btn); color: var(--accent-ink); border: 2px solid var(--outline); display: grid; place-items: center; flex: none; box-shadow: 0 3px 0 var(--accent-chunk); cursor: pointer; }
 .play .i { width: 20px; height: 20px; }
-.sym-chip { display: inline-grid; place-items: center; min-width: 30px; height: 30px; padding: 0 6px; border-radius: 9px; background: rgba(255, 255, 255, .12); font: 650 15px var(--display); }
-/* lịch nhiệt */
+.sym-chip { display: inline-grid; place-items: center; min-width: 34px; height: 34px; padding: 0 6px; border-radius: 11px; background: var(--surface); color: var(--ink); border: 2px solid var(--outline); font: 800 17px var(--display); }
 .heat-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-.heat { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-.heat span { font: 800 9.5px var(--font); color: var(--sp-ink-3); text-align: center; }
-.heat i { aspect-ratio: 1; border-radius: 6px; background: var(--sp-fill); }
-.heat i.pad { background: none; }
-.heat i.l1 { background: rgba(255, 155, 183, .32); } .heat i.l2 { background: rgba(255, 155, 183, .62); } .heat i.l3 { background: #ff9bb7; }
-.heat i.gold { box-shadow: inset 0 0 0 2px var(--sp-gold); }
-.heat i.today { outline: 2px solid #fff; outline-offset: 1px; }
-.flame { display: inline-flex; align-items: center; gap: 4px; font: 800 13px var(--font); color: var(--sp-gold); }
-.flame .i { width: 16px; height: 16px; }
-/* nhiệm vụ & cấp độ */
-.quests { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-.quests li { display: flex; align-items: center; gap: 10px; font: 700 13.5px/1.3 var(--font); min-width: 0; }
+.heat { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+.heat span { font: 800 10px var(--font); color: var(--sp-ink-3); text-align: center; }
+.heat i { aspect-ratio: 1; border-radius: 7px; background: var(--sp-fill); border: 1.5px solid color-mix(in srgb, var(--outline) 22%, transparent); }
+.heat i.pad { background: none; border: 0; }
+.heat i.l1 { background: color-mix(in srgb, var(--chart) 35%, var(--surface)); } .heat i.l2 { background: color-mix(in srgb, var(--chart) 68%, var(--surface)); } .heat i.l3 { background: var(--chart); }
+.heat i.gold { border: 2.5px solid var(--k-butter); }
+.heat i.today { outline: 2.5px solid var(--outline); outline-offset: 1px; }
+.flame { display: inline-flex; align-items: center; gap: 4px; font: 800 13px var(--font); color: var(--sp-ink); background: var(--t-butter); border: 1.5px solid var(--outline); border-radius: 999px; padding: 3px 10px; }
+.flame .i { width: 16px; height: 16px; color: var(--k-peach); }
+.quests { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
+.quests li { display: flex; align-items: center; gap: 10px; font: 800 13.5px/1.3 var(--font); min-width: 0; }
 .quests li > span:nth-child(2) { flex: 1; min-width: 0; }
-.quests small { display: block; font: 700 11px var(--font); color: var(--sp-ink-3); }
-.qdot { width: 22px; height: 22px; border-radius: 50%; flex: none; display: grid; place-items: center; background: conic-gradient(var(--sp-green) calc(var(--p) * 1turn), rgba(255, 255, 255, .12) 0); }
-.qdot::after { content: ""; width: 14px; height: 14px; border-radius: 50%; background: #17153a; }
-.qdot.done { background: var(--sp-green); color: #0e0d1f; }
-.qdot.done::after { display: none; }
+.quests small { display: block; font: 700 11.5px var(--font); color: var(--sp-ink-3); }
+.qdot { width: 26px; height: 26px; border-radius: 50%; flex: none; display: grid; place-items: center; border: 2px solid var(--outline); background: conic-gradient(var(--chart) calc(var(--p) * 1turn), var(--surface) 0); }
+.qdot.done { background: var(--accent-btn); color: var(--accent-ink); }
 .qdot .i { width: 14px; height: 14px; }
-.quests .btn { padding: 6px 10px; font-size: 12px; border-radius: 10px; }
-.btn.space-btn { background: rgba(255, 255, 255, .12); color: var(--sp-ink); border-color: transparent; }
+.btn.space-btn { padding: 6px 11px; font-size: 12px; border-radius: 12px; box-shadow: 0 3px 0 var(--chunk); }
 .lvl { display: grid; gap: 6px; }
 .lvl-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font: 800 12.5px var(--font); color: var(--sp-ink-2); }
-.lvl-top b { font: 650 16px var(--display); color: var(--sp-ink); }
-.xp { height: 8px; border-radius: 999px; background: rgba(255, 255, 255, .1); overflow: hidden; }
-.xp i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--sp-violet), var(--sp-rose), var(--sp-gold)); }
-/* phòng thí nghiệm */
+.lvl-top b { font: 800 16px var(--display); color: var(--sp-ink); }
+.xp { height: 14px; border-radius: 999px; background: var(--surface); border: 2px solid var(--outline); overflow: hidden; }
+.xp i { display: block; height: 100%; border-radius: inherit; background: repeating-linear-gradient(-45deg, var(--accent-btn) 0 8px, color-mix(in srgb, var(--accent-btn) 80%, #fff) 8px 16px); }
+
+/* ===== phòng thí nghiệm ===== */
 .atoms { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .atom-card { min-height: 200px; }
 .atom-card .w-row { align-items: center; }
-.ptable { overflow-x: auto; border-radius: 22px; padding: 12px; -webkit-overflow-scrolling: touch; }
+.ptable { overflow-x: auto; border: 2.5px solid var(--outline); border-radius: 24px; padding: 12px; box-shadow: var(--shadow-card); -webkit-overflow-scrolling: touch; }
 .pt { display: grid; grid-template-columns: repeat(18, 34px); grid-template-rows: repeat(7, 38px) 8px repeat(2, 38px); gap: 3px; width: max-content; }
-.el { border: 0; border-radius: 8px; display: grid; place-items: center; align-content: center; gap: 0; background: var(--sp-fill); color: var(--sp-ink-3); font: 800 11.5px/1 var(--font); cursor: pointer; padding: 0; }
-.el small { font: 700 7.5px/1 var(--font); opacity: .8; }
-.el.on { background: var(--cat); color: #0e0d1f; }
-.el.last { box-shadow: 0 0 0 2px #fff, 0 0 14px var(--cat); }
+.el { border: 1.5px dashed color-mix(in srgb, var(--outline) 40%, transparent); border-radius: 9px; display: grid; place-items: center; align-content: center; background: var(--sp-fill); color: var(--sp-ink-3); font: 800 11.5px/1 var(--font); cursor: pointer; padding: 0; }
+.el small { font: 800 7.5px/1 var(--font); }
+.el.on { background: var(--cat); color: #3a2a20; border: 1.5px solid var(--outline); }
+.el.last { box-shadow: 0 0 0 2.5px var(--outline); }
 .pt-gap { grid-column: 1 / -1; }
-.legend { display: flex; flex-wrap: wrap; gap: 6px 10px; font: 700 11px var(--font); color: var(--sp-ink-2); margin-top: 10px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 10px; font: 800 11px var(--font); color: var(--sp-ink-2); margin-top: 10px; }
 .legend span { display: inline-flex; align-items: center; gap: 5px; }
-.legend i { width: 10px; height: 10px; border-radius: 3px; background: var(--cat); }
-/* thẻ nguyên tố */
-.elem-tile { width: 150px; height: 160px; margin: 4px auto; border-radius: 26px; background: var(--cat); color: #0e0d1f; display: grid; grid-template-rows: auto 1fr auto; padding: 12px 14px; box-shadow: 0 18px 40px -14px var(--cat); animation: pop .6s cubic-bezier(.2, 1.4, .4, 1); }
+.legend i { width: 11px; height: 11px; border-radius: 3px; background: var(--cat); border: 1.5px solid var(--outline); }
+.elem-tile { width: 150px; height: 160px; margin: 4px auto; border-radius: 26px; background: var(--cat); color: #3a2a20; border: 2.5px solid var(--outline); box-shadow: 0 5px 0 var(--chunk); display: grid; grid-template-rows: auto 1fr auto; padding: 12px 14px; animation: pop .6s cubic-bezier(.2, 1.4, .4, 1); }
 .elem-tile .z { font: 800 14px var(--font); }
-.elem-tile .s { font: 650 64px/1 var(--display); align-self: center; text-align: center; }
+.elem-tile .s { font: 800 64px/1 var(--display); align-self: center; text-align: center; }
 .elem-tile .n { font: 800 14px var(--font); text-align: center; }
 @keyframes pop { from { transform: scale(.4) rotate(-8deg); opacity: 0; } to { transform: none; opacity: 1; } }
 .reward { text-align: center; display: grid; gap: 8px; justify-items: center; }
-.reward .gain { font: 650 30px var(--display); color: var(--accent); }
-/* màn tập trung */
-.focus-view { position: relative; }
+.reward .gain { font: 800 32px var(--display); color: var(--accent); }
+
+/* ===== màn tập trung ===== */
 .focus-view .fbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 10px; }
-.focus-view .icon-btn { color: var(--sp-ink-2); }
-.focus-view .icon-btn:hover { background: rgba(255, 255, 255, .08); }
+.focus-view .icon-btn { color: var(--ink); background: var(--surface); border: 2px solid var(--outline); box-shadow: 0 3px 0 var(--chunk); }
 .focus-in { flex: 1; display: grid; align-content: center; gap: 18px; padding-block: 10px calc(24px + env(safe-area-inset-bottom, 0px)); text-align: center; }
-.stage { position: relative; height: min(52vh, 380px); border-radius: 30px; overflow: hidden; }
+.stage { position: relative; height: min(50vh, 360px); border-radius: 30px; border: 2.5px solid var(--outline); background: color-mix(in srgb, var(--surface) 35%, transparent); overflow: hidden; box-shadow: var(--shadow-card); }
 .stage .stage-label { position: absolute; left: 0; right: 0; bottom: 14px; z-index: 1; display: grid; gap: 2px; justify-items: center; }
-.f-time { font: 650 64px/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: -.03em; }
-.f-pick { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; justify-content: flex-start; }
+.f-time { font: 800 66px/1 var(--display); font-variant-numeric: tabular-nums; }
+.f-pick { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 2px 2px 6px; }
 .f-pick::-webkit-scrollbar { display: none; }
-.f-pick button { flex: none; border: 1px solid var(--sp-line); background: var(--sp-fill); color: var(--sp-ink-2); border-radius: 999px; padding: 8px 13px; font: 800 13px var(--font); cursor: pointer; }
-.f-pick button[aria-pressed="true"] { background: var(--sp-ink); color: #12112a; border-color: var(--sp-ink); }
-.f-hint { font: 700 13px/1.45 var(--font); color: var(--sp-ink-3); }
-.btn.go { background: var(--sp-green); color: #0e0d1f; border-color: transparent; box-shadow: 0 10px 26px -10px rgba(127, 217, 171, .8); }
-.btn.quiet { background: rgba(255, 255, 255, .08); color: var(--sp-ink-2); border-color: transparent; }
-@media (max-width: 380px) { .widgets, .atoms { grid-template-columns: 1fr; } }
+.f-pick button { flex: none; border: 2px solid var(--outline); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 7px 13px; font: 800 13px var(--font); cursor: pointer; box-shadow: 0 3px 0 var(--chunk); }
+.f-pick button[aria-pressed="true"] { background: var(--accent-btn); color: var(--accent-ink); box-shadow: 0 3px 0 var(--accent-chunk); }
+.f-hint { font: 700 13px/1.45 var(--font); color: var(--sp-ink-2); }
+.btn.go { background: var(--accent-btn); color: var(--accent-ink); box-shadow: 0 5px 0 var(--accent-chunk); }
+.btn.quiet { background: var(--surface); }
+
+/* ===== thống kê ===== */
+.stats-tabs { display: grid; grid-template-columns: repeat(5, 1fr); background: var(--surface-2); border: 2px solid var(--outline); border-radius: 18px; padding: 4px; }
+.stats-tabs button { border: 0; background: none; padding: 9px 2px; border-radius: 14px; font: 800 12.5px var(--font); color: var(--ink-2); cursor: pointer; min-width: 0; }
+.stats-tabs button[aria-selected="true"] { background: var(--accent-btn); color: var(--accent-ink); box-shadow: inset 0 0 0 2px var(--outline); }
+.period { display: flex; align-items: center; justify-content: space-between; gap: 6px; background: var(--surface); border: 2px solid var(--outline); border-radius: 18px; padding: 5px; box-shadow: var(--shadow-card); }
+.period strong { font: 800 16px var(--display); text-align: center; flex: 1; }
+.period .icon-btn:disabled { opacity: .3; cursor: default; }
+.big-stat { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.big-stat b { font: 800 42px/1 var(--display); }
+.chart { position: relative; }
+.chart svg { display: block; width: 100%; height: 190px; overflow: visible; }
+.chart .gl { stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 3 5; }
+.chart .ax { fill: var(--ink-3); font: 800 10.5px var(--font); }
+.chart .bar { fill: var(--chart); }
+.chart .bar.zero { fill: var(--surface-2); }
+.chart .hit { fill: transparent; cursor: pointer; }
+.chart .hit:hover + .bar, .chart .hit.on + .bar { stroke: var(--outline); stroke-width: 2; }
+.chart .area { fill: color-mix(in srgb, var(--chart) 28%, transparent); }
+.chart .ln { fill: none; stroke: var(--chart); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.tip { position: absolute; z-index: 3; transform: translate(-50%, 0); background: var(--ink); color: var(--bg); font: 800 12px/1.3 var(--font); padding: 5px 9px; border-radius: 10px; pointer-events: none; white-space: nowrap; }
+.records { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.rec { background: var(--t-butter); border: 2px solid var(--outline); border-radius: 18px; padding: 14px 10px; text-align: center; box-shadow: var(--shadow-card); min-width: 0; }
+.rec b { display: block; font: 800 26px/1.15 var(--display); }
+.rec span { font: 800 12.5px var(--font); color: var(--ink-2); }
+.rec.mint { background: var(--t-mint); } .rec.sky { background: var(--t-sky); } .rec.peach { background: var(--t-peach); }
+.subj-bars { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.subj-bars li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; font: 800 13.5px var(--font); }
+.subj-bars li span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.subj-bars .trk { grid-column: 1 / -1; height: 12px; border-radius: 999px; background: var(--surface-2); border: 1.5px solid var(--outline); overflow: hidden; }
+.subj-bars .trk i { display: block; height: 100%; background: var(--chart); }
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table td, .data-table th { padding: 4px 6px; border-bottom: 1px solid var(--line); text-align: left; }
+.data-table td:last-child, .data-table th:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ===== cài đặt ===== */
+.set-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.set-card { display: grid; justify-items: center; gap: 6px; background: var(--t-mint); border: 2px solid var(--outline); border-radius: 18px; padding: 12px 6px; box-shadow: var(--shadow-card); text-align: center; font: 800 13px/1.25 var(--font); position: relative; }
+.set-card::after { content: ""; position: absolute; inset: 5px; border: 1.5px dashed color-mix(in srgb, var(--outline) 30%, transparent); border-radius: 13px; pointer-events: none; }
+.set-card .i { width: 28px; height: 28px; color: var(--k-mint); }
+.set-card.peach { background: var(--t-peach); } .set-card.peach .i { color: var(--k-peach); }
+.set-card.sky { background: var(--t-sky); } .set-card.sky .i { color: var(--k-sky); }
+.set-row { display: flex; align-items: center; gap: 12px; background: var(--surface-2); border: 2px solid var(--outline); border-radius: 18px; padding: 12px; }
+.set-row > span { flex: 1; min-width: 0; display: grid; font-weight: 800; }
+.set-row small { color: var(--ink-3); font-weight: 700; font-size: 12px; }
+.switch { appearance: none; -webkit-appearance: none; width: 56px; height: 32px; border-radius: 999px; background: var(--line); border: 2px solid var(--outline); position: relative; cursor: pointer; flex: none; transition: background .15s; margin: 0; }
+.switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: var(--surface); border: 2px solid var(--outline); transition: transform .15s; }
+.switch:checked { background: var(--accent-btn); }
+.switch:checked::after { transform: translateX(24px); }
+@media (max-width: 380px) { .widgets, .atoms { grid-template-columns: 1fr; } .stats-tabs button { font-size: 11.5px; } .set-grid { grid-template-columns: 1fr; } }
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -535,6 +606,11 @@ button.widget:active, .widget[data-act]:active { transform: scale(.975); }
   <symbol id="i-half" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"/></symbol>
   <symbol id="i-question" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.5a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.8v.5"/><circle cx="12" cy="17" r=".9" fill="currentColor" stroke="none"/></symbol>
   <symbol id="i-flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c3.6 0 6-2.4 6-5.8 0-3.1-2-5-3.3-6.9-.5 1.6-1.4 2.6-2.4 3C12.7 8 11.4 5.4 9.3 3.5c0 3.2-3.3 5.6-3.3 10 0 4.3 2.7 7.5 6 7.5z"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.8 12h2.4M18.8 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/><circle cx="12" cy="12" r="6.4"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><rect x="5.5" y="11" width="3.2" height="7" rx="1"/><rect x="10.4" y="6" width="3.2" height="12" rx="1"/><rect x="15.3" y="13.5" width="3.2" height="4.5" rx="1"/></symbol>
+  <symbol id="i-volume" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3"/><circle cx="12" cy="15.5" r="1.3" fill="currentColor"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M8.5 5.8v12.4a.8.8 0 0 0 1.2.7l9.6-6.2a.8.8 0 0 0 0-1.4L9.7 5.1a.8.8 0 0 0-1.2.7z" fill="currentColor"/></symbol>
   <symbol id="i-atom" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><ellipse cx="12" cy="12" rx="9.5" ry="3.8"/><ellipse cx="12" cy="12" rx="9.5" ry="3.8" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9.5" ry="3.8" transform="rotate(120 12 12)"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></symbol>
   <symbol id="i-map" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5 4 7v12l5-2 6 2 5-2V5l-5 2z"/><path d="M9 5v12M15 7v12"/></symbol>
@@ -547,8 +623,21 @@ button.widget:active, .widget[data-act]:active { transform: scale(.975); }
   <section id="v-home" class="view">
     <header class="hello">
       <div class="hello-txt"><p class="eyebrow" id="hDate"></p><h1 id="hGreet">Chào bạn</h1><p class="muted small" id="hSub"></p></div>
-      <div class="hello-mascot" id="hMascot"></div>
     </header>
+    <section class="hero" aria-label="Bé electron và nút tập trung">
+      <div class="hero-top">
+        <button class="name-pill" data-act="settings" aria-label="Đổi tên bé electron"><span id="buddyName">Elec</span><svg class="i"><use href="#i-pencil"></use></svg></button>
+        <span class="clock" id="hClock"></span>
+        <button class="icon-btn" data-act="settings" aria-label="Cài đặt"><svg class="i"><use href="#i-gear"></use></svg></button>
+      </div>
+      <p class="bubble" id="hBubble" aria-live="polite"></p>
+      <div class="scene"><span class="cloud c1"></span><span class="cloud c2"></span><span class="cloud c3"></span><button class="buddy" id="buddy" data-act="buddy" aria-label="Chạm vào bé electron"></button></div>
+      <div class="hero-actions">
+        <button class="side-btn" data-go="stats"><svg class="i"><use href="#i-chart"></use></svg>Thống kê</button>
+        <button class="main-btn" id="wFocus" data-act="focus-open"><svg class="sprout" viewBox="0 0 34 20" aria-hidden="true"><path d="M17 20V9" style="stroke: var(--outline); fill: none" stroke-width="2.2" stroke-linecap="round"/><path d="M17 10C14 3 7 2 3 4c2 6 9 8 14 6z" style="fill: #8fc45a; stroke: var(--outline)" stroke-width="2"/><path d="M17 10c3-7 10-8 14-6-2 6-9 8-14 6z" style="fill: #b3dc72; stroke: var(--outline)" stroke-width="2"/></svg><span id="wFocusLabel">Tập trung</span><small data-left>25:00 · +5 e⁻</small></button>
+        <button class="side-btn" data-go="lab"><svg class="i"><use href="#i-atom"></use></svg>Phòng lab</button>
+      </div>
+    </section>
     <div class="widgets" id="hWidgets"></div>
     <article class="tile tinted" id="hStatus"></article>
     <article class="tile" id="hMail"></article>
@@ -612,6 +701,19 @@ button.widget:active, .widget[data-act]:active { transform: scale(.975); }
       <div id="ckOut" class="stack"></div>
     </div>
   </section>
+  <!-- THỐNG KÊ -->
+  <section id="v-stats" class="view" hidden>
+    <header class="page-h">
+      <div><h1>Thống kê</h1><p class="muted">Câu chuyện tập trung của bạn</p></div>
+      <button class="icon-btn" data-go="home" aria-label="Về Hôm nay"><svg class="i"><use href="#i-back"></use></svg></button>
+    </header>
+    <div class="stats-tabs" id="stTabs" role="tablist"></div>
+    <div class="period" id="stPeriod"><button class="icon-btn" id="stPrev" aria-label="Khoảng trước"><svg class="i"><use href="#i-back"></use></svg></button><strong id="stLabel"></strong><button class="icon-btn" id="stNext" aria-label="Khoảng sau"><svg class="i"><use href="#i-chevron"></use></svg></button></div>
+    <article class="card" id="stMain"></article>
+    <div class="records" id="stRec"></div>
+    <article class="card" id="stSubj"></article>
+  </section>
+
   <!-- PHÒNG THÍ NGHIỆM -->
   <section id="v-lab" class="view" hidden>
     <header class="page-h">
@@ -833,7 +935,7 @@ async function copyText(text, label) {
 }
 
 // ================= dữ liệu (riêng tư theo người dùng) =================
-const state = { agenda: [], courses: [], decks: {}, chats: {}, mail: { seen: [], recent: [], lastRun: "" }, status: null, stats: { days: {} }, atoms: {}, focus: {}, facts: {}, cur: null, view: "home", seg: "mail", mailMsg: null };
+const state = { agenda: [], courses: [], decks: {}, chats: {}, mail: { seen: [], recent: [], lastRun: "" }, status: null, stats: { days: {} }, atoms: {}, focus: {}, facts: {}, prefs: {}, sessions: [], cur: null, view: "home", seg: "mail", mailMsg: null };
 let base = null;
 const writeQueue = new Map();
 function queue(docId, op) {
@@ -894,6 +996,8 @@ async function loadData() {
       else if (d.id === "atoms") state.atoms = v.list || {};
       else if (d.id === "focus") state.focus = v.endAt ? v : {};
       else if (d.id === "facts") state.facts = v.list || {};
+      else if (d.id === "prefs") state.prefs = v || {};
+      else if (d.id === "sessions") state.sessions = Array.isArray(v.list) ? v.list : [];
     }
     showNotice("");
   } catch (e) {
@@ -1585,13 +1689,14 @@ function confetti() {
 function flipCard() {
   if (!sess.cur || sess.flipped) return;
   sess.flipped = true;
+  sfx("flip");
   $("#flash").classList.add("flipped");
   $("#sGrades").hidden = false; $("#sFlip").hidden = true;
 }
 function gradeCur(g) {
   if (!sess.cur || !sess.flipped) return;
   const { deck, card } = sess.cur;
-  grade(card, g); saveDeck(deck); bump("r"); rewardReview(deck); checkGold();
+  grade(card, g); saveDeck(deck); bump("r"); sfx("pop"); rewardReview(deck); checkGold();
   if (g < 3) sess.queue.push(sess.cur); else sess.done++;
   nextCard();
 }
@@ -1623,7 +1728,6 @@ function renderHome() {
   const g = greeting();
   $("#hGreet").innerHTML = `${esc(g.pre)} <em>${esc(g.word)}</em>`;
   $("#hDate").textContent = longDate(todayISO());
-  $("#hMascot").innerHTML = mascot("md", g.mood);
   const up7 = upcoming(7), exams = up7.filter((a) => a.type === "exam").length, dues = up7.filter((a) => a.type === "deadline").length;
   $("#hSub").textContent = exams || dues ? `7 ngày tới: ${[exams && exams + " kỳ thi", dues && dues + " hạn nộp"].filter(Boolean).join(", ")}.` : g.mood === "sleep" ? "Mai học tiếp, giờ đi ngủ thôi." : "Tuần này nhẹ nhàng, tranh thủ ôn bài nhé.";
   // campus
@@ -1641,6 +1745,7 @@ function renderHome() {
       <a class="btn glass sm" href="https://claude.ai/new" target="_blank" rel="noopener">${icon("external")} Mở Claude</a>
       <button class="btn primary sm" data-act="paste-brief">${icon("paste")} ${fresh ? "Dán bản mới" : "Dán kết quả"}</button>
     </div>`;
+  renderHero();
   renderWidgets();
   // mail
   const m = state.mail, imp = m.recent.filter((x) => x.importance === "haute");
@@ -1915,14 +2020,18 @@ function checkGold() {
   const d = state.stats.days[todayISO()];
   if (!d || d.gold || !quests().every((q) => q.p >= 1)) return;
   d.gold = 1; saveStats();
-  confetti(); toast("Ngày hoàn hảo! Cả 3 nhiệm vụ đã xong", 4000);
+  confetti(); sfx("unlock"); toast("Ngày hoàn hảo! Cả 3 nhiệm vụ đã xong", 4000);
 }
 
-// --- vẽ nguyên tử (canvas, chuyển động nhẹ) ---
-const SPACE = { lav: "#b8adff", sky: "#93b6ff", mint: "#7fd9ab", peach: "#ffb38a", rose: "#ff9bb7", butter: "#f1c75e" };
+// --- vẽ nguyên tử kiểu vẽ tay (canvas, chuyển động nhẹ) ---
+const BODY = { lav: "#ebe5fb", sky: "#d9ecf7", mint: "#d8f0de", peach: "#ffe2c9", rose: "#ffdde5", butter: "#ffeaa8" };
+const ELEC = { lav: "#8f7ff0", sky: "#5aa3dd", mint: "#4fb37b", peach: "#ef9258", rose: "#ea6f93", butter: "#e0ae22" };
 const SHELLS = [2, 8, 18, 32, 32, 18, 8];
 const atomViews = new Set();
-let atomRaf = 0;
+let atomRaf = 0, inkCache = "";
+const ink = () => (inkCache ||= getComputedStyle(document.documentElement).getPropertyValue("--outline").trim() || "#6b4a3a");
+new MutationObserver(() => { inkCache = ""; kickAtoms(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "class", "style"] });
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { inkCache = ""; kickAtoms(); });
 function mountAtom(host, { z, tint = "lav", seed = "x", scale = 1, cx = 0.5, cy = 0.55 }) {
   if (!host) return;
   host.querySelector(":scope > .atom-cv")?.remove();
@@ -1930,7 +2039,7 @@ function mountAtom(host, { z, tint = "lav", seed = "x", scale = 1, cx = 0.5, cy 
   host.prepend(cv);
   let h = hashOf(seed) || 7;
   const rnd = () => ((h = (Math.imul(h, 1103515245) + 12345) >>> 0) / 4294967296);
-  atomViews.add({ cv, z, color: SPACE[tint] || SPACE.lav, scale, cx, cy, stars: Array.from({ length: 46 }, () => [rnd(), rnd(), rnd()]), t0: performance.now() - rnd() * 10000 });
+  atomViews.add({ cv, z, tint: BODY[tint] ? tint : "lav", scale, cx, cy, sparks: Array.from({ length: 9 }, () => [rnd(), rnd(), rnd()]), t0: performance.now() - rnd() * 10000 });
   kickAtoms();
 }
 function kickAtoms() { if (!atomRaf) atomRaf = requestAnimationFrame(frameAtoms); }
@@ -1945,51 +2054,53 @@ function frameAtoms(now) {
   }
   if (live && !reduceMotion) atomRaf = requestAnimationFrame(frameAtoms);
 }
+function spark(g, x, y, r) { g.beginPath(); g.moveTo(x, y - r); g.quadraticCurveTo(x, y, x + r, y); g.quadraticCurveTo(x, y, x, y + r); g.quadraticCurveTo(x, y, x - r, y); g.quadraticCurveTo(x, y, x, y - r); g.fill(); }
 function drawAtom(v, t) {
   const cv = v.cv, w = cv.clientWidth, hgt = cv.clientHeight;
   if (!w || !hgt) return;
   const dpr = Math.min(2, window.devicePixelRatio || 1);
   if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(hgt * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(hgt * dpr); }
-  const g = cv.getContext("2d");
+  const g = cv.getContext("2d"), INK = ink(), body = BODY[v.tint], elec = ELEC[v.tint];
   g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, hgt);
-  for (const [x, y, s] of v.stars) {
-    g.globalAlpha = 0.18 + 0.55 * Math.abs(Math.sin(t * (0.4 + s) + s * 20));
-    g.fillStyle = "#ffffff"; const d = s > 0.88 ? 1.8 : 1; g.fillRect(x * w, y * hgt, d, d);
-  }
+  g.fillStyle = "#f2c94c";
+  for (const [x, y, s] of v.sparks) { g.globalAlpha = 0.25 + 0.55 * Math.abs(Math.sin(t * (0.6 + s) + s * 20)); spark(g, x * w, y * hgt, 2.5 + s * 3); }
   g.globalAlpha = 1;
   const z = v.z, shells = [];
   let left = z;
   for (const cap of SHELLS) { if (left <= 0) break; shells.push(Math.min(cap, left)); left -= cap; }
-  const cx = w * v.cx, cy = hgt * v.cy, tilt = -0.34, sq = 0.36;
-  const maxR = Math.min(w * 0.47, hgt * 1.05) * v.scale;
-  const nucR = Math.max(5, Math.min(17, 4 + Math.sqrt(z + 1) * 1.35)) * Math.max(0.75, v.scale) * (1 + 0.04 * Math.sin(t * 2));
+  const cx = w * v.cx, cy = hgt * v.cy + Math.sin(t * 1.6) * 2, tilt = -0.32, sq = 0.38;
+  const maxR = Math.min(w * 0.46, hgt * 1.05) * v.scale;
+  const size = clamp(Math.min(w, hgt) / 170, 0.8, 2.2);
+  const R = Math.max(10, Math.min(26, 9 + Math.sqrt(z + 1) * 2.1)) * Math.max(0.75, v.scale) * size;
   const span = Math.max(shells.length, 2.4);
-  const radii = shells.map((_, i) => nucR * 1.9 + (maxR - nucR * 1.9) * ((i + 1) / span));
-  const ct = Math.cos(tilt), st = Math.sin(tilt);
-  const pts = [];
+  const radii = shells.map((_, i) => R * 1.6 + (maxR - R * 1.6) * ((i + 1) / span));
+  const ct = Math.cos(tilt), st = Math.sin(tilt), pts = [];
+  g.setLineDash([4, 5]); g.lineWidth = 1.6; g.strokeStyle = INK;
   shells.forEach((n, i) => {
-    const R = radii[i], dir = i % 2 ? -1 : 1, sp = 0.85 / (i + 1);
-    g.beginPath(); g.ellipse(cx, cy, R, R * sq, tilt, 0, Math.PI * 2);
-    g.strokeStyle = v.color; g.globalAlpha = 0.22; g.lineWidth = 1; g.stroke(); g.globalAlpha = 1;
+    const r = radii[i], dir = i % 2 ? -1 : 1, sp = 0.8 / (i + 1);
+    g.globalAlpha = 0.45; g.beginPath(); g.ellipse(cx, cy, r, r * sq, tilt, 0, Math.PI * 2); g.stroke();
     for (let k = 0; k < n; k++) {
-      const a = (k / n) * Math.PI * 2 + i * 0.7 + t * sp * dir;
-      const ex = R * Math.cos(a), ey = R * sq * Math.sin(a);
+      const a = (k / n) * Math.PI * 2 + i * 0.7 + t * sp * dir, ex = r * Math.cos(a), ey = r * sq * Math.sin(a);
       pts.push({ x: cx + ex * ct - ey * st, y: cy + ex * st + ey * ct, front: Math.sin(a) > 0 });
     }
   });
-  const dot = (p) => { g.beginPath(); g.arc(p.x, p.y, (p.front ? 2.5 : 1.9) * Math.max(0.8, v.scale), 0, Math.PI * 2); g.fill(); };
-  g.fillStyle = v.color; g.shadowColor = v.color; g.shadowBlur = 8;
-  g.globalAlpha = 0.5; pts.filter((p) => !p.front).forEach(dot);
-  g.globalAlpha = 1; g.shadowBlur = 0;
-  const glow = g.createRadialGradient(cx, cy, 0, cx, cy, nucR * 3.4);
-  glow.addColorStop(0, v.color); glow.addColorStop(0.35, v.color + "55"); glow.addColorStop(1, v.color + "00");
-  g.fillStyle = glow; g.beginPath(); g.arc(cx, cy, nucR * 3.4, 0, Math.PI * 2); g.fill();
-  const core = g.createRadialGradient(cx - nucR * 0.35, cy - nucR * 0.35, nucR * 0.1, cx, cy, nucR);
-  core.addColorStop(0, "#ffffff"); core.addColorStop(0.55, v.color); core.addColorStop(1, v.color + (z ? "ee" : "66"));
-  g.fillStyle = core; g.beginPath(); g.arc(cx, cy, nucR, 0, Math.PI * 2); g.fill();
-  g.fillStyle = "#ffffff"; g.shadowColor = v.color; g.shadowBlur = 10;
+  g.setLineDash([]); g.globalAlpha = 1;
+  const er = 3.6 * Math.max(0.8, v.scale) * Math.min(1.6, size);
+  const dot = (p) => { g.beginPath(); g.arc(p.x, p.y, p.front ? er : er * 0.8, 0, Math.PI * 2); g.fillStyle = elec; g.fill(); g.lineWidth = 1.4; g.strokeStyle = INK; g.stroke(); };
+  g.globalAlpha = 0.55; pts.filter((p) => !p.front).forEach(dot); g.globalAlpha = 1;
+  // hạt nhân: bé tròn có mặt
+  g.beginPath(); g.ellipse(cx, cy + R * 0.95, R * 0.8, R * 0.18, 0, 0, Math.PI * 2); g.fillStyle = "rgba(60, 40, 25, .14)"; g.fill();
+  g.beginPath(); g.arc(cx, cy, R, 0, Math.PI * 2); g.fillStyle = body; g.fill(); g.lineWidth = 2.2; g.strokeStyle = INK; g.stroke();
+  g.beginPath(); g.arc(cx - R * 0.35, cy - R * 0.4, R * 0.22, 0, Math.PI * 2); g.fillStyle = "rgba(255,255,255,.7)"; g.fill();
+  const face = "#3a2a20", ex = R * 0.34, ey = cy - R * 0.05, blink = !reduceMotion && (t % 5.5) > 5.3;
+  g.fillStyle = face; g.strokeStyle = face; g.lineWidth = Math.max(1.3, R * 0.09); g.lineCap = "round";
+  if (!z || blink) { for (const sx of [-1, 1]) { g.beginPath(); g.arc(cx + sx * ex, ey, R * 0.12, 0.15 * Math.PI, 0.85 * Math.PI); g.stroke(); } }
+  else for (const sx of [-1, 1]) { g.beginPath(); g.arc(cx + sx * ex, ey, R * 0.11, 0, Math.PI * 2); g.fill(); }
+  g.beginPath(); g.arc(cx, cy + R * 0.18, R * 0.18, 0.15 * Math.PI, 0.85 * Math.PI); g.stroke();
+  g.fillStyle = "rgba(255, 140, 160, .55)";
+  for (const sx of [-1, 1]) { g.beginPath(); g.ellipse(cx + sx * R * 0.58, cy + R * 0.2, R * 0.16, R * 0.1, 0, 0, Math.PI * 2); g.fill(); }
   pts.filter((p) => p.front).forEach(dot);
-  g.shadowBlur = 0;
+  if (!z) { g.fillStyle = INK; g.globalAlpha = 0.6; g.font = `800 ${Math.round(R * 0.55)}px Nunito, sans-serif`; g.fillText("z", cx + R * 0.9, cy - R * 0.8); g.fillText("z", cx + R * 1.25, cy - R * 1.25); g.globalAlpha = 1; }
 }
 
 // --- widget ở màn Hôm nay ---
@@ -2000,35 +2111,33 @@ function renderWidgets() {
   const subj = f ? subjOf(f.subject) : lastSubject();
   const z = zOf(subj.id), a = state.atoms[subj.id] || { min: 0 };
   const lv = levelInfo(), n = streak(), t = todayISO();
-  // lịch nhiệt tháng này
   const first = t.slice(0, 8) + "01", pad = (new Date(first + "T12:00:00Z").getUTCDay() + 6) % 7;
   const days = new Date(Date.UTC(+t.slice(0, 4), +t.slice(5, 7), 0)).getUTCDate();
-  let heat = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"].map((d) => `<span>${d}</span>`).join("") + "<i class=\"pad\"></i>".repeat(pad);
+  let heat = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"].map((d) => `<span>${d}</span>`).join("") + '<i class="pad"></i>'.repeat(pad);
   for (let d = 1; d <= days; d++) {
     const iso = t.slice(0, 8) + String(d).padStart(2, "0"), x = state.stats.days[iso] || {};
     const score = (x.f || 0) + (x.r || 0) + (x.m || 0) * 2;
     heat += `<i class="${score >= 50 ? "l3" : score >= 20 ? "l2" : score > 0 ? "l1" : ""} ${x.gold ? "gold" : ""} ${iso === t ? "today" : ""}" title="${iso}"></i>`;
   }
-  const q = quests(), done = q.filter((x) => x.p >= 1).length;
+  const q = quests(), done = q.filter((x) => x.p >= 1).length, best = bestStreak();
   box.innerHTML = `
-    <button class="widget space" data-act="focus-open" id="wFocus" aria-label="${f ? "Đang tập trung, mở đồng hồ" : "Bắt đầu một phiên tập trung"}">
-      <div><p class="w-title">${f ? "Đang tập trung" : "Tập trung"}</p><p class="w-sub">${esc(f ? subj.name : "Pomodoro · 1 e⁻ mỗi 5 phút")}</p></div>
-      <div class="w-row"><span class="w-big" data-left>${f ? fmtLeft(f.endAt - Date.now()) : "25:00"}</span><span class="play ${f ? "on" : ""}">${icon(f ? "stop" : "play")}</span></div>
-    </button>
     <button class="widget space" data-go="lab" id="wAtom" aria-label="Mở phòng thí nghiệm">
       <div><p class="w-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(subj.name)}</p><p class="w-sub">${z ? esc(EL_FR[z - 1]) : "Chưa có electron"}</p></div>
       <div class="w-row"><span class="w-foot"><b>${(a.min / 60).toFixed(1)}</b>giờ</span><span class="sym-chip">${z ? EL_SYM[z - 1] : "·"}</span></div>
     </button>
-    <div class="widget space wide">
-      <div class="heat-head"><p class="w-title">Tháng ${+t.slice(5, 7)}</p><span class="flame">${icon("flame")} ${n} ngày liên tiếp</span></div>
-      <div class="heat">${heat}</div>
-    </div>
+    <button class="widget space" data-go="stats" id="wStreak" aria-label="Mở thống kê">
+      <div><p class="w-title">Chuỗi ngày</p><p class="w-sub">Kỷ lục ${best} ngày</p></div>
+      <div class="w-row"><span class="w-big">${n}<span class="w-sub" style="margin-left:4px">ngày</span></span><span class="sym-chip" style="background:var(--t-butter)">${icon("flame")}</span></div>
+    </button>
     <div class="widget space wide">
       <div class="heat-head"><p class="w-title">Nhiệm vụ hôm nay</p><span class="w-sub">${done}/3</span></div>
       <ul class="quests">${q.map((x) => `<li><span class="qdot ${x.p >= 1 ? "done" : ""}" style="--p:${x.p.toFixed(2)}">${x.p >= 1 ? icon("check") : ""}</span><span>${esc(x.t)}<small>${esc(x.v)}</small></span>${x.act && x.p < 1 ? `<button class="btn space-btn" data-act="${x.act[0]}">${x.act[1]}</button>` : ""}</li>`).join("")}</ul>
       <button class="lvl" data-go="lab" style="all:unset;cursor:pointer;display:grid;gap:6px"><span class="lvl-top"><span>Cấp ${lv.n} · <b>${esc(lv.title)}</b></span><span>${lv.t} e⁻${lv.next ? " / " + lv.next : ""}</span></span><span class="xp"><i style="width:${Math.round(lv.pct * 100)}%"></i></span></button>
+    </div>
+    <div class="widget space wide">
+      <div class="heat-head"><p class="w-title">Tháng ${+t.slice(5, 7)}</p><span class="flame">${icon("flame")} ${n} ngày liên tiếp</span></div>
+      <div class="heat">${heat}</div>
     </div>`;
-  mountAtom($("#wFocus"), { z: Math.max(z, 1), tint: subj.tint, seed: "f" + subj.id, scale: 0.55, cx: 0.72, cy: 0.42 });
   mountAtom($("#wAtom"), { z, tint: subj.tint, seed: subj.id, scale: 0.62, cx: 0.66, cy: 0.5 });
 }
 
@@ -2077,22 +2186,11 @@ function openElement(z) {
 
 // --- phiên tập trung (Pomodoro) ---
 const DURS = [15, 25, 45, 60];
-let focusPick = { subject: null, dur: 25 }, wakeLock = null, audio = null;
-function chime() {
-  try {
-    if (!audio) return;
-    const now = audio.currentTime;
-    [[660, 0], [880, 0.18], [1320, 0.36]].forEach(([fq, d]) => {
-      const o = audio.createOscillator(), gn = audio.createGain();
-      o.type = "sine"; o.frequency.value = fq;
-      gn.gain.setValueAtTime(0.0001, now + d); gn.gain.exponentialRampToValueAtTime(0.22, now + d + 0.02); gn.gain.exponentialRampToValueAtTime(0.0001, now + d + 0.6);
-      o.connect(gn).connect(audio.destination); o.start(now + d); o.stop(now + d + 0.65);
-    });
-  } catch {}
-}
+let focusPick = { subject: null, dur: 0 }, wakeLock = null;
 function renderFocus() {
   const f = state.focus?.endAt ? state.focus : null;
   if (!focusPick.subject || !subjects().some((s) => s.id === focusPick.subject)) focusPick.subject = lastSubject().id;
+  if (!focusPick.dur) focusPick.dur = prefs().dur;
   const subj = subjOf(f ? f.subject : focusPick.subject), z = zOf(subj.id), lv = levelInfo();
   $("#fLevel").textContent = `Cấp ${lv.n} · ${lv.title}`;
   $("#fSetup").hidden = !!f; $("#fRun").hidden = !f;
@@ -2113,8 +2211,8 @@ async function startFocus() {
   const subj = subjOf(focusPick.subject);
   state.focus = { subject: subj.id, start: Date.now(), endAt: Date.now() + focusPick.dur * 60000, dur: focusPick.dur };
   save("focus", state.focus); lsSet("focusSubj", subj.id);
-  try { const AC = window.AudioContext || window.webkitAudioContext; if (AC) { audio ||= new AC(); audio.resume?.(); } } catch {}
-  try { wakeLock = await navigator.wakeLock?.request("screen"); } catch { wakeLock = null; }
+  audioCtx(); sfx("tick");
+  if (prefs().wake) { try { wakeLock = await navigator.wakeLock?.request("screen"); } catch { wakeLock = null; } }
   renderFocus();
 }
 function tickFocus() {
@@ -2125,6 +2223,7 @@ function tickFocus() {
   const s = fmtLeft(left);
   if (state.view === "focus") $("#fTime").textContent = s;
   $$("[data-left]").forEach((el) => (el.textContent = s));
+  if (state.view === "home" && $("#wFocusLabel").textContent !== "Đang tập trung") renderHero();
 }
 function finishFocus(complete) {
   const f = state.focus; if (!f?.endAt) return;
@@ -2132,10 +2231,15 @@ function finishFocus(complete) {
   state.focus = {}; save("focus", {});
   try { wakeLock?.release?.(); } catch {} wakeLock = null;
   const a = atomOf(f.subject); a.min += minutes; a.n = (a.n || 0) + (minutes >= 5 ? 1 : 0);
-  if (minutes > 0) bump("f", minutes);
+  if (minutes > 0) {
+    bump("f", minutes);
+    state.sessions.push({ s: f.start, m: minutes, subj: f.subject });
+    if (state.sessions.length > 3000) state.sessions.splice(0, state.sessions.length - 3000);
+    save("sessions", { list: state.sessions });
+  }
   const res = addElectrons(f.subject, Math.floor(minutes / 5));
   saveAtoms();
-  if (complete) chime();
+  if (res.news.length) sfx("unlock"); else if (complete) sfx("chime");
   const subj = subjOf(f.subject), gain = Math.floor(minutes / 5);
   if (state.view === "focus") renderFocus(); else render();
   if (gain) {
@@ -2156,12 +2260,263 @@ setInterval(tickFocus, 1000);
 document.addEventListener("visibilitychange", async () => {
   if (document.visibilityState !== "visible") return;
   tickFocus(); kickAtoms();
-  if (state.focus?.endAt && !wakeLock) { try { wakeLock = await navigator.wakeLock?.request("screen"); } catch {} }
+  if (state.focus?.endAt && !wakeLock && prefs().wake) { try { wakeLock = await navigator.wakeLock?.request("screen"); } catch {} }
 });
+
+// ================= cozy: bé electron biết nói, cài đặt, âm thanh, thống kê =================
+const PREF_DEFAULT = { name: "Elec", sfx: true, wake: true, strict: false, dur: 25 };
+const prefs = () => ({ ...PREF_DEFAULT, ...(state.prefs || {}) });
+
+// --- âm thanh nhỏ (không có nhạc nền) ---
+let actx = null;
+function audioCtx() {
+  try { const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null; actx ||= new AC(); if (actx.state === "suspended") actx.resume(); return actx; } catch { return null; }
+}
+document.addEventListener("pointerdown", () => { if (prefs().sfx) audioCtx(); }, { capture: true });
+const TUNES = {
+  pop: [[880, 0, 0.12]], flip: [[520, 0, 0.08], [780, 0.06, 0.1]], tick: [[1200, 0, 0.05]],
+  chime: [[660, 0, 0.5], [880, 0.18, 0.5], [1320, 0.36, 0.6]],
+  unlock: [[523, 0, 0.25], [659, 0.1, 0.25], [784, 0.2, 0.25], [1047, 0.3, 0.5]],
+  fail: [[392, 0, 0.3], [311, 0.18, 0.45]],
+};
+function sfx(kind) {
+  if (!prefs().sfx || !actx) return;
+  try {
+    const now = actx.currentTime;
+    for (const [fq, d, len] of TUNES[kind] || []) {
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = kind === "fail" ? "triangle" : "sine"; o.frequency.value = fq;
+      g.gain.setValueAtTime(0.0001, now + d); g.gain.exponentialRampToValueAtTime(0.18, now + d + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, now + d + len);
+      o.connect(g).connect(actx.destination); o.start(now + d); o.stop(now + d + len + 0.05);
+    }
+  } catch {}
+}
+
+// --- cảnh trời ở Hôm nay ---
+let lineIdx = 0;
+function buddyLines() {
+  const h = parisHour(), due = totalDue(), d = state.stats.days[todayISO()] || {};
+  const soon = upcoming(3).filter((a) => a.type === "exam" || a.type === "deadline")[0];
+  const L = [];
+  if (state.focus?.endAt) L.push("Đang tập trung nè, cố lên! Mình đang hút electron đó.");
+  if (h >= 23 || h < 5) L.push("Khuya rồi đó… ngủ sớm, mai mình học tiếp nha.");
+  if (d.gold) L.push("Hôm nay hoàn hảo luôn! Tự hào về bạn ghê.");
+  if (soon) L.push(`${soon.type === "exam" ? "Sắp thi" : "Sắp tới hạn"} “${soon.title}” (${countdown(soon.date)}). Mình ôn cùng nhau nha!`);
+  if (due) L.push(`Có ${due} thẻ đang chờ bạn ôn đó~`);
+  if (!d.f) L.push(h < 11 ? "Chào buổi sáng! Nạp vài electron đầu ngày nhé?" : "Hôm nay mình chưa có electron nào… tập trung 25 phút không?");
+  L.push("Mỗi 5 phút tập trung là mình lớn thêm một electron đó!", "Học kiểu Feynman: giảng lại cho mình nghe đi!", "Nhớ uống nước nha.", "Viết tiếng Pháp sai cũng không sao, mình sửa cho!");
+  return L;
+}
+function updateClock() {
+  const el = $("#hClock"); if (!el) return;
+  const t = todayISO();
+  el.textContent = `${hhmm(Date.now())} · ${wdOf(t)} ${+t.slice(8)}/${+t.slice(5, 7)}`;
+}
+function renderHero() {
+  const p = prefs(), g = greeting();
+  $("#buddyName").textContent = p.name;
+  updateClock();
+  const L = buddyLines();
+  $("#hBubble").textContent = L[lineIdx % L.length];
+  const mood = state.focus?.endAt ? "think" : g.mood === "sleep" ? "sleep" : state.stats.days[todayISO()]?.gold ? "party" : "happy";
+  $("#buddy").innerHTML = mascot("xl", mood);
+  $("#buddy").setAttribute("aria-label", `Chạm vào ${p.name}`);
+  const f = state.focus?.endAt ? state.focus : null;
+  $("#wFocus").classList.toggle("on", !!f);
+  $("#wFocusLabel").textContent = f ? "Đang tập trung" : "Tập trung";
+  $("#wFocus [data-left]").textContent = f ? fmtLeft(f.endAt - Date.now()) : `${p.dur}:00 · +${Math.floor(p.dur / 5)} e⁻`;
+}
+setInterval(updateClock, 20000);
+
+// --- cài đặt ---
+function openSettings() {
+  const p = prefs();
+  openSheet({ title: "Cài đặt", html: `
+    <label class="field"><span>Tên bé electron</span><input type="text" id="stName" maxlength="20" autocomplete="off"></label>
+    <div class="set-grid">
+      <label class="set-card">${icon("volume")}Âm thanh<input type="checkbox" class="switch" role="switch" id="stSfx" ${p.sfx ? "checked" : ""}></label>
+      <label class="set-card peach">${icon("sun")}Giữ màn hình sáng<input type="checkbox" class="switch" role="switch" id="stWake" ${p.wake ? "checked" : ""}></label>
+      <label class="set-card sky">${icon("lock")}Tập trung nghiêm<input type="checkbox" class="switch" role="switch" id="stStrict" ${p.strict ? "checked" : ""}></label>
+    </div>
+    <p class="small muted">Âm thanh chỉ là tiếng “ting” nhỏ khi lật thẻ, xong phiên, mở khoá nguyên tố. Tập trung nghiêm: đang tập trung mà rời app quá 15 giây (kể cả khoá màn hình) thì bé electron chạy mất và phiên bị huỷ.</p>
+    <div class="field"><span>Thời gian tập trung mặc định</span><div class="pills" id="stDur">${DURS.map((d) => `<button type="button" data-d="${d}" aria-pressed="${d === p.dur}">${d} phút</button>`).join("")}</div></div>
+    <button class="btn primary block" id="stSave">Lưu</button>`,
+    onMount: (el) => {
+      $("#stName", el).value = p.name;
+      let dur = p.dur;
+      $$("#stDur button", el).forEach((b) => b.addEventListener("click", () => { dur = +b.dataset.d; $$("#stDur button", el).forEach((x) => x.setAttribute("aria-pressed", String(x === b))); }));
+      $("#stSave", el).addEventListener("click", () => {
+        state.prefs = { name: $("#stName", el).value.trim().slice(0, 20) || PREF_DEFAULT.name, sfx: $("#stSfx", el).checked, wake: $("#stWake", el).checked, strict: $("#stStrict", el).checked, dur };
+        save("prefs", state.prefs);
+        focusPick.dur = dur;
+        if (state.prefs.sfx) { audioCtx(); sfx("pop"); }
+        closeSheet(); render(); toast("Đã lưu cài đặt");
+      });
+    } });
+}
+
+// --- tập trung nghiêm: rời app quá 15 giây thì phiên bị huỷ ---
+let hiddenAt = 0;
+document.addEventListener("visibilitychange", () => {
+  if (!state.focus?.endAt || !prefs().strict) { hiddenAt = 0; return; }
+  if (document.visibilityState === "hidden") { hiddenAt = Date.now(); return; }
+  const away = hiddenAt ? Date.now() - hiddenAt : 0;
+  hiddenAt = 0;
+  if (away > 15000 && Date.now() < state.focus.endAt) failFocus(Math.round(away / 1000));
+});
+function failFocus(sec) {
+  state.focus = {}; save("focus", {});
+  try { wakeLock?.release?.(); } catch {} wakeLock = null;
+  sfx("fail");
+  if (state.view === "focus") renderFocus(); else render();
+  openSheet({ title: `${prefs().name} chạy mất rồi!`, html: `<div class="reward">${mascot("lg", "sleep")}
+    <p>Bạn rời app ${sec} giây nên phiên tập trung bị huỷ (đang bật chế độ Tập trung nghiêm).</p>
+    <p class="muted small">Không sao cả, thử lại một phiên ngắn 15 phút nhé?</p>
+    <div class="two" style="width:100%"><button class="btn" data-close>Để sau</button><button class="btn primary" data-act="focus-open">Thử lại</button></div></div>` });
+}
+
+// --- thống kê ---
+const stv = { tab: "sum", off: 0 };
+const TABS_ST = [["sum", "Tổng quan"], ["day", "Ngày"], ["week", "Tuần"], ["month", "Tháng"], ["year", "Năm"]];
+function fmtMin(m) { m = Math.round(m); if (m < 60) return `${m} phút`; const h = Math.floor(m / 60), r = m % 60; return r ? `${h} giờ ${r} phút` : `${h} giờ`; }
+const shortMin = (m) => (m < 60 ? `${Math.round(m)}p` : `${Math.floor(m / 60)}g${Math.round(m % 60) ? String(Math.round(m % 60)).padStart(2, "0") : ""}`);
+const parisParts = (ts) => { const p = Object.fromEntries(new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit", hour: "numeric", minute: "numeric", hourCycle: "h23" }).formatToParts(new Date(ts)).map((x) => [x.type, x.value])); return { date: `${p.year}-${p.month}-${p.day}`, h: +p.hour, mi: +p.minute }; };
+function dayMinutes() { // phút tập trung theo ngày: từ nhật ký phiên, bù bằng thống kê ngày cũ
+  const map = {};
+  for (const s of state.sessions) { const d = parisParts(s.s).date; map[d] = (map[d] || 0) + s.m; }
+  for (const [d, x] of Object.entries(state.stats.days)) if ((x.f || 0) > (map[d] || 0)) map[d] = x.f;
+  return map;
+}
+function periodOf(tab, off) {
+  const t = todayISO(), WDL = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
+  if (tab === "day") {
+    const d = addDays(t, -off);
+    return { from: d, to: d, label: off === 0 ? "Hôm nay" : off === 1 ? "Hôm qua" : longDate(d), buckets: Array.from({ length: 24 }, (_, h) => ({ key: h, label: `${h}h`, axis: h % 6 === 0 || h === 23 ? String(h) : "" })) };
+  }
+  if (tab === "week") {
+    const mon = addDays(t, -((new Date(t + "T12:00:00Z").getUTCDay() + 6) % 7) - 7 * off);
+    const days = Array.from({ length: 7 }, (_, i) => addDays(mon, i));
+    return { from: days[0], to: days[6], label: `${+days[0].slice(8)}/${+days[0].slice(5, 7)} – ${+days[6].slice(8)}/${+days[6].slice(5, 7)}`, buckets: days.map((d, i) => ({ key: d, label: `${WDL[i]} ${+d.slice(8)}/${+d.slice(5, 7)}`, axis: WDL[i] })) };
+  }
+  if (tab === "month") {
+    const base = new Date(Date.UTC(+t.slice(0, 4), +t.slice(5, 7) - 1 - off, 1));
+    const y = base.getUTCFullYear(), m = base.getUTCMonth(), n = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+    const days = Array.from({ length: n }, (_, i) => `${y}-${String(m + 1).padStart(2, "0")}-${String(i + 1).padStart(2, "0")}`);
+    return { from: days[0], to: days[n - 1], label: `Tháng ${m + 1}/${y}`, buckets: days.map((d, i) => ({ key: d, label: `${i + 1}/${m + 1}`, axis: [1, 8, 15, 22, 29].includes(i + 1) ? String(i + 1) : "" })) };
+  }
+  const y = +t.slice(0, 4) - off;
+  return { from: `${y}-01-01`, to: `${y}-12-31`, label: `Năm ${y}`, buckets: Array.from({ length: 12 }, (_, i) => ({ key: `${y}-${String(i + 1).padStart(2, "0")}`, label: `Tháng ${i + 1}`, axis: String(i + 1) })) };
+}
+function bucketValues(tab, per) {
+  if (tab === "day") {
+    const v = Array(24).fill(0);
+    for (const s of state.sessions) {
+      let ts = s.s, left = s.m;
+      while (left > 0) {
+        const p = parisParts(ts); if (p.date !== per.from) { if (p.date > per.from) break; ts += 60000; left--; continue; }
+        const take = Math.min(left, 60 - p.mi); v[p.h] += take; left -= take; ts += take * 60000;
+      }
+    }
+    return v;
+  }
+  const dm = dayMinutes();
+  if (tab === "year") return per.buckets.map((b) => Object.entries(dm).filter(([d]) => d.startsWith(b.key)).reduce((n, [, m]) => n + m, 0));
+  return per.buckets.map((b) => dm[b.key] || 0);
+}
+// trục y: bước tròn (5, 10, 15, 30 phút, 1 giờ…) và tối đa 4 vạch
+function axisOf(v) {
+  const step = [5, 10, 15, 30, 60, 90, 120, 180, 240, 300, 600, 900, 1200, 1800, 3600, 6000].find((st) => Math.ceil(v / st) <= 4) || Math.ceil(v / 4 / 600) * 600;
+  const n = Math.max(1, Math.ceil(v / step));
+  return { max: n * step, n };
+}
+function barChart(values, buckets) {
+  const W = Math.max(260, ($("#stMain").clientWidth || 340) - 36), H = 190, L = 34, B = 22, T = 8;
+  const ax = axisOf(Math.max(1, ...values)), max = ax.max, band = (W - L) / values.length, bw = Math.max(3, Math.min(26, band * 0.64));
+  const y = (v) => T + (H - T - B) * (1 - v / max);
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Biểu đồ phút tập trung">`;
+  for (let k = 0; k <= ax.n; k++) { const v = (max / ax.n) * k, yy = y(v); svg += `<line class="gl" x1="${L}" x2="${W}" y1="${yy}" y2="${yy}"/><text class="ax" x="${L - 6}" y="${yy + 3.5}" text-anchor="end">${v ? shortMin(v) : "0"}</text>`; }
+  values.forEach((v, i) => {
+    const x = L + band * i + (band - bw) / 2, yy = y(v), h = H - B - yy, r = Math.min(4, bw / 2, h);
+    const d = v > 0 ? `M${x},${H - B} V${yy + r} Q${x},${yy} ${x + r},${yy} H${x + bw - r} Q${x + bw},${yy} ${x + bw},${yy + r} V${H - B} Z` : `M${x},${H - B - 3} h${bw} v3 h${-bw} Z`;
+    svg += `<rect class="hit" data-i="${i}" x="${L + band * i}" y="${T}" width="${band}" height="${H - T}"/><path class="bar ${v > 0 ? "" : "zero"}" d="${d}"/>`;
+    if (buckets[i].axis) svg += `<text class="ax" x="${L + band * i + band / 2}" y="${H - 6}" text-anchor="middle">${esc(buckets[i].axis)}</text>`;
+  });
+  return svg + "</svg>";
+}
+function areaChart(points) { // phút tích luỹ theo ngày
+  const W = Math.max(260, ($("#stMain").clientWidth || 340) - 36), H = 170, L = 40, B = 22, T = 8;
+  const ax = axisOf(Math.max(1, ...points.map((p) => p.v))), max = ax.max, n = points.length;
+  const x = (i) => L + (W - L) * (n === 1 ? 0.5 : i / (n - 1)), y = (v) => T + (H - T - B) * (1 - v / max);
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Tổng thời gian tập trung tích luỹ">`;
+  for (let k = 0; k <= ax.n; k++) { const v = (max / ax.n) * k; svg += `<line class="gl" x1="${L}" x2="${W}" y1="${y(v)}" y2="${y(v)}"/><text class="ax" x="${L - 6}" y="${y(v) + 3.5}" text-anchor="end">${v ? shortMin(v) : "0"}</text>`; }
+  const line = points.map((p, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(p.v).toFixed(1)}`).join(" ");
+  svg += `<path class="area" d="${line} L${x(n - 1).toFixed(1)},${H - B} L${x(0).toFixed(1)},${H - B} Z"/><path class="ln" d="${line}"/>`;
+  points.forEach((p, i) => { svg += `<rect class="hit" data-i="${i}" x="${x(i) - (W - L) / Math.max(1, n - 1) / 2}" y="${T}" width="${(W - L) / Math.max(1, n - 1)}" height="${H - T}"/>`; });
+  svg += `<text class="ax" x="${L}" y="${H - 6}">${esc(points[0].label)}</text><text class="ax" x="${W}" y="${H - 6}" text-anchor="end">${esc(points[n - 1].label)}</text>`;
+  return svg + "</svg>";
+}
+function bestStreak() {
+  const days = Object.keys(state.stats.days).filter(activeOn).sort();
+  let best = 0, run = 0, prev = "";
+  for (const d of days) { run = prev && addDays(prev, 1) === d ? run + 1 : 1; best = Math.max(best, run); prev = d; }
+  return best;
+}
+function renderStats() {
+  $("#stTabs").innerHTML = TABS_ST.map(([k, l]) => `<button role="tab" data-st="${k}" aria-selected="${k === stv.tab}">${l}</button>`).join("");
+  const main = $("#stMain");
+  $("#stPeriod").hidden = stv.tab === "sum";
+  let values, buckets, total, sessions;
+  if (stv.tab === "sum") {
+    const dm = dayMinutes(), days = Object.keys(dm).filter((d) => dm[d] > 0).sort();
+    total = Object.values(dm).reduce((a, b) => a + b, 0); sessions = state.sessions.length;
+    const start = !days[0] || days[0] > addDays(todayISO(), -6) ? addDays(todayISO(), -6) : days[0] < addDays(todayISO(), -59) ? addDays(todayISO(), -59) : days[0];
+    let acc = Object.entries(dm).filter(([d]) => d < start).reduce((n, [, m]) => n + m, 0);
+    const pts = []; for (let d = start; d <= todayISO(); d = addDays(d, 1)) { acc += dm[d] || 0; pts.push({ v: acc, label: `${+d.slice(8)}/${+d.slice(5, 7)}`, key: d }); }
+    main.innerHTML = `<span class="label">Tổng quan</span><div class="big-stat"><b>${esc(fmtMin(total))}</b><span class="muted">tập trung · ${sessions} phiên · ${totalE()} e⁻</span></div><div class="chart" id="stChart">${areaChart(pts)}</div>`;
+    main._points = pts.map((p) => ({ label: p.label, text: `tổng ${fmtMin(p.v)}` }));
+    const allR = Object.values(state.stats.days).reduce((n, x) => n + (x.r || 0), 0);
+    const bestDay = Math.max(0, ...Object.values(dm)), longest = Math.max(0, ...state.sessions.map((s) => s.m));
+    const showed = Object.keys(state.stats.days).filter(activeOn).length;
+    $("#stRec").hidden = false;
+    $("#stRec").innerHTML = `<div class="rec"><b>${esc(fmtMin(bestDay))}</b><span>Ngày tốt nhất</span></div><div class="rec mint"><b>${esc(fmtMin(longest))}</b><span>Phiên dài nhất</span></div>
+      <div class="rec sky"><b>${showed}</b><span>Ngày có học</span></div><div class="rec peach"><b>${bestStreak()}</b><span>Chuỗi ngày dài nhất</span></div>
+      <div class="rec" style="grid-column:1/-1"><b>${allR}</b><span>Thẻ đã ôn</span></div>`;
+    renderSubj(null);
+    return;
+  }
+  $("#stRec").hidden = true;
+  const per = periodOf(stv.tab, stv.off);
+  $("#stLabel").textContent = per.label;
+  $("#stNext").disabled = stv.off === 0;
+  values = bucketValues(stv.tab, per); buckets = per.buckets;
+  total = values.reduce((a, b) => a + b, 0);
+  sessions = state.sessions.filter((s) => { const d = parisParts(s.s).date; return d >= per.from && d <= per.to; }).length;
+  main.innerHTML = `<span class="label">${esc(TABS_ST.find((x) => x[0] === stv.tab)[1])}</span><div class="big-stat"><b>${esc(fmtMin(total))}</b><span class="muted">tập trung · ${sessions} phiên</span></div>
+    <div class="chart" id="stChart">${barChart(values, buckets)}</div>
+    <details><summary class="small muted">Xem dạng bảng</summary><table class="data-table"><tbody>${values.map((v, i) => (v ? `<tr><td>${esc(buckets[i].label)}</td><td>${esc(fmtMin(v))}</td></tr>` : "")).join("") || `<tr><td>Chưa có phiên nào</td><td></td></tr>`}</tbody></table></details>`;
+  main._points = values.map((v, i) => ({ label: buckets[i].label, text: fmtMin(v) }));
+  renderSubj(per);
+}
+function renderSubj(per) {
+  const by = {};
+  for (const s of state.sessions) { const d = parisParts(s.s).date; if (!per || (d >= per.from && d <= per.to)) by[s.subj] = (by[s.subj] || 0) + s.m; }
+  const rows = Object.entries(by).sort((a, b) => b[1] - a[1]), max = rows[0]?.[1] || 1;
+  $("#stSubj").innerHTML = `<span class="label">Theo môn</span>` + (rows.length ? `<ul class="subj-bars">${rows.map(([id, m]) => `<li><span>${esc(subjOf(id).name)}</span><span>${esc(fmtMin(m))}</span><span class="trk"><i style="width:${Math.max(4, Math.round((m / max) * 100))}%"></i></span></li>`).join("")}</ul>`
+    : `<p class="muted small">Chưa có phiên tập trung nào trong khoảng này. Bấm “Tập trung” ở màn Hôm nay để bắt đầu.</p>`);
+}
+function showTip(target) {
+  const main = $("#stMain"), chart = $("#stChart"); if (!chart || !main._points) return;
+  const i = +target.dataset.i, p = main._points[i]; if (!p) return;
+  $$("#stChart .hit.on").forEach((h) => h.classList.remove("on")); target.classList.add("on");
+  const r = target.getBoundingClientRect(), c = chart.getBoundingClientRect();
+  let tip = $("#stTip"); if (!tip) { tip = document.createElement("div"); tip.id = "stTip"; tip.className = "tip"; chart.appendChild(tip); }
+  tip.textContent = `${p.label}: ${p.text}`;
+  tip.style.left = clamp(r.left - c.left + r.width / 2, 50, c.width - 50) + "px"; tip.style.top = "0px";
+}
 
 // ================= điều hướng =================
 const TABS = ["home", "study", "review", "agenda", "inbox"];
-const MAIN = [...TABS, "lab"];
+const MAIN = [...TABS, "lab", "stats"];
 const IMMERSIVE = ["course", "session", "focus"];
 const START = location.hash.slice(1);
 function show(v) {
@@ -2175,7 +2530,7 @@ function show(v) {
   IMMERSIVE.forEach((x) => ($("#v-" + x).hidden = x !== v));
   $("#main").hidden = imm; $(".tabbar").hidden = imm;
   document.body.classList.toggle("immersive", imm);
-  const tabV = v === "lab" ? "home" : v;
+  const tabV = v === "lab" || v === "stats" ? "home" : v;
   $$(".tab").forEach((b) => (b.dataset.v === tabV ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
   if (location.hash.slice(1) !== v) history.replaceState(null, "", "#" + v);
   if (v !== "session") render(v);
@@ -2190,6 +2545,7 @@ function render(v = state.view) {
   else if (v === "agenda") renderAgenda();
   else if (v === "inbox") renderInbox();
   else if (v === "lab") renderLab();
+  else if (v === "stats") renderStats();
   else if (v === "focus") renderFocus();
   else if (v === "course" && !chatAbort) renderCourse();
 }
@@ -2230,6 +2586,8 @@ const ACTIONS = {
   },
   "copy-check": () => copyText(lastCheck.prompt, "lệnh kiểm chứng"),
   "focus-open": openFocus,
+  "settings": openSettings,
+  "buddy": (el) => { lineIdx++; $("#hBubble").textContent = buddyLines()[lineIdx % buddyLines().length]; el.classList.remove("hop"); void el.offsetWidth; el.classList.add("hop"); audioCtx(); sfx("pop"); },
   "focus-subj": (el) => { focusPick.subject = el.dataset.id; lsSet("focusSubj", el.dataset.id); openFocus(); },
   "el-info": (el) => openElement(+el.dataset.z),
   "go-study": () => show("study"),
@@ -2269,6 +2627,14 @@ document.addEventListener("keydown", (e) => {
   else if (sess.flipped && map[e.key] !== undefined) gradeCur(map[e.key]);
 });
 $("#sExit").addEventListener("click", () => { sess.queue = null; sess.cur = null; show("review"); });
+// thống kê
+$("#stTabs").addEventListener("click", (e) => { const b = e.target.closest("[data-st]"); if (!b) return; stv.tab = b.dataset.st; stv.off = 0; renderStats(); sfx("tick"); });
+$("#stPrev").addEventListener("click", () => { stv.off++; renderStats(); });
+$("#stNext").addEventListener("click", () => { if (stv.off > 0) { stv.off--; renderStats(); } });
+$("#stMain").addEventListener("pointerover", (e) => { const h = e.target.closest(".hit"); if (h) showTip(h); });
+$("#stMain").addEventListener("click", (e) => { const h = e.target.closest(".hit"); if (h) showTip(h); });
+let resizeT = 0;
+window.addEventListener("resize", () => { clearTimeout(resizeT); resizeT = setTimeout(() => { if (state.view === "stats") renderStats(); }, 200); });
 // tập trung
 $("#fSubj").addEventListener("click", (e) => { const b = e.target.closest("[data-subj]"); if (!b) return; focusPick.subject = b.dataset.subj; renderFocus(); });
 $("#fDur").addEventListener("click", (e) => { const b = e.target.closest("[data-dur]"); if (!b) return; focusPick.dur = +b.dataset.dur; renderFocus(); });

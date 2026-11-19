@@ -1,7 +1,7 @@
 
 // ================= điều hướng =================
 const TABS = ["home", "study", "review", "agenda", "inbox"];
-const MAIN = [...TABS, "lab"];
+const MAIN = [...TABS, "lab", "stats"];
 const IMMERSIVE = ["course", "session", "focus"];
 const START = location.hash.slice(1);
 function show(v) {
@@ -15,7 +15,7 @@ function show(v) {
   IMMERSIVE.forEach((x) => ($("#v-" + x).hidden = x !== v));
   $("#main").hidden = imm; $(".tabbar").hidden = imm;
   document.body.classList.toggle("immersive", imm);
-  const tabV = v === "lab" ? "home" : v;
+  const tabV = v === "lab" || v === "stats" ? "home" : v;
   $$(".tab").forEach((b) => (b.dataset.v === tabV ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
   if (location.hash.slice(1) !== v) history.replaceState(null, "", "#" + v);
   if (v !== "session") render(v);
@@ -30,6 +30,7 @@ function render(v = state.view) {
   else if (v === "agenda") renderAgenda();
   else if (v === "inbox") renderInbox();
   else if (v === "lab") renderLab();
+  else if (v === "stats") renderStats();
   else if (v === "focus") renderFocus();
   else if (v === "course" && !chatAbort) renderCourse();
 }
@@ -70,6 +71,8 @@ const ACTIONS = {
   },
   "copy-check": () => copyText(lastCheck.prompt, "lệnh kiểm chứng"),
   "focus-open": openFocus,
+  "settings": openSettings,
+  "buddy": (el) => { lineIdx++; $("#hBubble").textContent = buddyLines()[lineIdx % buddyLines().length]; el.classList.remove("hop"); void el.offsetWidth; el.classList.add("hop"); audioCtx(); sfx("pop"); },
   "focus-subj": (el) => { focusPick.subject = el.dataset.id; lsSet("focusSubj", el.dataset.id); openFocus(); },
   "el-info": (el) => openElement(+el.dataset.z),
   "go-study": () => show("study"),
@@ -109,6 +112,14 @@ document.addEventListener("keydown", (e) => {
   else if (sess.flipped && map[e.key] !== undefined) gradeCur(map[e.key]);
 });
 $("#sExit").addEventListener("click", () => { sess.queue = null; sess.cur = null; show("review"); });
+// thống kê
+$("#stTabs").addEventListener("click", (e) => { const b = e.target.closest("[data-st]"); if (!b) return; stv.tab = b.dataset.st; stv.off = 0; renderStats(); sfx("tick"); });
+$("#stPrev").addEventListener("click", () => { stv.off++; renderStats(); });
+$("#stNext").addEventListener("click", () => { if (stv.off > 0) { stv.off--; renderStats(); } });
+$("#stMain").addEventListener("pointerover", (e) => { const h = e.target.closest(".hit"); if (h) showTip(h); });
+$("#stMain").addEventListener("click", (e) => { const h = e.target.closest(".hit"); if (h) showTip(h); });
+let resizeT = 0;
+window.addEventListener("resize", () => { clearTimeout(resizeT); resizeT = setTimeout(() => { if (state.view === "stats") renderStats(); }, 200); });
 // tập trung
 $("#fSubj").addEventListener("click", (e) => { const b = e.target.closest("[data-subj]"); if (!b) return; focusPick.subject = b.dataset.subj; renderFocus(); });
 $("#fDur").addEventListener("click", (e) => { const b = e.target.closest("[data-dur]"); if (!b) return; focusPick.dur = +b.dataset.dur; renderFocus(); });

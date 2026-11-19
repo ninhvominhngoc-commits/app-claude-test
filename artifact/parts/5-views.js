@@ -81,13 +81,14 @@ function confetti() {
 function flipCard() {
   if (!sess.cur || sess.flipped) return;
   sess.flipped = true;
+  sfx("flip");
   $("#flash").classList.add("flipped");
   $("#sGrades").hidden = false; $("#sFlip").hidden = true;
 }
 function gradeCur(g) {
   if (!sess.cur || !sess.flipped) return;
   const { deck, card } = sess.cur;
-  grade(card, g); saveDeck(deck); bump("r"); rewardReview(deck); checkGold();
+  grade(card, g); saveDeck(deck); bump("r"); sfx("pop"); rewardReview(deck); checkGold();
   if (g < 3) sess.queue.push(sess.cur); else sess.done++;
   nextCard();
 }
@@ -119,7 +120,6 @@ function renderHome() {
   const g = greeting();
   $("#hGreet").innerHTML = `${esc(g.pre)} <em>${esc(g.word)}</em>`;
   $("#hDate").textContent = longDate(todayISO());
-  $("#hMascot").innerHTML = mascot("md", g.mood);
   const up7 = upcoming(7), exams = up7.filter((a) => a.type === "exam").length, dues = up7.filter((a) => a.type === "deadline").length;
   $("#hSub").textContent = exams || dues ? `7 ngày tới: ${[exams && exams + " kỳ thi", dues && dues + " hạn nộp"].filter(Boolean).join(", ")}.` : g.mood === "sleep" ? "Mai học tiếp, giờ đi ngủ thôi." : "Tuần này nhẹ nhàng, tranh thủ ôn bài nhé.";
   // campus
@@ -137,6 +137,7 @@ function renderHome() {
       <a class="btn glass sm" href="https://claude.ai/new" target="_blank" rel="noopener">${icon("external")} Mở Claude</a>
       <button class="btn primary sm" data-act="paste-brief">${icon("paste")} ${fresh ? "Dán bản mới" : "Dán kết quả"}</button>
     </div>`;
+  renderHero();
   renderWidgets();
   // mail
   const m = state.mail, imp = m.recent.filter((x) => x.importance === "haute");
