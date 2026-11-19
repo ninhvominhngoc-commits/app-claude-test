@@ -1,5 +1,6 @@
 // ================= phiêu lưu: Hành trình Mạch Lớn =================
-const ADV0 = () => ({ gems: 0, welcome: 0, pulls: 0, p5: 0, p4: 0, guar: 0, own: {}, decor: {}, show: [], party: [], comp: "", done: [], choice: {}, aff: {}, prog: null, day: {}, hist: [] });
+// furni/equip: đồ nội thất đã có và món đang đặt ở từng chỗ trong phòng (tặng sẵn thảm + chồng sách)
+const ADV0 = () => ({ gems: 0, welcome: 0, pulls: 0, p5: 0, p4: 0, guar: 0, own: {}, furni: { rug: 1, books: 1 }, equip: { rug: "rug", corner: "books" }, party: [], comp: "", done: [], choice: {}, aff: {}, prog: null, day: {}, hist: [] });
 const adv = () => (state.adv ||= ADV0());
 const saveAdv = () => save("adv", state.adv);
 const owned = (id) => adv().own[id] !== undefined;
@@ -8,12 +9,11 @@ const COST = 100;
 let advSeg = "story";
 const pickOne = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const fmtN = (n) => Math.round(n).toLocaleString("vi-VN");
-const decorOf = (id) => DECOR.find((d) => d[0] === id);
 const speakerName = (c) => (c === "elec" ? prefs().name : CHARS[c]?.name || SPEAKER[c] || "");
 const elChip = (el) => `<span class="el-chip" style="--ec:${ELEM[el][1]}">${esc(ELEM[el][0])}</span>`;
 
 // --- ví Tinh thể ✦: kiếm được khi học ---
-function advDay() { const a = adv(), t = todayISO(); if (a.day?.d !== t) a.day = { d: t, fe: 0, tr: 0, q: [], gold: 0, gift: 0 }; return a.day; }
+function advDay() { const a = adv(), t = todayISO(); if (a.day?.d !== t) a.day = { d: t, fe: 0, tr: 0, q: [], gold: 0, gift: 0, visit: 0 }; return a.day; }
 function earn(n) {
   n = Math.round(n); if (!(n > 0)) return 0;
   adv().gems += n; saveAdv(); gemPop(n); paintGems();
@@ -53,13 +53,14 @@ function grantChar(id) { // trả về true nếu là nhân vật mới
   if (!a.comp) a.comp = id;
   return true;
 }
-function grantDecor(id) {
-  const a = adv(), isNew = !a.decor[id];
-  a.decor[id] = (a.decor[id] || 0) + 1;
-  if (isNew && a.show.length < 5) a.show.push(id);
-  if (!isNew) a.gems += 10;
-  return isNew;
+function grantFurni(id) { // cầu nguyện 3★: món nội thất nhỏ; trùng thì hoàn 15 ✦
+  const a = adv(), f = furniOf(id); if (!f) return false;
+  if (a.furni[id]) { a.gems += 15; return false; }
+  a.furni[id] = 1;
+  if (!a.equip[f.slot]) a.equip[f.slot] = id;
+  return true;
 }
+function pickSmallFurni(a) { const pool = FURNI.filter((f) => f.small), fresh = pool.filter((f) => !a.furni[f.id]); return pickOne(fresh.length ? fresh : pool).id; }
 const partyOf = () => adv().party.filter((id) => owned(id) && CHARS[id]);
 const affHearts = (id) => Math.min(5, Math.floor((adv().aff[id] || 0) / 3));
 
@@ -84,15 +85,7 @@ function setProg(p) { if (p && isDone(p.ch)) return; adv().prog = p; saveAdv(); 
 
 // --- màn Phiêu lưu ---
 function renderAdv() {
-  const a = adv();
-  if (!a.welcome && dataReady) {
-    a.welcome = 1; a.gems += 1000; saveAdv();
-    setTimeout(() => openSheet({ title: "Chào mừng đến Hành trình Mạch Lớn!", html: `<div class="reward">
-      <div class="sticker" style="width:120px">${chibi("lumi", { mood: "joy" })}</div>
-      <p class="gain gems">+1 000 ✦</p>
-      <p>Quà khởi đầu: đủ cho <b>10 lần cầu nguyện</b>. Học là có thêm Tinh thể: tập trung 1 phút = 2 ✦, ôn 1 thẻ = 1 ✦, tự giảng Feynman = 20 ✦, mỗi nhiệm vụ hằng ngày = 30 ✦.</p>
-      <div class="two" style="width:100%"><button class="btn" data-close data-go="wish">Cầu nguyện</button><button class="btn primary" data-act="adv-play" data-id="p">Vào truyện</button></div></div>` }), 60);
-  }
+  maybeWelcome();
   $$("#advSeg button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.seg === advSeg)));
   $("#advGem").innerHTML = gemPill();
   const d = advDay();
@@ -134,7 +127,8 @@ function openChapters() {
 }
 function claimGift() {
   const d = advDay(); if (d.gift) return;
-  d.gift = 1; earn(50); sfx("chime"); toast("Quà hôm nay: +50 ✦. Mai quay lại nhận tiếp nhé!"); renderAdv();
+  d.gift = 1; earn(50); sfx("chime"); toast("Quà hôm nay: +50 ✦. Mai quay lại nhận tiếp nhé!");
+  if (!sheetRoot.hidden && $("#sheetRoot .qpanel")) openQuests(); render();
 }
 
 // --- cầu nguyện (gacha) ---
@@ -148,7 +142,7 @@ function rollOne(a) {
     return { id, r: 5 };
   }
   if (a.p4 >= 10 || x < r5 + 0.13) { a.p4 = 0; return { id: pickOne(BANNER.four), r: 4 }; }
-  return { id: pickOne(DECOR)[0], r: 3 };
+  return { id: pickSmallFurni(a), r: 3 };
 }
 function wish(n) {
   const a = adv(), cost = COST * n;
@@ -160,14 +154,14 @@ function wish(n) {
   }
   a.gems -= cost;
   const res = [];
-  for (let i = 0; i < n; i++) { const r = rollOne(a); r.isNew = r.r >= 4 ? grantChar(r.id) : grantDecor(r.id); res.push(r); }
+  for (let i = 0; i < n; i++) { const r = rollOne(a); r.isNew = r.r >= 4 ? grantChar(r.id) : grantFurni(r.id); res.push(r); }
   a.hist = [...res.map((r) => ({ id: r.id, r: r.r, t: Date.now() })).reverse(), ...a.hist].slice(0, 60);
   saveAdv(); paintGems();
   playWish(res);
 }
-const nameOf = (r) => (r.r >= 4 ? CHARS[r.id].name : decorOf(r.id)?.[2] || r.id);
+const nameOf = (r) => (r.r >= 4 ? CHARS[r.id]?.name : furniOf(r.id)?.name) || r.id;
 function gcard(r, i) {
-  return `<div class="gcard r${r.r}" style="animation-delay:${(i * 0.07).toFixed(2)}s">${starsSvg(r.r, "st")}${r.isNew ? `<span class="new">MỚI</span>` : ""}${r.r >= 4 ? `<div class="g-art">${chibi(r.id, { mood: "joy" })}</div>` : `<span class="em" aria-hidden="true">${decorOf(r.id)?.[1] || "✦"}</span>`}<span class="nm">${esc(nameOf(r))}</span></div>`;
+  return `<div class="gcard r${r.r}" style="animation-delay:${(i * 0.07).toFixed(2)}s">${starsSvg(r.r, "st")}${r.isNew ? `<span class="new">MỚI</span>` : ""}${r.r >= 4 ? `<div class="g-art">${chibi(r.id, { mood: "joy" })}</div>` : `<span class="g-furni">${furniThumb(r.id)}</span>`}<span class="nm">${esc(nameOf(r))}</span></div>`;
 }
 function playWish(res) {
   const best = Math.max(...res.map((r) => r.r));
@@ -184,7 +178,7 @@ function playWish(res) {
     const k = step - 1;
     if (k < splashes.length) {
       const r = splashes[k], c = CHARS[r.id];
-      ov.innerHTML = `<span class="g-burst"></span><div class="g-splash"><div class="sticker g-big">${chibi(r.id, { mood: "joy" })}</div>${starsSvg(r.r, "stars big")}<p class="g-name">${esc(c.name)}</p><p class="g-role">${esc(c.role)} · ${esc(ELEM[c.el][0])}${r.isNew ? " · Mới!" : ""}</p><p class="g-quote">“${esc(c.quotes[0])}”</p><p class="g-hint">Chạm để tiếp tục</p></div>`;
+      ov.innerHTML = `<span class="g-burst"></span><div class="g-splash"><div class="sticker g-big">${portrait(r.id, { mood: "joy" })}</div>${starsSvg(r.r, "stars big")}<p class="g-name">${esc(c.name)}</p><p class="g-role">${esc(c.role)} · ${esc(ELEM[c.el][0])}${r.isNew ? " · Mới!" : ""}</p><p class="g-quote">“${esc(c.quotes[0])}”</p><p class="g-hint">Chạm để tiếp tục</p></div>`;
       if (r.r === 5) confetti();
       return;
     }
@@ -199,7 +193,7 @@ function renderWish() {
   const a = adv(), left = 50 - a.p5, f = CHARS[BANNER.feat];
   $("#advWish").innerHTML = `
     <article class="sb-card wish-banner hearts-bg">
-      <div class="who sticker">${chibi(BANNER.feat, { mood: "happy" })}</div>
+      <div class="who sticker">${portrait(BANNER.feat, { mood: "happy", rough: false })}</div>
       <div class="info">
         <span class="pill-note">Sự kiện cầu nguyện</span>
         <span class="logo-t" style="--lc:#ff9bb8">${esc(BANNER.name)}</span>
@@ -221,7 +215,7 @@ function openRates() {
     <p><b>5★</b> (Lumi, Tranz, Ope): 1,6% mỗi lượt. Từ lượt thứ 36 tỉ lệ tăng dần, lượt thứ 50 chắc chắn ra 5★.</p>
     <p><b>50/50:</b> 5★ đầu tiên có một nửa khả năng là Lumi. Nếu ra Tranz hoặc Ope thì 5★ kế tiếp chắc chắn là Lumi.</p>
     <p><b>4★</b> (Ohmi, Capa, Kirch, Indu, Bobo): 13%, và cứ 10 lượt chắc chắn có ít nhất một 4★.</p>
-    <p><b>3★</b>: đồ trang trí cho màn Hôm nay. Trùng đồ được hoàn 10 ✦.</p>
+    <p><b>3★</b>: đồ nội thất nhỏ cho căn phòng ở màn Hôm nay. Trùng đồ được hoàn 15 ✦.</p>
     <p>Trùng nhân vật thì tăng Cung (C1 → C6). Từ C6, trùng 4★ hoàn 20 ✦, trùng 5★ hoàn 50 ✦.</p>
     <p class="muted">Đã cầu nguyện ${fmtN(adv().pulls)} lần · ${adv().p5} lượt kể từ 5★ gần nhất.</p></div>` });
 }
@@ -235,7 +229,6 @@ function renderTeam() {
   const a = adv(), party = partyOf();
   const slots = [0, 1, 2].map((i) => { const id = party[i]; return id ? `<button class="sb-card ccard" data-act="char" data-id="${id}" style="--cbg:${CHARS[id].bg}"><div class="chibi-box">${chibi(id)}</div><span class="nm">${esc(CHARS[id].name)}</span></button>` : `<div class="sb-card ccard" style="--cbg:#fff;opacity:.7;cursor:default"><div class="chibi-box" style="height:82px;display:grid;place-items:center;font:800 26px var(--display)">+</div><span class="nm">Trống</span></div>`; }).join("");
   const ids = Object.keys(CHARS).sort((x, y) => CHARS[y].r - CHARS[x].r);
-  const nDecor = Object.keys(a.decor).length;
   $("#advTeam").innerHTML = `
     <div class="sec-head"><span class="label">Đội hình (tối đa 3)</span><span class="small muted">Mỗi người một kỹ năng / trận</span></div>
     <div class="roster">${slots}</div>
@@ -244,16 +237,14 @@ function renderTeam() {
       const c = CHARS[id], has = owned(id);
       return `<button class="sb-card ccard ${has ? "" : "locked"}" data-act="char" data-id="${id}" style="--cbg:${has ? c.bg : "#f3ece4"}" aria-label="${esc(c.name)}${has ? "" : ", chưa có"}">${a.party.includes(id) ? `<span class="tm">Đội</span>` : ""}${has && a.own[id] ? `<span class="cl">C${a.own[id]}</span>` : ""}<div class="chibi-box">${chibi(id)}</div><span class="nm">${has ? esc(c.name) : "???"}</span>${starsSvg(c.r)}</button>`;
     }).join("")}</div>
-    <div class="sec-head"><span class="label">Trang trí màn Hôm nay</span><span class="small muted">${nDecor}/${DECOR.length} · chọn tối đa 5</span></div>
-    <div class="decor-grid">${DECOR.map(([id, em, name]) => { const n = a.decor[id] || 0, on = a.show.includes(id);
-      return `<button class="sb-card dcard ${n ? "" : "locked"}" data-act="decor" data-id="${id}" ${n ? `aria-pressed="${on}"` : "disabled"} style="--bgc:${on ? "#e2efc6" : "#fffaf2"};background:var(--bgc)"><span class="em" aria-hidden="true">${em}</span>${n ? esc(name) : "???"}${n > 1 ? ` ×${n}` : ""}</button>`; }).join("")}</div>`;
+    <button class="btn soft block" data-act="decor">Trang trí phòng của ${esc(prefs().name)}</button>`;
 }
 function openChar(id) {
   const c = CHARS[id], a = adv(), has = owned(id);
   if (!has) return openSheet({ title: "Nhân vật bí ẩn", html: `<div class="reward"><div class="sticker" style="width:120px;filter:brightness(0) opacity(.2)">${chibi(id)}</div><p>${starsSvg(c.r)} ${elChip(c.el)}</p><p class="muted small">${c.r === 5 ? "Gặp được khi cầu nguyện." : "Gặp được trong truyện hoặc khi cầu nguyện."}</p></div>` });
   const inParty = a.party.includes(id), isComp = a.comp === id, h = affHearts(id);
   openSheet({ title: c.name, html: `<div class="prof">
-    <div class="prof-art" style="--cbg:${c.bg}"><div class="chibi-box sticker">${chibi(id, { mood: "joy" })}</div></div>
+    <div class="prof-art" style="--cbg:${c.bg}"><div class="chibi-box sticker">${portrait(id, { mood: "joy" })}</div></div>
     <div class="row" style="gap:6px;flex-wrap:wrap">${starsSvg(c.r)} ${elChip(c.el)} <span class="el-chip" style="--ec:#fff">${esc(c.role)}</span>${a.own[id] ? `<span class="el-chip" style="--ec:#fff1bd">Cung C${a.own[id]}</span>` : ""}</div>
     <p class="small">${esc(c.bio)}</p>
     <div class="explain"><b>${esc(c.skill[0])}</b>: ${esc(c.skill[1])}</div>
@@ -268,13 +259,6 @@ function toggleParty(id) {
   saveAdv(); closeSheet(); renderAdv();
 }
 function setComp(id) { adv().comp = id; saveAdv(); closeSheet(); render(); toast(`${CHARS[id].name} sẽ ở cạnh bạn ở màn Hôm nay`); }
-function toggleDecor(id) {
-  const a = adv();
-  if (a.show.includes(id)) a.show = a.show.filter((x) => x !== id);
-  else { if (a.show.length >= 5) return toast("Tối đa 5 món. Bỏ bớt một món trước nhé"); a.show.push(id); }
-  saveAdv(); renderTeam();
-}
-
 // --- trình đọc truyện (visual novel) ---
 const vn = { ch: null, part: "pre", lines: [], i: 0, cast: [], typing: 0, full: "", scene: "" };
 function playChapter(id) {
@@ -297,8 +281,8 @@ function startVN(id, part, from = 0) {
 }
 function castIn(c) { const k = vn.cast.indexOf(c); if (k >= 0) return; vn.cast.push(c); if (vn.cast.length > 2) vn.cast.shift(); }
 function actorArt(c, mood) {
-  if (c === "elec") return mascot("", ({ happy: "happy", party: "party", think: "think", sleep: "sleep" })[mood] || "happy");
-  if (CHARS[c]) return chibi(c, { mood: mood || "happy" });
+  if (c === "elec") return kitten(({ happy: "happy", party: "party", think: "think", sleep: "sleep" })[mood] || "happy");
+  if (CHARS[c]) return portrait(c, { mood: mood || "happy" });
   return bossArt(c);
 }
 function paintStage(line) {
@@ -569,24 +553,11 @@ Cours :
   return qs;
 }
 
-// --- ở màn Hôm nay: thẻ phiêu lưu, bạn đồng hành, đồ trang trí ---
-function renderAdvHome() {
-  const box = $("#hAdv"); if (!box) return;
-  const a = adv(), ch = currentChapter(), allDone = STORY.every((c) => isDone(c.id)), cs = chapterState(ch);
-  box.innerHTML = `<div class="ah-top hearts-bg"><span class="logo-t sm" style="--lc:#ff9bb8">Mạch Lớn</span>${gemPill()}</div>
-    <div class="ah-body"><div class="ah-txt"><span class="chap-no">${allDone ? "Đã cứu campus" : esc(ch.no)}</span><strong>${esc(allDone ? "Còn tiếp: Thành phố Xoay Chiều" : ch.title)}</strong>
-      <span class="small" style="color:var(--sb-ink-2)">${allDone ? "Gặp lại các Linh Kiện trong phần Nhân vật." : cs.lock ? esc(cs.text) : a.prog?.ch === ch.id ? "Đang đọc dở, vào đọc tiếp nhé!" : "Sẵn sàng phiêu lưu!"}</span>
-      <div class="ah-btns"><button class="adv-btn" data-go="adv">${icon("map")} Phiêu lưu</button><button class="adv-btn lav" data-go="wish">✦ Cầu nguyện</button></div></div>
-      <div class="ah-art sticker">${chibi(ch.cover, { mood: cs.lock ? "sleep" : "happy" })}</div></div>`;
-  const scene = $(".hero .scene");
-  scene.querySelector(".companion")?.remove(); scene.querySelector(".scene-decor")?.remove();
-  if (a.comp && owned(a.comp)) scene.insertAdjacentHTML("beforeend", `<button class="companion sticker" data-act="comp-talk" aria-label="Chạm vào ${esc(CHARS[a.comp].name)}">${chibi(a.comp, { mood: "happy" })}</button>`);
-  if (a.show.length) scene.insertAdjacentHTML("beforeend", `<div class="scene-decor" aria-hidden="true">${a.show.map((id) => decorOf(id)?.[1] || "").join("")}</div>`);
-}
+// --- ở màn Hôm nay: bạn đồng hành nói chuyện ---
 function compTalk(el) {
   const id = adv().comp, c = CHARS[id]; if (!c) return;
   $("#hBubble").textContent = `${c.name}: ${pickOne(c.quotes)}`;
-  el.classList.remove("hop"); void el.offsetWidth; el.classList.add("hop"); audioCtx(); sfx("pop");
+  hopEl(el); sfx("pop");
 }
 
 // --- trình đọc & trận đấu: sự kiện ---

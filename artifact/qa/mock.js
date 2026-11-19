@@ -6,6 +6,7 @@
   const load = () => new Map(JSON.parse(sessionStorage.getItem("__store") || "[]"));
   const store = load();
   const persist = () => sessionStorage.setItem("__store", JSON.stringify([...store]));
+  if (!cfg.welcome && !cfg.noDb && !store.has("data/users/u1/adv")) { store.set("data/users/u1/adv", { welcome: 1 }); persist(); }
   window.__store = store;
   window.__calls = [];
   const clone = (x) => JSON.parse(JSON.stringify(x));
@@ -14,7 +15,7 @@
     set: async (d) => { const s = JSON.stringify(d); if (s.length > 262144) throw { code: "invalid_argument", message: "too big " + path }; store.set(path, JSON.parse(s)); persist(); },
     delete: async () => { store.delete(path); persist(); } });
   const db = { collection: (p) => ({ doc: (id) => docRef(p + "/" + id),
-    get: async () => { if (cfg.dbFail) throw { code: "unavailable" }; return { docs: [...store.keys()].filter((k) => k.startsWith(p + "/") && !k.slice(p.length + 1).includes("/")).map((k) => ({ id: k.slice(p.length + 1), data: () => clone(store.get(k)) })) }; } }) };
+    get: async () => { if (cfg.slowDb) await new Promise((r) => setTimeout(r, cfg.slowDb)); if (cfg.dbFail) throw { code: "unavailable" }; return { docs: [...store.keys()].filter((k) => k.startsWith(p + "/") && !k.slice(p.length + 1).includes("/")).map((k) => ({ id: k.slice(p.length + 1), data: () => clone(store.get(k)) })) }; } }) };
   const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Paris" }).format(new Date());
   const plus = (n) => { const d = new Date(today + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
   const answer = cfg.answer || "## La diode, un clapet anti-retour\nImagine une **porte de métro** qui ne tourne que dans un sens [p. 2]. Le courant passe si $V_D > 0{,}6\\,V$.\n\n$$I = I_s\\left(e^{V/V_T}-1\\right)$$\n\n- Sens passant : ça conduit\n- Sens bloqué : presque rien\n\n> Astuce : pense au clapet d'une pompe à vélo.\n\nÀ toi : explique-moi avec tes mots ?";

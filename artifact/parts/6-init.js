@@ -1,8 +1,8 @@
 
 // ================= điều hướng =================
 const TABS = ["home", "study", "review", "agenda", "inbox"];
-const MAIN = [...TABS, "lab", "stats", "adv"];
-const IMMERSIVE = ["course", "session", "focus", "vn", "battle"];
+const MAIN = [...TABS, "adv"];
+const IMMERSIVE = ["course", "session", "focus", "vn", "battle", "stats", "lab"];
 const START = location.hash.slice(1);
 function show(v) {
   if (v === "course" && !curCourse()) { const id = lsGet("cur"); if (state.courses.some((c) => c.id === id)) state.cur = id; else v = "study"; }
@@ -21,7 +21,8 @@ function show(v) {
   IMMERSIVE.forEach((x) => ($("#v-" + x).hidden = x !== v));
   $("#main").hidden = imm; $(".tabbar").hidden = imm;
   document.body.classList.toggle("immersive", imm);
-  const tabV = ["lab", "stats", ...Object.keys(ADV_SEG)].includes(v) ? "home" : v;
+  document.body.classList.toggle("at-home", v === "home");
+  const tabV = Object.keys(ADV_SEG).includes(v) ? "home" : v;
   $$(".tab").forEach((b) => (b.dataset.v === tabV ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
   if (location.hash.slice(1) !== v) history.replaceState(null, "", "#" + v);
   if (v !== "session" && v !== "vn") render(v);
@@ -49,7 +50,7 @@ const ACTIONS = {
   "copy-brief": () => copyText(briefingPrompt(), "lệnh briefing"),
   "paste-brief": openPasteBrief,
   "read-mail": () => runMail(+lsGet("mailDays", "7") || 7),
-  "review-all": () => startSession(deckList().map((d) => d.id)),
+  "review-all": () => { closeSheet(); startSession(deckList().map((d) => d.id)); },
   "deck-start": (el) => startSession([el.dataset.deck]),
   "add-course": openAddCourse,
   "open-course": (el) => { state.cur = el.dataset.id; lsSet("cur", state.cur); show("course"); },
@@ -80,10 +81,10 @@ const ACTIONS = {
   "copy-check": () => copyText(lastCheck.prompt, "lệnh kiểm chứng"),
   "focus-open": openFocus,
   "settings": openSettings,
-  "buddy": (el) => { lineIdx++; $("#hBubble").textContent = buddyLines()[lineIdx % buddyLines().length]; el.classList.remove("hop"); void el.offsetWidth; el.classList.add("hop"); audioCtx(); sfx("pop"); },
+  "buddy": (el) => { lineIdx++; const L = buddyLines(); $("#hBubble").textContent = L[lineIdx % L.length]; hopEl(el); sfx("pop"); },
   "focus-subj": (el) => { focusPick.subject = el.dataset.id; lsSet("focusSubj", el.dataset.id); openFocus(); },
   "el-info": (el) => openElement(+el.dataset.z),
-  "go-study": () => show("study"),
+  "go-study": () => { closeSheet(); show("study"); },
   "add-found": () => lastCheck.events.length && openEventsSheet(lastCheck.events, "kiểm tra"),
   // phiêu lưu
   "adv-play": (el) => playChapter(el.dataset.id),
@@ -96,7 +97,10 @@ const ACTIONS = {
   "char": (el) => openChar(el.dataset.id),
   "party": (el) => toggleParty(el.dataset.id),
   "comp": (el) => setComp(el.dataset.id),
-  "decor": (el) => toggleDecor(el.dataset.id),
+  "decor": openDecor,
+  "quests": openQuests,
+  "earn-info": openEarnInfo,
+  "visitor": (el) => tapVisitor(el),
   "comp-talk": (el) => compTalk(el),
 };
 document.addEventListener("click", (e) => {
@@ -158,6 +162,7 @@ $("#ckGo").addEventListener("click", (e) => runCheck(e.currentTarget));
 getLimits().then((l) => { if (!l?.images) { $("#ckDrop").hidden = true; } else $("#ckFiles").accept = l.images.mediaTypes.join(","); });
 
 document.documentElement.lang = "vi";
+$("#spArt").innerHTML = kitten("party");
 show(START || "home");
 loadData();
 })();

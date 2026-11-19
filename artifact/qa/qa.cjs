@@ -52,12 +52,16 @@ async function axe(p, label) {
   // ---------- 1. Người dùng mới (chưa có dữ liệu) ----------
   {
     const p = await open();
-    check("Mới: lời chào hiển thị", /Chào buổi|Khuya rồi/.test(await txt(p, "#hGreet")));
+    check("Mới: lời chào hiển thị", /Chào buổi|Khuya rồi/.test(await txt(p, "#hBubble")), await txt(p, "#hBubble"));
     check("Mới: ô campus ở trạng thái chưa rõ", (await p.getAttribute("#hStatus", "class")).includes("v-unknown"));
-    check("Mới: có 4 widget (tập trung, nguyên tử, lịch nhiệt, nhiệm vụ)", (await p.$$("#hWidgets .widget")).length === 4);
-    check("Mới: 3 nhiệm vụ hôm nay, 0/3", (await p.$$("#hWidgets .quests li")).length === 3 && /0\/3/.test(await txt(p, "#hWidgets")));
-    check("Mới: chuỗi ngày = 0", /0 ngày liên tiếp/.test(await txt(p, "#hWidgets .flame")));
-    check("Mới: nguyên tử chưa có electron", /Chưa có electron/.test(await txt(p, "#wAtom")));
+    check("Mới: căn phòng có bé mèo Elec", (await vis(p, "#hRoom .room-svg")) && (await vis(p, "#hRoom .dweller.kit svg")));
+    check("Mới: chưa có bạn đồng hành hay khách", !(await vis(p, "#hRoom .dweller.comp")) && !(await vis(p, "#hRoom .dweller.visit")));
+    check("Mới: nút Truyện báo có chương đang chờ", await vis(p, "#hudStory .dot-new"));
+    check("Mới: nhãn nhiệm vụ 0/3, có chấm quà", /0\/3/.test(await txt(p, "#hQuestTxt")) && (await vis(p, "#hQuest .dot-new")));
+    await p.click("#hQuest");
+    check("Mới: 3 nhiệm vụ hôm nay", (await p.$$("#sheetRoot .quests li")).length === 3);
+    check("Mới: chuỗi ngày = 0", /0 ngày liên tiếp/.test(await txt(p, "#sheetRoot .flame")));
+    await p.keyboard.press("Escape");
     check("Mới: mail 'Chưa đọc lần nào'", /Chưa đọc lần nào/.test(await txt(p, "#hMail")));
     for (const v of ["study", "review", "agenda", "inbox"]) { await tab(p, v); check(`Mới: tab ${v} có màn trống thân thiện`, await vis(p, `#v-${v} .empty`)); }
     await tab(p, "home");
@@ -75,7 +79,9 @@ async function axe(p, label) {
     const dates = await p.$$eval("#hUpcoming .ev", (els) => els.map((e) => e.dataset.date));
     check("Hôm nay: 'Sắp tới' xếp đúng thứ tự ngày", dates.length === 2 && dates[0] < dates[1], dates.join(","));
     check("Hôm nay: không hiện mốc đã qua", !(await txt(p, "#hUpcoming")).includes("Toussaint"));
-    check("Hôm nay: nhiệm vụ ôn thẻ có nút 'Ôn'", await vis(p, '#hWidgets [data-act="review-all"]'));
+    await p.click("#hQuest");
+    check("Hôm nay: nhiệm vụ ôn thẻ có nút 'Ôn'", await vis(p, '#sheetRoot [data-act="review-all"]'));
+    await p.keyboard.press("Escape");
     check("Tab Ôn tập có huy hiệu 1", (await txt(p, "#tabDue")).trim() === "1");
     await tab(p, "agenda");
     check("Lịch: dải 14 ngày", (await p.$$("#aStrip .day")).length === 14);
@@ -205,9 +211,10 @@ async function axe(p, label) {
     await p.click('#sDone [data-go="review"]');
     check("Ôn tập: bộ thẻ môn đã ôn xong", /đã ôn xong/.test(await txt(p, "#rList")));
     await tab(p, "home");
-    check("Hôm nay: chuỗi ngày = 1", /1 ngày liên tiếp/.test(await txt(p, "#hWidgets .flame")));
+    await p.click("#hQuest");
+    check("Hôm nay: chuỗi ngày = 1", /1 ngày liên tiếp/.test(await txt(p, "#sheetRoot .flame")));
     // thoát giữa phiên
-    await p.click('#hWidgets [data-act="review-all"]'); await p.click("#sExit");
+    await p.click('#sheetRoot [data-act="review-all"]'); await p.click("#sExit");
     check("Phiên ôn: thoát giữa chừng về Ôn tập", await vis(p, "#v-review"));
     // xoá tài liệu
     await tab(p, "study"); await p.click(".course-card"); await p.click('[data-act="c-menu"]'); await p.click('[data-act="c-delete"]'); await p.click("#cfYes"); await p.waitForTimeout(300);
@@ -310,6 +317,8 @@ async function axe(p, label) {
   {
     const p = await open({ cfg: { noClaude: true } });
     check("Ngoài claude.ai: báo cần đăng nhập", /Đăng nhập claude\.ai/.test(await txt(p, "#notice")));
+    check("Ngoài claude.ai: vẫn chào mừng (chỉ giữ trong phiên)", (await sheetOpen(p)) && /1 000 ✦/.test(await txt(p, "#sheetRoot")));
+    await p.keyboard.press("Escape");
     await p.click('#hMail [data-act="read-mail"]'); await p.waitForTimeout(200);
     check("Ngoài claude.ai: đọc mail báo rõ ràng", /claude\.ai/.test(await txt(p, "#hMail")));
     await p.click('[data-act="paste-brief"]'); await p.fill("#pbText", "abc"); await p.click("#pbGo");
@@ -317,6 +326,9 @@ async function axe(p, label) {
     await p.close();
     const q = await open({ cfg: { dbFail: true } });
     check("Lỗi dữ liệu: báo không đọc được", /Không đọc được dữ liệu/.test(await txt(q, "#notice")));
+    check("Lỗi dữ liệu: không tặng quà chào mừng (tránh đè dữ liệu thật)", !(await sheetOpen(q)));
+    await q.click("#wFocus"); await q.click("#fStart"); await q.waitForTimeout(200);
+    check("Lỗi dữ liệu: không ghi gì lên dữ liệu cũ", !(await store(q))["data/users/u1/focus"]);
     await q.close();
     const r = await open({ seed: true });
     await r.evaluate(() => localStorage.setItem("cur", "c1"));
@@ -335,13 +347,12 @@ async function axe(p, label) {
     const today = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Paris" }).format(new Date());
     const setStore = (p, kv) => p.evaluate((kv) => { for (const [k, v] of Object.entries(kv)) window.__store.set(k, v); sessionStorage.setItem("__store", JSON.stringify([...window.__store])); }, kv);
     const p = await open({ seed: true });
-    const painted = await p.$eval("#wAtom canvas", (c) => { const d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data; let n = 0; for (let i = 3; i < d.length; i += 4) if (d[i] > 0) n++; return c.width > 0 && n > 50; });
-    check("Widget: nguyên tử được vẽ trên canvas", painted);
     await p.click("#wFocus");
     check("Tập trung: mở màn toàn màn hình", await vis(p, "#v-focus") && !(await vis(p, ".tabbar")));
     check("Tập trung: chọn được 3 môn (1 tài liệu + Tiếng Pháp + Tự học)", (await p.$$("#fSubj button")).length === 3);
     await p.click('#fSubj button[data-subj="free"]'); await p.click('#fDur button[data-dur="15"]');
-    check("Tập trung: gợi ý phần thưởng +3 e⁻ → Lithium", /\+3 e⁻ → Lithium \(Li\)/.test(await txt(p, "#fHint")), await txt(p, "#fHint"));
+    check("Tập trung: gợi ý phần thưởng +30 ✦ và +3 e⁻ (Lithium)", /\+30 ✦ và \+3 e⁻ \(Lithium \(Li\)\)/.test(await txt(p, "#fHint")), await txt(p, "#fHint"));
+    check("Tập trung: mạch 5 linh kiện, chưa sáng", (await p.$$("#fCircuit [data-p]")).length === 5 && (await p.$$("#fCircuit .part.on")).length === 0);
     await p.click("#fStart"); await p.waitForTimeout(1200);
     check("Tập trung: đồng hồ đếm ngược chạy", /^1[45]:\d\d$/.test((await txt(p, "#fTime")).trim()), await txt(p, "#fTime"));
     let st = await store(p);
@@ -359,17 +370,20 @@ async function axe(p, label) {
     const now = Date.now();
     await setStore(p, { "data/users/u1/focus": { subject: "free", start: now - 26 * 60000, endAt: now - 60000, dur: 25 } });
     await p.reload({ waitUntil: "load" }); await p.waitForTimeout(900);
-    check("Hoàn thành: mở lại app thì nhận thưởng", /Hoàn thành phiên tập trung/.test(await txt(p, "#sheetRoot")) && /\+5 e⁻/.test(await txt(p, "#sheetRoot")));
+    check("Hoàn thành: mở lại app thì nhận thưởng", /Hoàn thành phiên tập trung/.test(await txt(p, "#sheetRoot")) && /\+5 e⁻/.test(await txt(p, "#sheetRoot")) && /\+50 ✦/.test(await txt(p, "#sheetRoot")), await txt(p, "#sheetRoot"));
     check("Hoàn thành: thẻ nguyên tố mới là Bore (B)", (await txt(p, "#sheetRoot .elem-tile .s")).trim() === "B");
     st = await store(p);
     check("Hoàn thành: lưu 5 e⁻ và 25 phút", st["data/users/u1/atoms"].list.free.e === 5 && st["data/users/u1/atoms"].list.free.min === 25);
     check("Thống kê: 25 phút tập trung hôm nay", st["data/users/u1/stats"].days[today()].f === 25);
     await p.keyboard.press("Escape");
     if (await vis(p, "#v-focus")) await p.click('#v-focus [data-go="home"]');
-    check("Nhiệm vụ 1 (tập trung 25 phút) hoàn thành", /1\/3/.test(await txt(p, "#hWidgets")));
+    check("Nhiệm vụ 1 (tập trung 25 phút) hoàn thành", /1\/3/.test(await txt(p, "#hQuestTxt")));
     // phòng thí nghiệm
-    await p.click("#wAtom");
-    check("Lab: mở từ widget nguyên tử", await vis(p, "#v-lab"));
+    await p.click('.hero-actions [data-go="stats"]'); await p.click('#v-stats [data-go="lab"]');
+    check("Lab: mở từ bảng Thống kê, che thanh tab", (await vis(p, "#v-lab")) && !(await vis(p, ".tabbar")));
+    await p.waitForTimeout(200);
+    const painted = await p.$eval("#labAtoms canvas", (c) => { const d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data; let n = 0; for (let i = 3; i < d.length; i += 4) if (d[i] > 0) n++; return c.width > 0 && n > 50; });
+    check("Lab: nguyên tử được vẽ trên canvas", painted);
     check("Lab: bảng tuần hoàn đủ 118 ô", (await p.$$("#pt .el")).length === 118);
     check("Lab: đã tổng hợp 5/118", /5\/118/.test(await txt(p, "#ptCount")));
     check("Lab: 5 ô đầu sáng lên, Bo là ô mới nhất", (await p.$$("#pt .el.on")).length === 5 && (await p.$eval("#pt .el.last", (e) => e.dataset.z)) === "5");
@@ -390,7 +404,7 @@ async function axe(p, label) {
     const cards = Array.from({ length: 10 }, (_, i) => ({ id: "x" + i, front: "Q" + i, back: "A" + i, mnemonic: "", ef: 2.5, interval: 0, reps: 0, lapses: 0, due: today() }));
     await setStore(q, { "data/users/u1/deck-francais": { cards }, "data/users/u1/stats": { days: { [today()]: { r: 0, m: 0, f: 25 } } } });
     await q.reload({ waitUntil: "load" }); await q.waitForTimeout(700);
-    await q.click('#hWidgets [data-act="review-all"]');
+    await q.click("#hQuest"); await q.click('#sheetRoot [data-act="review-all"]');
     for (let i = 0; i < 10; i++) { await q.keyboard.press("Space"); await q.keyboard.press("3"); }
     await q.waitForTimeout(200);
     let s2 = await store(q);
@@ -401,14 +415,18 @@ async function axe(p, label) {
     s2 = await store(q);
     check("Ngày hoàn hảo: đủ 3 nhiệm vụ thì được đánh dấu vàng", s2["data/users/u1/stats"].days[today()].gold === 1 && s2["data/users/u1/stats"].days[today()].fe === 1);
     await q.click('#v-course [data-go="study"]'); await tab(q, "home");
-    check("Lịch nhiệt: hôm nay có viền vàng", await q.$eval("#hWidgets .heat i.today", (e) => e.classList.contains("gold")));
-    check("Nhiệm vụ: 3/3", /3\/3/.test(await txt(q, "#hWidgets")));
+    check("Nhiệm vụ: 3/3", /3\/3/.test(await txt(q, "#hQuestTxt")));
+    await q.click("#hQuest");
+    check("Lịch nhiệt: hôm nay có viền vàng", await q.$eval("#sheetRoot .heat i.today", (e) => e.classList.contains("gold")));
+    check("Nhiệm vụ: đủ 3 nhiệm vụ đều hiện đã nhận thưởng", (await q.$$("#sheetRoot .q-reward.done")).length === 3);
     await q.close();
     // cấp độ
     const r = await open({ seed: true });
     await setStore(r, { "data/users/u1/atoms": { list: { free: { e: 12, min: 60, n: 2, rc: 0 } } } });
     await r.reload({ waitUntil: "load" }); await r.waitForTimeout(700);
-    check("Cấp độ: 12 e⁻ = cấp 2 'Proton tò mò'", /Cấp 2 · Proton tò mò/.test(await txt(r, "#hWidgets")));
+    check("Cấp độ: đồng hồ hiện Cấp 2", /Cấp 2/.test(await txt(r, "#hClock")));
+    await r.click("#hQuest");
+    check("Cấp độ: 12 e⁻ = cấp 2 'Proton tò mò'", /Cấp 2 · Proton tò mò/.test(await txt(r, "#sheetRoot")));
     await r.close();
   }
 
@@ -418,17 +436,17 @@ async function axe(p, label) {
     const today = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Paris" }).format(new Date());
     const setStore = (p, kv) => p.evaluate((kv) => { for (const [k, v] of Object.entries(kv)) window.__store.set(k, v); sessionStorage.setItem("__store", JSON.stringify([...window.__store])); }, kv);
     const p = await open({ seed: true });
-    check("Hero: bé electron và lời thoại", (await vis(p, "#buddy svg")) && (await txt(p, "#hBubble")).length > 10);
-    const b1 = await txt(p, "#hBubble"); await p.click("#buddy"); const b2 = await txt(p, "#hBubble");
-    check("Hero: chạm bé electron đổi lời thoại", b1 !== b2, b1 + " | " + b2);
+    check("Phòng: bé mèo Elec và lời thoại", (await vis(p, "#hRoom .dweller.kit svg")) && (await txt(p, "#hBubble")).length > 10);
+    const b1 = await txt(p, "#hBubble"); await p.click("#hRoom .dweller.kit"); const b2 = await txt(p, "#hBubble");
+    check("Phòng: chạm bé mèo đổi lời thoại", b1 !== b2, b1 + " | " + b2);
     check("Hero: lời thoại nhắc thẻ cần ôn hoặc hạn nộp", /thẻ đang chờ|Sắp tới hạn|Sắp thi|electron/.test(b1 + b2));
     check("Hero: đồng hồ giờ Paris", /^\d\d:\d\d · /.test(await txt(p, "#hClock")));
-    await p.click('.hero .name-pill');
+    await p.click('.home .name-pill');
     await p.fill("#stName", "Mít"); await p.click('#stDur button[data-d="45"]'); await p.click("#stSfx"); await p.click("#stStrict"); await p.click("#stSave");
     let st = await store(p);
     check("Cài đặt: lưu tên, thời gian, âm thanh, tập trung nghiêm", st["data/users/u1/prefs"]?.name === "Mít" && st["data/users/u1/prefs"].dur === 45 && st["data/users/u1/prefs"].sfx === false && st["data/users/u1/prefs"].strict === true, JSON.stringify(st["data/users/u1/prefs"]));
     check("Cài đặt: tên mới hiện trên nhãn", (await txt(p, "#buddyName")) === "Mít");
-    check("Cài đặt: nút tập trung theo thời gian mặc định", /45:00 · \+9 e⁻/.test(await txt(p, "#wFocus")));
+    check("Cài đặt: nút tập trung theo thời gian mặc định", /45:00 · \+90 ✦/.test(await txt(p, "#wFocus")), await txt(p, "#wFocus"));
     await p.click("#wFocus");
     check("Tập trung: chọn sẵn 45 phút", await p.$eval('#fDur button[data-dur="45"]', (b) => b.getAttribute("aria-pressed") === "true"));
     await p.click("#fStart"); await p.waitForTimeout(300);
@@ -445,7 +463,7 @@ async function axe(p, label) {
     await p.keyboard.press("Escape");
     st = await store(p);
     check("Nhật ký phiên: lưu phiên vừa xong", st["data/users/u1/sessions"]?.list?.length === 1 && st["data/users/u1/sessions"].list[0].m === 25);
-    await p.click('.hero [data-go="stats"]');
+    await p.click('.hero-actions [data-go="stats"]');
     check("Thống kê: tổng quan có biểu đồ và kỷ lục", (await vis(p, "#stChart svg .ln")) && /25 phút/.test(await txt(p, "#stRec")), (await vis(p, "#stChart svg .ln")) + " | " + (await txt(p, "#stRec")) + " | " + (await p.$eval("#stChart", (e) => e.innerHTML.slice(0, 300)).catch(() => "no chart")));
     await p.click('#stTabs [data-st="day"]');
     check("Thống kê ngày: 24 cột theo giờ, tổng 25 phút", (await p.$$("#stChart .bar")).length === 24 && /25 phút/.test(await txt(p, "#stMain .big-stat")));
@@ -492,7 +510,7 @@ async function axe(p, label) {
     }
 
     // A. lần đầu vào: quà khởi đầu, quà mỗi ngày
-    const p = await open({ reduce: true, hash: "#adv" });
+    const p = await open({ reduce: true, hash: "#adv", cfg: { welcome: true } });
     check("Phiêu lưu: mở thẳng #adv", await vis(p, "#v-adv") && !(await vis(p, "#v-home")));
     check("Phiêu lưu: tab Hôm nay vẫn sáng", (await p.getAttribute('.tab[data-v="home"]', "aria-current")) === "page");
     check("Phiêu lưu: chào mừng + 1 000 ✦", (await sheetOpen(p)) && /1 000 ✦/.test(await txt(p, "#sheetRoot")));
@@ -628,15 +646,19 @@ async function axe(p, label) {
     a = await advDoc(p);
     check("Đội: thêm/bớt thành viên (tối đa 3)", a.party.length <= 3 && (party0.includes("lumi") ? !a.party.includes("lumi") : a.party.includes("lumi") || party0.length >= 3), JSON.stringify({ party0, now: a.party }));
     if (await sheetOpen(p)) { check("Đội đủ 3: báo cho người dùng", /đủ 3 người/.test(await txt(p, "#toast"))); await p.keyboard.press("Escape"); }
-    const dec = await p.$("#advTeam .dcard:not(.locked)");
-    if (dec) { const pressed = await dec.getAttribute("aria-pressed"); await dec.click(); const after = await p.getAttribute(`#advTeam .dcard[data-id="${await dec.getAttribute("data-id")}"]`, "aria-pressed"); check("Trang trí: bật/tắt món đồ", pressed !== after, `${pressed} → ${after}`); }
-    else check("Trang trí: có món đồ sau 11 lượt cầu nguyện", false, JSON.stringify(a.decor));
+    check("Nhân vật: có lối tắt sang trang trí phòng", await vis(p, '#advTeam [data-act="decor"]'));
+    check("Cầu nguyện 3★: ra đồ nội thất cho căn phòng", Object.keys(a.furni || {}).length >= 2, JSON.stringify(a.furni));
     await tab(p, "home");
-    check("Hôm nay: thẻ Mạch Lớn hiện chương & ví", /Mạch Lớn/.test(await txt(p, "#hAdv")) && /Chương 2/.test(await txt(p, "#hAdv")));
-    check("Hôm nay: bạn đồng hành Lumi đứng cạnh bé electron", await vis(p, ".hero .companion"));
-    await p.click(".hero .companion");
+    check("Hôm nay: chương 2 khoá theo cấp nên nút Truyện không có dấu !", !(await vis(p, "#hudStory .dot-new")));
+    check("Hôm nay: bạn đồng hành Lumi ở trong phòng", await vis(p, "#hRoom .dweller.comp"));
+    await p.click("#hRoom .dweller.comp");
     check("Bạn đồng hành: chạm thì nói chuyện", /^Lumi:/.test(await txt(p, "#hBubble")));
-    await p.click('#hAdv [data-go="wish"]');
+    check("Khách ghé thăm: một bạn khác trong đội, có quà", (await vis(p, "#hRoom .dweller.visit")) && (await vis(p, "#hRoom .dweller.visit .gift")));
+    const gV = (await advDoc(p)).gems; await p.click("#hRoom .dweller.visit");
+    check("Khách ghé thăm: tặng 20 ✦ một lần", (await advDoc(p)).gems === gV + 20 && /tặng bạn 20 ✦/.test(await txt(p, "#hBubble")), await txt(p, "#hBubble"));
+    await p.click("#hRoom .dweller.visit");
+    check("Khách ghé thăm: chạm lần nữa không tặng thêm", (await advDoc(p)).gems === gV + 20);
+    await p.click("#hudWish");
     check("Hôm nay: nút Cầu nguyện mở đúng mục", (await vis(p, "#advWish")) && !(await vis(p, "#advStory")));
 
     // F. kiếm ✦ khi học
@@ -655,7 +677,7 @@ async function axe(p, label) {
     await p.keyboard.press("Escape");
 
     // G. đấu tập
-    await p.click('#hAdv [data-go="adv"]');
+    await p.click("#hudStory");
     await p.click('#advStory [data-act="train"]');
     check("Đấu tập: có câu hỏi có sẵn và tài liệu", /Điện học L1 có sẵn/.test(await txt(p, "#sheetRoot")) && /Électronique/.test(await txt(p, "#sheetRoot")));
     await p.click('#sheetRoot [data-train="mix"]');
@@ -677,7 +699,7 @@ async function axe(p, label) {
   }
   {
     // H. hoạt ảnh cầu nguyện thật (không giảm chuyển động) + Claude lỗi khi soạn câu hỏi
-    const p = await open({ seed: true, hash: "#wish", cfg: { jsonFail: "rate_limited" } });
+    const p = await open({ seed: true, hash: "#wish", cfg: { jsonFail: "rate_limited", welcome: true } });
     await p.keyboard.press("Escape");
     await p.click('#advWish [data-n="1"]');
     check("Hoạt ảnh: sao băng trước khi lộ kết quả", await vis(p, ".gacha-ov .shoot"));
@@ -704,7 +726,7 @@ async function axe(p, label) {
     const advDoc = async (p) => (await store(p))["data/users/u1/adv"] || {};
     const p = await open({ reduce: true, hash: "#adv" });
     await p.keyboard.press("Escape");
-    await setStore(p, { "data/users/u1/adv": { gems: 0, welcome: 1, pulls: 0, p5: 0, p4: 0, guar: 0, own: { ohmi: 0, indu: 0 }, decor: {}, show: [], party: ["indu", "ohmi"], comp: "ohmi", done: ["p"], choice: {}, aff: {}, prog: { ch: "c1", part: "pre", i: 6 }, day: {}, hist: [] } });
+    await setStore(p, { "data/users/u1/adv": { gems: 0, welcome: 1, pulls: 0, p5: 0, p4: 0, guar: 0, own: { ohmi: 0, indu: 0 }, party: ["indu", "ohmi"], comp: "ohmi", done: ["p"], choice: {}, aff: {}, prog: { ch: "c1", part: "pre", i: 6 }, day: {}, hist: [] } });
     await p.reload({ waitUntil: "load" }); await p.waitForTimeout(700);
     check("Tiến độ: chương 1 đang đọc dở", /Đọc tiếp/.test(await txt(p, '#advStory [data-act="adv-play"]')));
     await p.click('#advStory [data-act="chapters"]');
@@ -726,13 +748,78 @@ async function axe(p, label) {
     check("Indu: lặp lại đòn 25 sát thương", /50\/100/.test(await txt(p, "#btStage")), await txt(p, "#btStage"));
     await p.close();
   }
+  // ---------- 14. Căn phòng: màn chờ, chào mừng, trang trí, quà, khách, mạch khi tập trung ----------
+  {
+    const setStore = (p, kv) => p.evaluate((kv) => { for (const [k, v] of Object.entries(kv)) window.__store.set(k, v); sessionStorage.setItem("__store", JSON.stringify([...window.__store])); }, kv);
+    const advDoc = async (p) => (await store(p))["data/users/u1/adv"] || {};
+    const reopen = async (p, hash) => { await p.goto("https://app.test/" + hash, { waitUntil: "load" }); await p.reload({ waitUntil: "load" }); await p.waitForTimeout(700); };
+    // màn chờ: hiện khi dữ liệu đang tải, tự tắt khi xong
+    const s0 = await open({ cfg: { slowDb: 1600 } });
+    check("Màn chờ: hiện trong lúc tải dữ liệu", (await vis(s0, "#splash")) && !(await s0.$eval("#splash", (e) => e.classList.contains("out"))) && (await vis(s0, "#spArt svg")));
+    await s0.waitForTimeout(1500);
+    check("Màn chờ: tự tắt khi dữ liệu đã tải", !(await vis(s0, "#splash")) || (await s0.$eval("#splash", (e) => e.classList.contains("out"))));
+    await s0.close();
+    // chào mừng ở màn Hôm nay
+    const w = await open({ cfg: { welcome: true } });
+    check("Chào mừng: hiện ở Hôm nay, +1 000 ✦ và 3 bước", (await sheetOpen(w)) && /1 000 ✦/.test(await txt(w, "#sheetRoot")) && (await w.$$("#sheetRoot ol.loop li")).length === 3);
+    await w.click('#sheetRoot [data-act="decor"]');
+    check("Chào mừng: nút Trang trí mở bảng trang trí", /Trang trí phòng/.test(await txt(w, "#sheetRoot h3")));
+    await w.close();
+    // trang trí
+    const p = await open({ seed: true, reduce: true });
+    await setStore(p, { "data/users/u1/adv": { gems: 400, welcome: 1, own: {}, furni: { rug: 1, books: 1 }, equip: { rug: "rug", corner: "books" }, party: [], comp: "", done: [], choice: {}, aff: {}, prog: null, day: {}, hist: [] } });
+    await reopen(p, "#home");
+    check("Phòng: có thảm và chồng sách tặng sẵn", (await p.$$('#hRoom [data-f="rug"], #hRoom [data-f="books"]')).length === 2);
+    check("Phòng: ví ✦ hiện 400", /400/.test(await txt(p, "#hGems")));
+    await p.click('.hero-actions [data-act="decor"]');
+    check("Trang trí: xem trước căn phòng + đủ 20 món", (await vis(p, "#sheetRoot .decor-prev svg")) && (await p.$$("#sheetRoot .fcard")).length === 20, String((await p.$$("#sheetRoot .fcard")).length));
+    await p.click('#dcTabs [data-slot="desk"]');
+    check("Trang trí: lọc theo chỗ (Góc học có 2 món)", (await p.$$("#sheetRoot .fcard")).length === 2);
+    await p.click('#dcGrid [data-buy="deskpc"]');
+    check("Trang trí: thiếu ✦ thì báo cần tập trung bao lâu", /Còn thiếu 200 ✦/.test(await txt(p, "#toast")) && /100 phút/.test(await txt(p, "#toast")), await txt(p, "#toast"));
+    await p.click('#dcGrid [data-buy="desk"]');
+    check("Trang trí: chạm lần đầu chỉ hỏi lại", /Mua\?/.test(await txt(p, '#dcGrid [data-buy="desk"]')) && (await advDoc(p)).gems === 400);
+    await p.click('#dcGrid [data-buy="desk"]');
+    let a = await advDoc(p);
+    check("Trang trí: mua xong trừ ✦ và đặt ngay vào phòng", a.gems === 0 && a.furni.desk === 1 && a.equip.desk === "desk" && (await p.$$('#hRoom [data-f="desk"]')).length === 1, JSON.stringify(a.equip));
+    await p.click('#dcTabs [data-slot="rug"]'); await p.click('#dcGrid [data-equip="rug"]');
+    a = await advDoc(p);
+    check("Trang trí: chạm món đang dùng thì cất đi", !a.equip.rug && (await p.$$('#hRoom [data-f="rug"]')).length === 0);
+    await p.keyboard.press("Escape");
+    // nhiệm vụ & quà mỗi ngày
+    await p.click("#hQuest");
+    await p.click('#sheetRoot [data-act="gift"]');
+    a = await advDoc(p);
+    check("Quà mỗi ngày: +50 ✦, nút chuyển Đã nhận", a.gems === 50 && a.day.gift === 1 && /Đã nhận/.test(await txt(p, '#sheetRoot [data-act="gift"]')));
+    await p.keyboard.press("Escape");
+    check("Nhãn nhiệm vụ: hết chấm đỏ sau khi nhận quà", !(await vis(p, "#hQuest .dot-new")));
+    await p.click("#hGems");
+    check("Tinh thể: bảng cách kiếm", /1 phút = 2 ✦/.test(await txt(p, "#sheetRoot")) && /Không có tiền thật/.test(await txt(p, "#sheetRoot")));
+    await p.keyboard.press("Escape");
+    // cầu nguyện 3★ ra đồ nội thất nhỏ chưa có
+    await setStore(p, { "data/users/u1/adv": { ...(await advDoc(p)), gems: 100 } });
+    await reopen(p, "#wish");
+    await p.evaluate(() => { Math.random = () => 0.99; });
+    await p.click('#advWish [data-n="1"]');
+    for (let i = 0; i < 4 && (await vis(p, ".gacha-ov")); i++) { await p.click(".gacha-ov"); await p.waitForTimeout(40); }
+    a = await advDoc(p);
+    check("Cầu nguyện 3★: ra món nội thất nhỏ chưa có (tháp Eiffel mini)", a.hist?.[0]?.r === 3 && a.hist[0].id === "eiffel" && a.furni.eiffel === 1 && a.equip.sill === "eiffel", JSON.stringify(a.hist?.[0]));
+    // tập trung: mạch sáng dần theo thời gian
+    const now = Date.now();
+    await setStore(p, { "data/users/u1/focus": { subject: "free", start: now - 10 * 60000, endAt: now + 15 * 60000, dur: 25 } });
+    await reopen(p, "#focus"); await p.waitForTimeout(1200);
+    check("Tập trung: Elec trong phòng đang lắp mạch", (await vis(p, "#fRoom .dweller.kit")) && /đang lắp mạch/.test(await txt(p, "#fElem")));
+    check("Tập trung: 10/25 phút = 2/5 linh kiện sáng", /2\/5/.test(await p.getAttribute("#fCircuit svg", "aria-label")) && (await p.$$("#fCircuit [data-p] .part.on")).length >= 2, await p.getAttribute("#fCircuit svg", "aria-label"));
+    await p.close();
+  }
+
   // ---------- 10. Bố cục ở nhiều cỡ màn hình, sáng/tối, truy cập ----------
   for (const scheme of ["light", "dark"]) {
     for (const width of [320, 390, 820]) {
       const p = await open({ seed: true, scheme, width, mobile: width < 700 });
-      for (const v of ["home", "study", "review", "agenda", "inbox", "lab", "stats"]) {
-        if (v === "lab") { await tab(p, "home"); await p.click("#wAtom"); }
-        else if (v === "stats") { await tab(p, "home"); await p.click('.hero [data-go="stats"]'); }
+      for (const v of ["home", "study", "review", "agenda", "inbox", "stats", "lab"]) {
+        if (v === "stats") { await tab(p, "home"); await p.click('.hero-actions [data-go="stats"]'); }
+        else if (v === "lab") { await p.click('#v-stats [data-go="lab"]'); }
         else await tab(p, v);
         await p.waitForTimeout(80);
         const o = await overflow(p);
@@ -740,7 +827,7 @@ async function axe(p, label) {
         if (width === 390) await axe(p, `${scheme} ${v}`);
         if (width === 320) await p.screenshot({ path: `${SHOTS}/${scheme}-${width}-${v}.png`, fullPage: true });
       }
-      await p.click('#v-stats [data-go="home"]'); await p.click("#wFocus"); await p.waitForTimeout(300);
+      await p.click('#v-lab [data-go="stats"]'); await p.click('#v-stats [data-go="home"]'); await p.click("#wFocus"); await p.waitForTimeout(300);
       check(`Bố cục ${scheme} ${width}px focus: không tràn ngang`, (await overflow(p)) <= 0);
       if (width === 390) await axe(p, `${scheme} focus`);
       if (width === 320) await p.screenshot({ path: `${SHOTS}/${scheme}-${width}-focus.png` });
@@ -760,7 +847,7 @@ async function axe(p, label) {
   // ---------- bố cục các màn phiêu lưu ----------
   for (const scheme of ["light", "dark"]) {
     for (const width of [320, 390, 820]) {
-      const p = await open({ seed: true, scheme, width, mobile: width < 700, reduce: true, hash: "#adv" });
+      const p = await open({ seed: true, scheme, width, mobile: width < 700, reduce: true, hash: "#adv", cfg: { welcome: true } });
       await p.keyboard.press("Escape");
       for (const v of ["adv", "wish", "team", "home"]) {
         if (v === "home") await tab(p, "home"); else if (v !== "adv") await p.click(`#advSeg [data-seg="${v}"]`);
@@ -769,7 +856,7 @@ async function axe(p, label) {
         if (width === 390) await axe(p, `${scheme} ${v}`);
         await p.screenshot({ path: `${SHOTS}/adv-${scheme}-${width}-${v}.png`, fullPage: true });
       }
-      await p.click('#hAdv [data-go="adv"]'); await p.click('#advStory [data-act="adv-play"]'); await p.waitForTimeout(100);
+      await p.click("#hudStory"); await p.click('#advStory [data-act="adv-play"]'); await p.waitForTimeout(100);
       for (let i = 0; i < 5; i++) { await p.click("#vnBox"); await p.waitForTimeout(30); }
       check(`Bố cục ${scheme} ${width}px vn: không tràn ngang`, (await overflow(p)) <= 0);
       if (width === 390) await axe(p, `${scheme} vn`);

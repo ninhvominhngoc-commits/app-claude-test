@@ -14,16 +14,7 @@ const icon = (n, cls = "") => `<svg class="i ${cls}" aria-hidden="true"><use hre
 const thinking = (label = "") => `<span class="typing" role="status"><i></i><i></i><i></i>${label ? `<span>${esc(label)}</span>` : ""}</span>`;
 function lsGet(k, d = "") { try { const v = localStorage.getItem(k); return v === null ? d : v; } catch { return d; } }
 function lsSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
-function mascot(cls = "", mood = "happy") {
-  const motion = reduceMotion ? "" : `<animateMotion dur="6s" repeatCount="indefinite" path="M3,0 a29,11 0 1,0 58,0 a29,11 0 1,0 -58,0"/>`;
-  const face = {
-    happy: `<circle class="m-eye" cx="26.5" cy="31" r="2.1"/><circle class="m-eye" cx="37.5" cy="31" r="2.1"/><path class="m-line" d="M28.5 36.5 q3.5 3 7 0"/>`,
-    think: `<circle class="m-eye" cx="27.5" cy="29.6" r="2.1"/><circle class="m-eye" cx="38.5" cy="29.6" r="2.1"/><circle class="m-mouth" cx="33" cy="37.6" r="1.7"/>`,
-    party: `<path class="m-line" d="M24.5 31.5 l2-2.2 2 2.2M35.5 31.5 l2-2.2 2 2.2"/><path class="m-mouth" d="M27.5 35.5 h9 q0 5 -4.5 5 q-4.5 0 -4.5 -5z"/><path class="m-spark" d="M10 14l1.3 3 3 1.3-3 1.3L10 22.6l-1.3-3-3-1.3 3-1.3zM54 8l1 2.3 2.3 1-2.3 1L54 14.6l-1-2.3-2.3-1 2.3-1zM55 44l.9 2 2 .9-2 .9-.9 2-.9-2-2-.9 2-.9z"/>`,
-    sleep: `<path class="m-line" d="M24.5 31 q2 2 4 0M35.5 31 q2 2 4 0"/><path class="m-line" d="M30 37 q2 1.2 4 0"/><text class="m-z" x="46" y="18">z</text><text class="m-z" x="51" y="11" style="font-size:7px">z</text>`,
-  }[mood] || "";
-  return `<svg class="mascot ${cls}" viewBox="0 0 64 64" aria-hidden="true"><g transform="rotate(-18 32 32)"><ellipse class="m-orbit" cx="32" cy="32" rx="29" ry="11"/><circle class="m-e" cx="0" cy="32" r="3">${motion}</circle></g><circle class="m-body" cx="32" cy="33" r="16.5"/>${face}<circle class="m-blush" cx="22.5" cy="35.5" r="2.4"/><circle class="m-blush" cx="41.5" cy="35.5" r="2.4"/></svg>`;
-}
+function mascot(cls = "", mood = "happy") { return kitten(mood, cls); } // bé mèo Elec (vẽ ở 9-adv-art.js)
 
 // ================= ngày giờ (giờ Paris) =================
 const TZ = "Europe/Paris";
@@ -116,7 +107,7 @@ async function copyText(text, label) {
 
 // ================= dữ liệu (riêng tư theo người dùng) =================
 const state = { agenda: [], courses: [], decks: {}, chats: {}, mail: { seen: [], recent: [], lastRun: "" }, status: null, stats: { days: {} }, atoms: {}, focus: {}, facts: {}, prefs: {}, sessions: [], adv: null, cur: null, view: "home", seg: "mail", mailMsg: null };
-let base = null, dataReady = false;
+let base = null, dataReady = false, loadFailed = false;
 const writeQueue = new Map();
 function queue(docId, op) {
   const next = (writeQueue.get(docId) || Promise.resolve()).then(op).catch((e) => {
@@ -178,15 +169,17 @@ async function loadData() {
       else if (d.id === "facts") state.facts = v.list || {};
       else if (d.id === "prefs") state.prefs = v || {};
       else if (d.id === "sessions") state.sessions = Array.isArray(v.list) ? v.list : [];
-      else if (d.id === "adv") state.adv = { ...ADV0(), ...v, own: v.own || {}, decor: v.decor || {}, choice: v.choice || {}, aff: v.aff || {}, day: v.day || {} };
+      else if (d.id === "adv") { const z = ADV0(); state.adv = { ...z, ...v, own: v.own || {}, choice: v.choice || {}, aff: v.aff || {}, day: v.day || {}, furni: v.furni || z.furni, equip: v.equip || z.equip }; }
     }
     showNotice("");
   } catch (e) {
     console.warn(e);
+    base = null; loadFailed = true; // đọc lỗi thì tạm không ghi gì, để không đè lên dữ liệu thật
     showNotice("Không đọc được dữ liệu đã lưu. Thử tải lại trang sau.");
   } finally {
     clearTimeout(timer);
     dataReady = true;
+    hideSplash();
     const cur = lsGet("cur");
     if (cur && state.courses.some((c) => c.id === cur)) state.cur = cur;
     if (state.focus?.endAt && state.focus.endAt <= Date.now()) finishFocus(true);

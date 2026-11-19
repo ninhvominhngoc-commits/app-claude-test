@@ -263,18 +263,19 @@ function renderFocus() {
   const subj = subjOf(f ? f.subject : focusPick.subject), z = zOf(subj.id), lv = levelInfo();
   $("#fLevel").textContent = `Cấp ${lv.n} · ${lv.title}`;
   $("#fSetup").hidden = !!f; $("#fRun").hidden = !f;
-  $("#fElem").textContent = z ? `${EL_FR[z - 1]} · ${EL_SYM[z - 1]}` : subj.name;
-  $("#fElemSub").textContent = z ? `${subj.name} · ${z} electron` : "Nguyên tử đang chờ electron đầu tiên";
+  $("#fRoom").innerHTML = roomHtml({ focus: true, mood: f ? "think" : "happy" });
+  $("#fElem").textContent = f ? `${prefs().name} đang lắp mạch cùng bạn… · ${subj.name}${z ? ` · ${EL_FR[z - 1]}` : ""}` : `Chọn môn và thời gian, ${prefs().name} sẽ lắp mạch cùng bạn.`;
+  $("#fCircuit").innerHTML = circuitSvg();
   if (!f) {
     $("#fSubj").innerHTML = subjects().map((s) => `<button data-subj="${esc(s.id)}" aria-pressed="${s.id === focusPick.subject}">${esc(s.name)}</button>`).join("");
     $("#fDur").innerHTML = DURS.map((d) => `<button data-dur="${d}" aria-pressed="${d === focusPick.dur}">${d} phút</button>`).join("");
     const gain = Math.floor(focusPick.dur / 5), target = Math.min(118, z + gain);
-    $("#fHint").textContent = `Xong phiên: +${gain} e⁻ → ${elName(target)}. Màn hình được giữ sáng; khoá máy thì đồng hồ vẫn chạy.`;
+    $("#fHint").textContent = `Xong phiên: +${focusPick.dur * 2} ✦ và +${gain} e⁻ (${elName(target)}). Màn hình được giữ sáng; khoá máy thì đồng hồ vẫn chạy.`;
+    paintCircuit(0);
   } else {
-    $("#fRunHint").textContent = `Đang nuôi nguyên tử “${subj.name}”. Cứ 5 phút trọn vẹn = 1 electron, dừng sớm vẫn giữ phần đã có.`;
+    $("#fRunHint").textContent = `Mỗi phút = 2 ✦, cứ 5 phút trọn vẹn = 1 electron cho “${subj.name}”. Dừng sớm vẫn giữ phần đã có.`;
     tickFocus();
   }
-  mountAtom($("#fStage"), { z: f ? Math.max(z, 1) : z, tint: subj.tint, seed: "stage" + subj.id, scale: 0.95, cx: 0.5, cy: 0.46 });
 }
 async function startFocus() {
   const subj = subjOf(focusPick.subject);
@@ -290,7 +291,7 @@ function tickFocus() {
   const left = f.endAt - Date.now();
   if (left <= 0) { finishFocus(true); return; }
   const s = fmtLeft(left);
-  if (state.view === "focus") $("#fTime").textContent = s;
+  if (state.view === "focus") { $("#fTime").textContent = s; paintCircuit(1 - left / (f.dur * 60000)); }
   $$("[data-left]").forEach((el) => (el.textContent = s));
   if (state.view === "home" && $("#wFocusLabel").textContent !== "Đang tập trung") renderHero();
 }
@@ -316,9 +317,9 @@ function finishFocus(complete) {
     confetti();
     const z = res.news[res.news.length - 1];
     openSheet({ title: complete ? "Hoàn thành phiên tập trung!" : "Đã dừng phiên tập trung", html: `<div class="reward">
-      ${z ? elemTile(z) : ""}
-      <p class="gain">+${gain} e⁻</p>${gems ? `<p class="gain gems" style="font-size:22px">+${gems} ✦</p>` : ""}
-      <p>${esc(subj.name)}: ${minutes} phút${z ? ` · nguyên tử đã thành <b>${esc(EL_FR[z - 1])}</b>` : ""}${res.news.length > 1 ? ` (mở khoá ${res.news.length} nguyên tố mới)` : ""}.</p>
+      ${z ? elemTile(z) : `<div class="sticker" style="width:110px">${kitten("party")}</div>`}
+      <p class="gain gems">+${gems} ✦</p>
+      <p>${esc(prefs().name)} đã lắp xong mạch cùng bạn! ${esc(subj.name)}: ${minutes} phút · +${gain} e⁻${z ? ` · nguyên tử đã thành <b>${esc(EL_FR[z - 1])}</b>` : ""}${res.news.length > 1 ? ` (mở khoá ${res.news.length} nguyên tố mới)` : ""}.</p>
       ${res.levelUp ? `<p class="tag c-holiday">Lên cấp ${res.levelUp}: ${esc(LEVELS[res.levelUp - 1][1])}!</p>` : ""}
       <p class="muted small">Nghỉ 5 phút, uống nước rồi quay lại nhé.</p>
       <div class="two" style="width:100%"><button class="btn" data-close>Nghỉ đã</button><button class="btn primary" data-act="focus-open">Phiên mới</button></div></div>` });

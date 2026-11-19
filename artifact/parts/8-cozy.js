@@ -39,14 +39,16 @@ function buddyLines() {
   if (d.gold) L.push("Hôm nay hoàn hảo luôn! Tự hào về bạn ghê.");
   if (soon) L.push(`${soon.type === "exam" ? "Sắp thi" : "Sắp tới hạn"} “${soon.title}” (${countdown(soon.date)}). Mình ôn cùng nhau nha!`);
   if (due) L.push(`Có ${due} thẻ đang chờ bạn ôn đó~`);
-  if (!d.f) L.push(h < 11 ? "Chào buổi sáng! Nạp vài electron đầu ngày nhé?" : "Hôm nay mình chưa có electron nào… tập trung 25 phút không?");
-  L.push("Mỗi 5 phút tập trung là mình lớn thêm một electron đó!", "Học kiểu Feynman: giảng lại cho mình nghe đi!", "Nhớ uống nước nha.", "Viết tiếng Pháp sai cũng không sao, mình sửa cho!");
+  if (!d.f) L.push(h < 11 ? "Nạp vài electron đầu ngày nhé? Bấm Tập trung là mình lắp mạch cùng bạn!" : "Hôm nay mình chưa lắp được mạch nào… tập trung 25 phút không?");
+  L.push("Mỗi phút tập trung là 2 Tinh thể ✦ để trang trí phòng đó!", "Học kiểu Feynman: giảng lại cho mình nghe đi, meo!", "Nhớ uống nước nha.", "Viết tiếng Pháp sai cũng không sao, mình sửa cho!");
+  const g = greeting();
+  if (g.mood !== "sleep") L[0] = `${g.pre} ${g.word}! ${L[0]}`;
   return L;
 }
 function updateClock() {
   const el = $("#hClock"); if (!el) return;
   const t = todayISO();
-  el.textContent = `${hhmm(Date.now())} · ${wdOf(t)} ${+t.slice(8)}/${+t.slice(5, 7)}`;
+  el.textContent = `${hhmm(Date.now())} · ${wdOf(t)} ${+t.slice(8)}/${+t.slice(5, 7)} · Cấp ${levelInfo().n}`;
 }
 function renderHero() {
   const p = prefs(), g = greeting();
@@ -54,13 +56,12 @@ function renderHero() {
   updateClock();
   const L = buddyLines();
   $("#hBubble").textContent = L[lineIdx % L.length];
-  const mood = state.focus?.endAt ? "think" : g.mood === "sleep" ? "sleep" : state.stats.days[todayISO()]?.gold ? "party" : "happy";
-  $("#buddy").innerHTML = mascot("xl", mood);
-  $("#buddy").setAttribute("aria-label", `Chạm vào ${p.name}`);
+  void g;
   const f = state.focus?.endAt ? state.focus : null;
   $("#wFocus").classList.toggle("on", !!f);
   $("#wFocusLabel").textContent = f ? "Đang tập trung" : "Tập trung";
-  $("#wFocus [data-left]").textContent = f ? fmtLeft(f.endAt - Date.now()) : `${p.dur}:00 · +${Math.floor(p.dur / 5)} e⁻`;
+  $("#wFocus [data-left]").textContent = f ? fmtLeft(f.endAt - Date.now()) : `${p.dur}:00 · +${p.dur * 2} ✦`;
+  renderRoom();
 }
 setInterval(updateClock, 20000);
 
@@ -68,13 +69,13 @@ setInterval(updateClock, 20000);
 function openSettings() {
   const p = prefs();
   openSheet({ title: "Cài đặt", html: `
-    <label class="field"><span>Tên bé electron</span><input type="text" id="stName" maxlength="20" autocomplete="off"></label>
+    <label class="field"><span>Tên bé mèo</span><input type="text" id="stName" maxlength="20" autocomplete="off"></label>
     <div class="set-grid">
       <label class="set-card">${icon("volume")}Âm thanh<input type="checkbox" class="switch" role="switch" id="stSfx" ${p.sfx ? "checked" : ""}></label>
       <label class="set-card peach">${icon("sun")}Giữ màn hình sáng<input type="checkbox" class="switch" role="switch" id="stWake" ${p.wake ? "checked" : ""}></label>
       <label class="set-card sky">${icon("lock")}Tập trung nghiêm<input type="checkbox" class="switch" role="switch" id="stStrict" ${p.strict ? "checked" : ""}></label>
     </div>
-    <p class="small muted">Âm thanh chỉ là tiếng “ting” nhỏ khi lật thẻ, xong phiên, mở khoá nguyên tố. Tập trung nghiêm: đang tập trung mà rời app quá 15 giây (kể cả khoá màn hình) thì bé electron chạy mất và phiên bị huỷ.</p>
+    <p class="small muted">Âm thanh chỉ là tiếng “ting” nhỏ khi lật thẻ, xong phiên, mở khoá nguyên tố. Tập trung nghiêm: đang tập trung mà rời app quá 15 giây (kể cả khoá màn hình) thì bé mèo chạy mất và phiên bị huỷ.</p>
     <div class="field"><span>Thời gian tập trung mặc định</span><div class="pills" id="stDur">${DURS.map((d) => `<button type="button" data-d="${d}" aria-pressed="${d === p.dur}">${d} phút</button>`).join("")}</div></div>
     <button class="btn primary block" id="stSave">Lưu</button>`,
     onMount: (el) => {

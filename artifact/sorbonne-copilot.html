@@ -571,6 +571,155 @@ button.widget:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--chu
 .switch:checked::after { transform: translateX(24px); }
 @media (max-width: 380px) { .widgets, .atoms { grid-template-columns: 1fr; } .stats-tabs button { font-size: 11.5px; } .set-grid { grid-template-columns: 1fr; } }
 
+/* ===== Hôm nay: căn phòng gác mái — thanh trên, bong bóng thoại, phòng, nút Tập trung ===== */
+:root { --mocha-ink: #ffffff; --mocha: #8a6650; --pill-bg: var(--accent-btn); --x-red: #ef7f72; --x-chunk: #b9544a; --dim: #646b63; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --mocha-ink: #241a13; --mocha: #c9a58c; --dim: #0d0a09; --x-red: #e0766a; --x-chunk: #6e2c25; } }
+:root[data-theme="dark"] { --mocha-ink: #241a13; --mocha: #c9a58c; --dim: #0d0a09; --x-red: #e0766a; --x-chunk: #6e2c25; }
+:root { --home-sky-1: #a9d5ef; --home-sky-2: #d3ebf3; --home-sky-3: #e6f2df; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --home-sky-1: #182340; --home-sky-2: #221d3a; --home-sky-3: #2a2130; } }
+:root[data-theme="dark"] { --home-sky-1: #182340; --home-sky-2: #221d3a; --home-sky-3: #2a2130; }
+body.at-home { background-image: linear-gradient(180deg, var(--home-sky-1) 0, var(--home-sky-2) 360px, var(--home-sky-3) 620px, var(--bg) 900px); background-size: auto; background-position: 0 0; background-repeat: no-repeat; }
+body.at-home::before { background: var(--home-sky-1); }
+.room-wrap { isolation: isolate; }
+.room-wrap .cloud { z-index: -1; }
+.room-wrap .cloud.c1 { top: 4%; left: -2%; } .room-wrap .cloud.c2 { top: 22%; right: -4%; left: auto; } .room-wrap .cloud.c3 { top: 46%; left: 2%; bottom: auto; }
+.home { gap: 12px; }
+.home-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; padding-top: 2px; }
+.ht-left { display: grid; gap: 4px; min-width: 0; flex: 1 1 auto; justify-items: start; }
+.ht-right { display: flex; align-items: center; gap: 8px; flex: none; }
+.home .name-pill { max-width: 100%; }
+.home .clock { color: var(--sky-ink-2); font-size: 12.5px; padding-left: 4px; margin: 0; }
+.cur-pill { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 5px 0 4px; border-radius: 999px; background: var(--surface); border: 2px solid var(--outline); box-shadow: 0 3px 0 var(--chunk); font: 800 15px var(--font); color: var(--ink); cursor: pointer; font-variant-numeric: tabular-nums; }
+.cur-ic { width: 27px; height: 27px; border-radius: 50%; display: grid; place-items: center; background: #ece3ff; color: #6d50c8; font: 800 15px/1 var(--font); border: 1.5px solid var(--outline); }
+.cur-plus { width: 22px; height: 22px; border-radius: 50%; background: var(--accent-btn); border: 1.5px solid var(--outline); display: grid; place-items: center; font: 800 15px/1 var(--font); color: var(--accent-ink); }
+.home .gear { width: 40px; height: 40px; background: var(--surface); border: 2px solid var(--outline); box-shadow: 0 3px 0 var(--chunk); color: var(--ink); }
+.home .bubble { margin-top: 0; width: 100%; max-width: 460px; justify-self: center; box-sizing: border-box; }
+.room-wrap { position: relative; padding: 0 0 6px; width: min(100%, 460px); margin: 0 auto; }
+.room { position: relative; width: 100%; aspect-ratio: 360 / 330; }
+.room-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.dweller { position: absolute; border: 0; background: none; padding: 0; cursor: pointer; transform: translateX(-50%); -webkit-tap-highlight-color: transparent; }
+.dweller > svg { display: block; width: 100%; height: auto; }
+.dweller.kit { width: 21%; left: 34%; bottom: 7.5%; }
+.dweller.comp { width: 23%; left: 54%; bottom: 7%; }
+.dweller.visit { width: 19%; left: 75%; bottom: 15%; }
+.dweller.kit > svg, .dweller.comp > svg { animation: float 3.4s ease-in-out infinite; }
+.dweller.comp > svg { animation-delay: -1.2s; }
+.dweller.visit > svg { animation: peek 4s ease-in-out infinite; }
+.dweller.hop > svg { animation: hop .5s ease; }
+.dweller .gift { position: absolute; top: -6px; right: -4px; width: 26px; height: 26px; border-radius: 50%; background: #fff; border: 2px solid var(--outline); display: grid; place-items: center; font-size: 14px; box-shadow: 0 2px 0 var(--chunk); animation: nudge 1.2s ease-in-out infinite; }
+@keyframes float { 50% { transform: translateY(-6px); } }
+@keyframes hop { 30% { transform: translateY(-20px) scale(1.05, .95); } 60% { transform: translateY(0) scale(.96, 1.04); } }
+@keyframes peek { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(3deg) translateY(-3px); } }
+.room-hud { position: absolute; right: 0; top: 32%; display: grid; gap: 10px; z-index: 2; }
+.hud-btn { position: relative; width: 58px; display: grid; justify-items: center; gap: 1px; background: var(--surface); color: var(--ink); border: 2px solid var(--outline); border-radius: 18px; padding: 5px 2px 5px; box-shadow: 0 3px 0 var(--chunk); font: 800 10.5px/1.1 var(--font); cursor: pointer; }
+.hud-btn svg { width: 30px; height: 30px; }
+.hud-btn:active, .quest-sticker:active { transform: translateY(3px); box-shadow: 0 0 0 var(--chunk); }
+.dot-new { position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; border-radius: 999px; background: #e0485f; color: #fff; border: 2px solid var(--surface); font: 800 10px/14px var(--font); text-align: center; padding: 0 3px; }
+.quest-sticker { position: absolute; left: 0; bottom: 0; z-index: 2; display: grid; justify-items: center; gap: 0; width: 74px; padding: 4px 2px 6px; border: 2px solid var(--outline); border-radius: 18px; background: var(--surface); color: var(--ink); box-shadow: 0 3px 0 var(--chunk); font: 800 11px/1.15 var(--font); cursor: pointer; }
+.quest-sticker svg { width: 40px; height: 40px; }
+.home .hero-actions { width: min(100%, 460px); margin: -2px auto 0; }
+.home .side-btn svg.ic { width: 30px; height: 30px; }
+.today-h { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 8px; margin-top: 6px; }
+.home #hStatus { gap: 8px; padding: 12px 14px; }
+.home #hStatus .verdict { font-size: 18px; }
+.home #hMail { gap: 8px; padding: 12px 14px; }
+
+/* ===== bảng nổi (Thống kê, Phòng lab): nền tối, tiêu đề dạng nhãn, nút X đỏ ===== */
+.pv { background: var(--dim); position: relative; }
+.pv-leaf { position: absolute; width: 14px; height: 22px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; background: #8a6a55; opacity: .55; top: 18px; }
+.pv-card { position: relative; background: var(--surface); border-radius: 30px 30px 0 0; margin: 62px auto 0; padding: 46px max(16px, env(safe-area-inset-right, 0px)) calc(28px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); min-height: calc(100dvh - 62px); width: 100%; max-width: 720px; display: grid; gap: 14px; align-content: start; box-sizing: border-box; }
+.pv-title { position: absolute; top: 0; left: 50%; transform: translate(-50%, -52%); margin: 0; background: var(--pill-bg); color: var(--accent-ink); border: 2.5px solid var(--outline); border-radius: 999px; padding: 10px 30px 7px; font: 800 26px/1 var(--display); box-shadow: 0 4px 0 var(--accent-chunk); white-space: nowrap; }
+.x-btn { position: absolute; top: 0; right: 14px; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; background: var(--x-red); color: #fff; border: 2.5px solid var(--outline); box-shadow: 0 4px 0 var(--x-chunk); display: grid; place-items: center; cursor: pointer; padding: 0; }
+.x-btn .i { width: 22px; height: 22px; stroke-width: 3; }
+.x-btn:active { transform: translateY(calc(-50% + 3px)); box-shadow: 0 1px 0 var(--x-chunk); }
+.pv-sub { text-align: center; margin-top: -4px; }
+.pv .stats-tabs button[aria-selected="true"] { background: var(--mocha); color: var(--mocha-ink); box-shadow: none; }
+.pv .stats-tabs { background: var(--surface-2); border-color: transparent; }
+.pv .card, .pv .period { background: var(--surface-2); box-shadow: none; border-color: transparent; }
+.pv .rec { background: #fbd38a; border-color: transparent; box-shadow: none; }
+.pv .rec span { color: #6a5042; }
+.pv .rec b { color: #4a3428; }
+.pv .rec.mint { background: #cfe9c4; } .pv .rec.sky { background: #cfe6f5; } .pv .rec.peach { background: #ffd7bd; }
+.pv .lab-links { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+
+/* ===== bảng trượt: tiêu đề nhãn giữa mép trên, nút đóng tròn đỏ ===== */
+.sheet { padding-top: 16px; }
+.grab { display: none; }
+.sheet-h { position: relative; justify-content: center; min-height: 18px; padding: 0 64px; }
+.sheet-h h3 { position: absolute; left: 50%; top: -16px; transform: translate(-50%, -50%); width: max-content; max-width: calc(100% - 132px); background: var(--pill-bg); color: var(--accent-ink); border: 2.5px solid var(--outline); border-radius: 999px; padding: 8px 20px 6px; box-shadow: 0 4px 0 var(--accent-chunk); font: 800 17px/1.15 var(--display); text-align: center; }
+.sheet-h .icon-btn[data-close] { position: absolute; right: 12px; top: -16px; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; background: var(--x-red); color: #fff; border: 2.5px solid var(--outline); box-shadow: 0 4px 0 var(--x-chunk); }
+.sheet-h .icon-btn[data-close] .i { stroke-width: 3; }
+.sheet-b { padding-top: 22px; }
+
+/* ===== cài đặt kiểu thẻ khâu viền ===== */
+.set-card { background: #e3ecb0; color: #3a2a20; }
+.set-card.peach { background: #ffe0c6; } .set-card.sky { background: #d7ebf8; }
+.set-card .i { color: #5b7a1f; } .set-card.peach .i { color: #a8501c; } .set-card.sky .i { color: #2a6496; }
+.switch { width: 66px; height: 32px; }
+.switch::before { content: "TẮT"; position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font: 800 10.5px var(--font); color: var(--ink-2); letter-spacing: .02em; }
+.switch:checked::before { content: "BẬT"; left: 8px; right: auto; color: var(--accent-ink); }
+.switch:checked::after { transform: translateX(34px); }
+
+/* ===== màn chờ ===== */
+#splash { position: fixed; inset: 0; z-index: 100; display: grid; justify-items: center; align-content: center; gap: 10px; padding: 24px; text-align: center; background: repeating-linear-gradient(90deg, transparent 0 58px, rgba(232, 168, 120, .28) 58px 60px), linear-gradient(180deg, #fdf1d9, #fbe2c2); color: #6b4a3a; transition: opacity .35s ease; }
+#splash.out { opacity: 0; pointer-events: none; }
+.sp-sub { font: 800 16px var(--font); color: #6b4a3a; margin: 0; }
+.sp-logo { font: 800 clamp(40px, 12vw, 64px)/.95 var(--display); color: #6b4a3a; letter-spacing: -.02em; margin: 0; }
+.sp-art { width: min(58vw, 230px); margin: 8px 0 14px; }
+.sp-art .mascot { width: 100%; height: auto; animation: hop 1.4s ease-in-out infinite; }
+.sp-bar { position: relative; width: min(80vw, 340px); height: 34px; border-radius: 999px; background: #fff7e8; border: 4px solid #fff7e8; box-shadow: 0 0 0 2px #ecd8bb; overflow: hidden; display: grid; place-items: center; }
+.sp-bar i { position: absolute; left: 0; top: 0; bottom: 0; width: 8%; border-radius: 999px; background: #b6c65e; animation: load 2.4s cubic-bezier(.2, .7, .3, 1) forwards; }
+.sp-bar span { position: relative; font: 800 15px var(--font); color: #44501b; }
+.sp-foot { font: 700 12.5px var(--font); color: #7d6253; margin: 6px 0 0; }
+@keyframes load { to { width: 92%; } }
+
+/* ===== trang trí, nhiệm vụ ===== */
+.decor-prev { position: relative; width: min(100%, 300px); margin: 0 auto; aspect-ratio: 360 / 330; }
+.slot-tabs { display: flex; gap: 6px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; padding: 2px 2px 6px; min-height: 46px; flex: none; }
+.slot-tabs::-webkit-scrollbar { display: none; }
+.slot-tabs button { flex: none; border: 2px solid var(--outline); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 6px 12px; font: 800 12.5px var(--font); cursor: pointer; box-shadow: 0 3px 0 var(--chunk); }
+.slot-tabs button[aria-pressed="true"] { background: var(--mocha); color: var(--mocha-ink); }
+.furni-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(98px, 1fr)); gap: 10px; }
+.fcard { display: grid; justify-items: center; gap: 5px; padding: 8px 6px 10px; background: var(--surface-2); border: 2px solid var(--outline); border-radius: 18px; text-align: center; font: 800 12px/1.2 var(--font); color: var(--ink); min-width: 0; }
+.fcard .furni { width: 66px; height: 66px; background: #fffaf1; border-radius: 14px; border: 1.5px solid var(--line); }
+.fcard.on { background: var(--accent-soft); box-shadow: 0 0 0 3px var(--accent-btn); }
+.fcard .btn { padding: 6px 10px; font-size: 12px; border-radius: 12px; box-shadow: 0 3px 0 var(--chunk); width: 100%; }
+.fcard .btn.buy { background: #ece3ff; color: #3b2a85; }
+.fcard .btn.armed { background: #ffd3dc; color: #7a1d36; }
+.qpanel .heat { width: 100%; max-width: 300px; justify-self: center; gap: 4px; }
+.qpanel .heat i { border-radius: 6px; }
+.reward .mascot.kitten, .sticker > .mascot.kitten, .reward > div > .mascot.kitten { width: 100%; height: auto; }
+.qpanel { --sp-ink: var(--ink); --sp-ink-2: var(--ink-2); --sp-ink-3: var(--ink-3); --sp-fill: var(--surface-2); display: grid; gap: 14px; }
+.q-reward { font: 800 11.5px var(--font); color: #3b2a85; background: #ece3ff; border: 1.5px solid var(--outline); border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
+.q-reward.done { background: var(--accent-soft); color: var(--accent); }
+.gift-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: #fff1bd; color: #4a3428; border: 2px solid var(--outline); border-radius: 18px; padding: 10px 12px; }
+.gift-row b { font: 800 15px var(--display); }
+
+/* ===== màn tập trung: Elec lắp mạch trong phòng ===== */
+.f-room { position: relative; width: min(100%, 360px); margin: 0 auto; aspect-ratio: 360 / 330; }
+.f-cap { font: 800 14px/1.35 var(--font); color: var(--sp-ink-2); margin-top: -6px; }
+.circuit { width: min(100%, 360px); margin: 0 auto; }
+.circuit svg { width: 100%; height: auto; display: block; overflow: visible; }
+.circuit .wire { stroke: #cdbfae; stroke-width: 3; fill: none; stroke-linecap: round; }
+.circuit .wire.on { stroke: var(--outline); stroke-dasharray: 6 6; animation: flow 1s linear infinite; }
+.circuit .part { fill: var(--surface); stroke: #cdbfae; stroke-width: 2.4; stroke-linejoin: round; }
+.circuit .part.on { stroke: var(--outline); }
+.circuit .part.on.r { fill: #f4dca8; } .circuit .part.on.c { fill: #d4e9fa; } .circuit .part.on.l { fill: #e6dcfb; } .circuit .part.on.d { fill: #ffd3dc; } .circuit .part.on.led { fill: #ffe17a; }
+.circuit .glow { fill: #ffe17a; opacity: 0; }
+.circuit .glow.on { opacity: .6; animation: pulse 1.6s ease-in-out infinite; }
+.circuit text { font: 800 11px var(--font); fill: var(--sp-ink-2); text-anchor: middle; }
+@keyframes flow { to { stroke-dashoffset: -12; } }
+@keyframes pulse { 50% { opacity: .25; } }
+ol.loop { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; text-align: left; width: 100%; counter-reset: lp; }
+ol.loop li { counter-increment: lp; display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: center; background: var(--surface-2); border: 2px solid var(--outline); border-radius: 16px; padding: 8px 10px; font: 700 13.5px/1.4 var(--font); }
+ol.loop li::before { content: counter(lp); width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-btn); color: var(--accent-ink); border: 2px solid var(--outline); font: 800 13px var(--font); }
+.earn-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.earn-list li { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; background: var(--surface-2); border-radius: 14px; padding: 8px 12px; font-size: 13.5px; }
+.earn-list span { font-weight: 800; color: var(--ink-2); text-align: right; }
+.gcard .g-furni { display: grid; place-items: center; width: 100%; }
+.gcard .g-furni .furni { width: 78%; height: auto; background: rgba(255, 255, 255, .6); border-radius: 12px; }
+@media (max-width: 380px) { .home .clock { white-space: normal; font-size: 11.5px; line-height: 1.3; } .home .hero-actions { gap: 8px; } .hud-btn { width: 52px; font-size: 10px; } .hud-btn svg { width: 26px; height: 26px; } .quest-sticker { width: 66px; } .cur-pill { font-size: 14px; } .pv-title { font-size: 22px; padding: 9px 24px 6px; } }
+
 /* ===== Phiêu lưu: thế giới truyện pastel — một giao diện sáng cố định, mọi màu khai báo rõ ===== */
 :root { --sb-ink: #5b3f33; --sb-ink-2: #6f5245; --sb-cream: #fffaf2; --sb-chunk: #e9c9b6; --sb-pink: #ffd9e2; --sb-pink-2: #f28aa6; --sb-green: #e2efc6; --sb-green-2: #8fbf5c; --sb-yellow: #fff1bd; --sb-yellow-2: #f0bd3e; --sb-sky: #d9ecf8; --sb-sky-2: #6fa9d6; --sb-lav: #ebe3fb; --sb-lav-2: #9c84e0; --gem-c: #6d50c8; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --gem-c: #c9bbff; } }
@@ -707,7 +856,7 @@ button.widget:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--chu
 .gcard .nm { font: 800 clamp(10px, 2.9vw, 12.5px)/1.1 var(--display); overflow-wrap: anywhere; }
 .gcard .st { display: flex; justify-content: center; } .gcard .st svg { width: clamp(8px, 2.4vw, 11px); height: auto; }
 .gcard .g-art { width: 100%; min-height: 0; align-self: end; } .gcard .g-art .chibi { width: 100%; height: auto; max-height: 100%; }
-.gcard .new { position: absolute; top: 3px; right: 3px; z-index: 2; background: #d93d68; color: #fff; font: 800 9px var(--font); border-radius: 999px; padding: 1px 5px; border: 1.5px solid #fff; }
+.gcard .new { position: absolute; top: 38%; right: 2px; z-index: 2; background: #d93d68; color: #fff; font: 800 9px var(--font); border-radius: 999px; padding: 1px 5px; border: 1.5px solid #fff; }
 .gcard .em { font-size: clamp(26px, 8vw, 38px); line-height: 1; }
 .gcard.r5 { --rc: linear-gradient(180deg, #fff1b8, #f3c14e); box-shadow: 0 0 28px #ffd66e; }
 .gcard.r4 { --rc: linear-gradient(180deg, #efe4ff, #b9a2f1); box-shadow: 0 0 22px #b49cff; }
@@ -814,34 +963,49 @@ button.widget:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--chu
   <symbol id="i-map" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5 4 7v12l5-2 6 2 5-2V5l-5 2z"/><path d="M9 5v12M15 7v12"/></symbol>
 </svg>
 
+<div id="splash" role="status" aria-label="Đang tải app">
+  <p class="sp-sub">Cozy Study Companion</p>
+  <p class="sp-logo">Sorbonne<br>Copilot</p>
+  <div class="sp-art" id="spArt"></div>
+  <div class="sp-bar"><i></i><span>Đang tải…</span></div>
+  <p class="sp-foot">L1 EEA · campus Jussieu</p>
+</div>
+
 <main class="wrap" id="main">
   <div id="notice" class="notice" hidden></div>
 
-  <!-- HÔM NAY -->
-  <section id="v-home" class="view">
-    <header class="hello">
-      <div class="hello-txt"><p class="eyebrow" id="hDate"></p><h1 id="hGreet">Chào bạn</h1><p class="muted small" id="hSub"></p></div>
-    </header>
-    <section class="hero" aria-label="Bé electron và nút tập trung">
-      <div class="hero-top">
-        <button class="name-pill" data-act="settings" aria-label="Đổi tên bé electron"><span id="buddyName">Elec</span><svg class="i"><use href="#i-pencil"></use></svg></button>
+  <!-- HÔM NAY: CĂN PHÒNG -->
+  <section id="v-home" class="view home">
+    <div class="home-top">
+      <div class="ht-left">
+        <button class="name-pill" data-act="settings" aria-label="Đổi tên bé mèo"><span id="buddyName">Elec</span><svg class="i"><use href="#i-pencil"></use></svg></button>
         <span class="clock" id="hClock"></span>
-        <button class="icon-btn" data-act="settings" aria-label="Cài đặt"><svg class="i"><use href="#i-gear"></use></svg></button>
       </div>
-      <p class="bubble" id="hBubble" aria-live="polite"></p>
-      <div class="scene"><span class="cloud c1"></span><span class="cloud c2"></span><span class="cloud c3"></span><button class="buddy" id="buddy" data-act="buddy" aria-label="Chạm vào bé electron"></button></div>
-      <div class="hero-actions">
-        <button class="side-btn" data-go="stats"><svg class="i"><use href="#i-chart"></use></svg>Thống kê</button>
-        <button class="main-btn" id="wFocus" data-act="focus-open"><svg class="sprout" viewBox="0 0 34 20" aria-hidden="true"><path d="M17 20V9" style="stroke: var(--outline); fill: none" stroke-width="2.2" stroke-linecap="round"/><path d="M17 10C14 3 7 2 3 4c2 6 9 8 14 6z" style="fill: #8fc45a; stroke: var(--outline)" stroke-width="2"/><path d="M17 10c3-7 10-8 14-6-2 6-9 8-14 6z" style="fill: #b3dc72; stroke: var(--outline)" stroke-width="2"/></svg><span id="wFocusLabel">Tập trung</span><small data-left>25:00 · +5 e⁻</small></button>
-        <button class="side-btn" data-go="lab"><svg class="i"><use href="#i-atom"></use></svg>Phòng lab</button>
+      <div class="ht-right">
+        <button class="cur-pill" data-act="earn-info" id="hGems"><span class="cur-ic" aria-hidden="true">✦</span><b data-gems>0</b><span class="cur-plus" aria-hidden="true">+</span></button>
+        <button class="icon-btn gear" data-act="settings" aria-label="Cài đặt"><svg class="i"><use href="#i-gear"></use></svg></button>
       </div>
-    </section>
-    <article class="sb-card adv-home" id="hAdv" aria-label="Hành trình Mạch Lớn"></article>
-    <div class="widgets" id="hWidgets"></div>
+    </div>
+    <p class="bubble" id="hBubble" aria-live="polite"></p>
+    <div class="room-wrap">
+      <span class="cloud c1" aria-hidden="true"></span><span class="cloud c2" aria-hidden="true"></span><span class="cloud c3" aria-hidden="true"></span>
+      <div class="room" id="hRoom"></div>
+      <div class="room-hud">
+        <button class="hud-btn" data-go="adv" id="hudStory"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 8c4-2 8-2 12 1 4-3 8-3 12-1v17c-4-2-8-2-12 1-4-3-8-3-12-1z" fill="#ffd3dc" stroke="#664536" stroke-width="2" stroke-linejoin="round"/><path d="M16 9v17" stroke="#664536" stroke-width="2"/><path d="M10 15.5c-1.8-1.1-2.6-2.1-2.6-3a1.4 1.4 0 0 1 2.6-.7 1.4 1.4 0 0 1 2.6.7c0 .9-.8 1.9-2.6 3z" fill="#ef6f7f"/><path d="M19 13h6M19 17h6" stroke="#ef90aa" stroke-width="1.8" stroke-linecap="round"/></svg><span>Truyện</span></button>
+        <button class="hud-btn" data-go="wish" id="hudWish"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 27l8-8" stroke="#b49cff" stroke-width="3.4" stroke-linecap="round"/><path d="M6 20l5-5" stroke="#ffbccd" stroke-width="2.4" stroke-linecap="round"/><path d="M20 4l2.6 5.6 6 .9-4.4 4.2 1 6-5.2-2.8-5.4 2.8 1-6-4.2-4.2 6-.9z" fill="#ffe17a" stroke="#664536" stroke-width="2" stroke-linejoin="round"/></svg><span>Cầu nguyện</span></button>
+      </div>
+      <button class="quest-sticker" data-act="quests" id="hQuest"><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="9" y="6" width="22" height="28" rx="3" fill="#fff8e6" stroke="#664536" stroke-width="2"/><path d="M6 9a3 3 0 0 1 6 0v4H6zM28 31a3 3 0 0 0 6 0v-4h-6z" fill="#f4dca8" stroke="#664536" stroke-width="2" stroke-linejoin="round"/><path d="M14 15h12M14 20h12M14 25h8" stroke="#d9b48c" stroke-width="2" stroke-linecap="round"/><circle cx="29" cy="10" r="5.4" fill="#ef6f7f" stroke="#664536" stroke-width="1.6"/><path d="M27 10l1.4 1.4 2.6-2.8" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="hQuestTxt">Nhiệm vụ</span></button>
+    </div>
+    <div class="hero-actions">
+      <button class="side-btn" data-act="decor"><svg class="ic" viewBox="0 0 32 32" aria-hidden="true"><path d="M19 4l9 9-8.5 8.5-9-9z" fill="#ffd3a8" stroke="#664536" stroke-width="2" stroke-linejoin="round"/><path d="M21 6l5 5" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".7"/><path d="M10.5 12.5l9 9-3 3c-2.2 2.2-5.6 1.6-6.8 4-1-3.4-4.2-4.6-5.4-6.8 2.4-1.2 1.8-4.6 4-6.8z" fill="#ef9a6c" stroke="#664536" stroke-width="2" stroke-linejoin="round"/></svg>Trang trí</button>
+      <button class="main-btn" id="wFocus" data-act="focus-open"><svg class="sprout" viewBox="0 0 34 20" aria-hidden="true"><path d="M17 20V9" style="stroke: var(--outline); fill: none" stroke-width="2.2" stroke-linecap="round"/><path d="M17 10C14 3 7 2 3 4c2 6 9 8 14 6z" style="fill: #8fc45a; stroke: var(--outline)" stroke-width="2"/><path d="M17 10c3-7 10-8 14-6-2 6-9 8-14 6z" style="fill: #b3dc72; stroke: var(--outline)" stroke-width="2"/></svg><span id="wFocusLabel">Tập trung</span><small data-left>25:00 · +50 ✦</small></button>
+      <button class="side-btn" data-go="stats"><svg class="ic" viewBox="0 0 32 32" aria-hidden="true"><rect x="6" y="5" width="20" height="24" rx="3" fill="#fff8e6" stroke="#664536" stroke-width="2"/><rect x="11" y="3" width="10" height="5" rx="2" fill="#bcd76b" stroke="#664536" stroke-width="1.8"/><path d="M11 24v-5M16 24v-9M21 24v-6" stroke="#6f9530" stroke-width="3" stroke-linecap="round"/></svg>Thống kê</button>
+    </div>
+    <div class="today-h"><span class="label">Hôm nay ở trường</span><span class="small muted" id="hDate"></span></div>
     <article class="tile tinted" id="hStatus"></article>
-    <article class="tile" id="hMail"></article>
-    <div class="sec-head"><span class="label">Sắp tới</span><button class="link" data-go="agenda">Xem lịch</button></div>
     <div id="hUpcoming" class="list"></div>
+    <article class="tile" id="hMail"></article>
+    <button class="link" data-go="agenda" style="justify-self:center">Xem cả lịch</button>
   </section>
 
   <!-- HỌC -->
@@ -900,31 +1064,6 @@ button.widget:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--chu
       <div id="ckOut" class="stack"></div>
     </div>
   </section>
-  <!-- THỐNG KÊ -->
-  <section id="v-stats" class="view" hidden>
-    <header class="page-h">
-      <div><h1>Thống kê</h1><p class="muted">Câu chuyện tập trung của bạn</p></div>
-      <button class="icon-btn" data-go="home" aria-label="Về Hôm nay"><svg class="i"><use href="#i-back"></use></svg></button>
-    </header>
-    <div class="stats-tabs" id="stTabs" role="tablist"></div>
-    <div class="period" id="stPeriod"><button class="icon-btn" id="stPrev" aria-label="Khoảng trước"><svg class="i"><use href="#i-back"></use></svg></button><strong id="stLabel"></strong><button class="icon-btn" id="stNext" aria-label="Khoảng sau"><svg class="i"><use href="#i-chevron"></use></svg></button></div>
-    <article class="card" id="stMain"></article>
-    <div class="records" id="stRec"></div>
-    <article class="card" id="stSubj"></article>
-  </section>
-
-  <!-- PHÒNG THÍ NGHIỆM -->
-  <section id="v-lab" class="view" hidden>
-    <header class="page-h">
-      <div><h1>Phòng thí nghiệm</h1><p class="muted">Mỗi môn là một nguyên tử. Học càng nhiều, nguyên tử càng lớn.</p></div>
-      <button class="icon-btn" data-go="home" aria-label="Về Hôm nay"><svg class="i"><use href="#i-back"></use></svg></button>
-    </header>
-    <div class="widget space wide" id="labLevel"></div>
-    <div class="atoms" id="labAtoms"></div>
-    <div class="sec-head"><span class="label">Bảng tuần hoàn của bạn</span><span class="small muted" id="ptCount"></span></div>
-    <div class="ptable space"><div class="pt" id="pt"></div><div class="legend" id="ptLegend"></div></div>
-    <p class="muted small">Cứ 5 phút tập trung = 1 electron cho môn đó, và nguyên tử “tiến hoá” sang nguyên tố kế tiếp. Ôn 10 flashcards cũng được thưởng 1 electron.</p>
-  </section>
 
   <!-- PHIÊU LƯU -->
   <section id="v-adv" class="view" hidden>
@@ -943,6 +1082,36 @@ button.widget:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--chu
     <div id="advTeam" class="stack" hidden></div>
   </section>
 </main>
+
+<!-- THỐNG KÊ: BẢNG NỔI -->
+<section id="v-stats" class="immersive pv" hidden>
+  <span class="pv-leaf" style="left:14%;transform:rotate(-24deg)" aria-hidden="true"></span><span class="pv-leaf" style="left:46%;top:8px;transform:rotate(18deg) scale(.8)" aria-hidden="true"></span><span class="pv-leaf" style="left:84%;top:26px;transform:rotate(40deg) scale(.7)" aria-hidden="true"></span>
+  <div class="pv-card">
+    <h1 class="pv-title">Thống kê</h1>
+    <button class="x-btn" data-go="home" aria-label="Đóng thống kê"><svg class="i"><use href="#i-x"></use></svg></button>
+    <div class="stats-tabs" id="stTabs" role="tablist"></div>
+    <div class="period" id="stPeriod"><button class="icon-btn" id="stPrev" aria-label="Khoảng trước"><svg class="i"><use href="#i-back"></use></svg></button><strong id="stLabel"></strong><button class="icon-btn" id="stNext" aria-label="Khoảng sau"><svg class="i"><use href="#i-chevron"></use></svg></button></div>
+    <article class="card" id="stMain"></article>
+    <div class="records" id="stRec"></div>
+    <article class="card" id="stSubj"></article>
+    <div class="lab-links"><button class="btn soft" data-go="lab"><svg class="i"><use href="#i-atom"></use></svg> Bảng tuần hoàn</button><button class="btn" data-act="quests"><svg class="i"><use href="#i-flame"></use></svg> Nhiệm vụ &amp; chuỗi ngày</button></div>
+  </div>
+</section>
+
+<!-- PHÒNG THÍ NGHIỆM: BẢNG NỔI -->
+<section id="v-lab" class="immersive pv" hidden>
+  <span class="pv-leaf" style="left:14%;transform:rotate(-24deg)" aria-hidden="true"></span><span class="pv-leaf" style="left:46%;top:8px;transform:rotate(18deg) scale(.8)" aria-hidden="true"></span><span class="pv-leaf" style="left:84%;top:26px;transform:rotate(40deg) scale(.7)" aria-hidden="true"></span>
+  <div class="pv-card">
+    <h1 class="pv-title">Phòng lab</h1>
+    <button class="x-btn" data-go="stats" aria-label="Đóng phòng lab"><svg class="i"><use href="#i-x"></use></svg></button>
+    <p class="muted pv-sub">Mỗi môn là một nguyên tử. Học càng nhiều, nguyên tử càng lớn.</p>
+    <div class="widget space wide" id="labLevel"></div>
+    <div class="atoms" id="labAtoms"></div>
+    <div class="sec-head"><span class="label">Bảng tuần hoàn của bạn</span><span class="small muted" id="ptCount"></span></div>
+    <div class="ptable space"><div class="pt" id="pt"></div><div class="legend" id="ptLegend"></div></div>
+    <p class="muted small">Cứ 5 phút tập trung = 1 electron cho môn đó, và nguyên tử “tiến hoá” sang nguyên tố kế tiếp. Ôn 10 flashcards cũng được thưởng 1 electron.</p>
+  </div>
+</section>
 
 <!-- HỌC: CHẾ ĐỘ TOÀN MÀN HÌNH -->
 <section id="v-course" class="immersive" hidden>
@@ -1002,7 +1171,9 @@ button.widget:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--chu
     <span class="w-sub" id="fLevel"></span>
   </div>
   <div class="bar-in focus-in">
-    <div class="stage" id="fStage"><div class="stage-label"><span class="w-title" id="fElem"></span><span class="w-sub" id="fElemSub"></span></div></div>
+    <div class="f-room" id="fRoom"></div>
+    <p class="f-cap" id="fElem"></p>
+    <div class="circuit" id="fCircuit"></div>
     <div id="fSetup" class="stack" style="gap:14px">
       <div><p class="w-sub" style="margin-bottom:8px">Môn học</p><div class="f-pick" id="fSubj"></div></div>
       <div><p class="w-sub" style="margin-bottom:8px">Thời gian</p><div class="f-pick" id="fDur" style="justify-content:center; flex-wrap:wrap; overflow:visible"></div></div>
@@ -1070,16 +1241,7 @@ const icon = (n, cls = "") => `<svg class="i ${cls}" aria-hidden="true"><use hre
 const thinking = (label = "") => `<span class="typing" role="status"><i></i><i></i><i></i>${label ? `<span>${esc(label)}</span>` : ""}</span>`;
 function lsGet(k, d = "") { try { const v = localStorage.getItem(k); return v === null ? d : v; } catch { return d; } }
 function lsSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
-function mascot(cls = "", mood = "happy") {
-  const motion = reduceMotion ? "" : `<animateMotion dur="6s" repeatCount="indefinite" path="M3,0 a29,11 0 1,0 58,0 a29,11 0 1,0 -58,0"/>`;
-  const face = {
-    happy: `<circle class="m-eye" cx="26.5" cy="31" r="2.1"/><circle class="m-eye" cx="37.5" cy="31" r="2.1"/><path class="m-line" d="M28.5 36.5 q3.5 3 7 0"/>`,
-    think: `<circle class="m-eye" cx="27.5" cy="29.6" r="2.1"/><circle class="m-eye" cx="38.5" cy="29.6" r="2.1"/><circle class="m-mouth" cx="33" cy="37.6" r="1.7"/>`,
-    party: `<path class="m-line" d="M24.5 31.5 l2-2.2 2 2.2M35.5 31.5 l2-2.2 2 2.2"/><path class="m-mouth" d="M27.5 35.5 h9 q0 5 -4.5 5 q-4.5 0 -4.5 -5z"/><path class="m-spark" d="M10 14l1.3 3 3 1.3-3 1.3L10 22.6l-1.3-3-3-1.3 3-1.3zM54 8l1 2.3 2.3 1-2.3 1L54 14.6l-1-2.3-2.3-1 2.3-1zM55 44l.9 2 2 .9-2 .9-.9 2-.9-2-2-.9 2-.9z"/>`,
-    sleep: `<path class="m-line" d="M24.5 31 q2 2 4 0M35.5 31 q2 2 4 0"/><path class="m-line" d="M30 37 q2 1.2 4 0"/><text class="m-z" x="46" y="18">z</text><text class="m-z" x="51" y="11" style="font-size:7px">z</text>`,
-  }[mood] || "";
-  return `<svg class="mascot ${cls}" viewBox="0 0 64 64" aria-hidden="true"><g transform="rotate(-18 32 32)"><ellipse class="m-orbit" cx="32" cy="32" rx="29" ry="11"/><circle class="m-e" cx="0" cy="32" r="3">${motion}</circle></g><circle class="m-body" cx="32" cy="33" r="16.5"/>${face}<circle class="m-blush" cx="22.5" cy="35.5" r="2.4"/><circle class="m-blush" cx="41.5" cy="35.5" r="2.4"/></svg>`;
-}
+function mascot(cls = "", mood = "happy") { return kitten(mood, cls); } // bé mèo Elec (vẽ ở 9-adv-art.js)
 
 // ================= ngày giờ (giờ Paris) =================
 const TZ = "Europe/Paris";
@@ -1172,7 +1334,7 @@ async function copyText(text, label) {
 
 // ================= dữ liệu (riêng tư theo người dùng) =================
 const state = { agenda: [], courses: [], decks: {}, chats: {}, mail: { seen: [], recent: [], lastRun: "" }, status: null, stats: { days: {} }, atoms: {}, focus: {}, facts: {}, prefs: {}, sessions: [], adv: null, cur: null, view: "home", seg: "mail", mailMsg: null };
-let base = null, dataReady = false;
+let base = null, dataReady = false, loadFailed = false;
 const writeQueue = new Map();
 function queue(docId, op) {
   const next = (writeQueue.get(docId) || Promise.resolve()).then(op).catch((e) => {
@@ -1234,15 +1396,17 @@ async function loadData() {
       else if (d.id === "facts") state.facts = v.list || {};
       else if (d.id === "prefs") state.prefs = v || {};
       else if (d.id === "sessions") state.sessions = Array.isArray(v.list) ? v.list : [];
-      else if (d.id === "adv") state.adv = { ...ADV0(), ...v, own: v.own || {}, decor: v.decor || {}, choice: v.choice || {}, aff: v.aff || {}, day: v.day || {} };
+      else if (d.id === "adv") { const z = ADV0(); state.adv = { ...z, ...v, own: v.own || {}, choice: v.choice || {}, aff: v.aff || {}, day: v.day || {}, furni: v.furni || z.furni, equip: v.equip || z.equip }; }
     }
     showNotice("");
   } catch (e) {
     console.warn(e);
+    base = null; loadFailed = true; // đọc lỗi thì tạm không ghi gì, để không đè lên dữ liệu thật
     showNotice("Không đọc được dữ liệu đã lưu. Thử tải lại trang sau.");
   } finally {
     clearTimeout(timer);
     dataReady = true;
+    hideSplash();
     const cur = lsGet("cur");
     if (cur && state.courses.some((c) => c.id === cur)) state.cur = cur;
     if (state.focus?.endAt && state.focus.endAt <= Date.now()) finishFocus(true);
@@ -1963,29 +2127,23 @@ function resistor(id) {
 // ================= màn Hôm nay =================
 const VERDICT_IC = { go: "building", stay: "home", partial: "half", unknown: "question" };
 function renderHome() {
-  const g = greeting();
-  $("#hGreet").innerHTML = `${esc(g.pre)} <em>${esc(g.word)}</em>`;
   $("#hDate").textContent = longDate(todayISO());
-  const up7 = upcoming(7), exams = up7.filter((a) => a.type === "exam").length, dues = up7.filter((a) => a.type === "deadline").length;
-  $("#hSub").textContent = exams || dues ? `7 ngày tới: ${[exams && exams + " kỳ thi", dues && dues + " hạn nộp"].filter(Boolean).join(", ")}.` : g.mood === "sleep" ? "Mai học tiếp, giờ đi ngủ thôi." : "Tuần này nhẹ nhàng, tranh thủ ôn bài nhé.";
+  maybeWelcome();
   // campus
   const s = state.status, fresh = s && s.date === todayISO(), vk = fresh && VERDICT[s.verdict] ? s.verdict : "unknown", v = VERDICT[vk];
   const el = $("#hStatus");
   el.className = "tile tinted " + v.cls;
   el.innerHTML = `
     <div class="tile-head"><span class="badge-ic" style="background: color-mix(in srgb, var(--surface) 70%, transparent)">${icon(VERDICT_IC[vk])}</span><div><span class="label" style="color: var(--tk)">Campus Jussieu</span><span class="faint small">${s ? (fresh ? "Cập nhật lúc " + hhmm(s.updatedAt) : "Bản tin gần nhất: " + countdown(s.date)) : "Chưa có bản tin"}</span></div></div>
-    <div class="stack" style="gap:6px"><p class="verdict">${esc(fresh ? v.label : "Hôm nay có cần lên trường không?")}</p>
-    ${fresh && s.headline ? `<p class="verdict-sub">${esc(s.headline)}</p>` : `<p class="verdict-sub">Hỏi Claude (có tìm kiếm web) về blocus, biểu tình, giao thông, rồi dán kết quả vào đây.</p>`}</div>
-    ${fresh && s.points?.length ? `<div class="chips">${s.points.map((p) => `<span>${esc(p)}</span>`).join("")}</div>`
-      : `<ol class="steps"><li><b>Chép lệnh</b> có sẵn lịch của bạn</li><li><b>Dán vào Claude</b>, bật Tìm kiếm web</li><li><b>Dán kết quả</b> vào đây</li></ol>`}
+    <div class="stack" style="gap:4px"><p class="verdict">${esc(fresh ? v.label : "Hôm nay có cần lên trường không?")}</p>
+    ${fresh && s.headline ? `<p class="verdict-sub">${esc(s.headline)}</p>` : `<p class="verdict-sub">Chép lệnh, dán vào Claude (bật Tìm kiếm web), rồi dán kết quả vào đây.</p>`}</div>
+    ${fresh && s.points?.length ? `<div class="chips">${s.points.map((p) => `<span>${esc(p)}</span>`).join("")}</div>` : ""}
     <div class="row">
       <button class="btn glass sm" data-act="copy-brief">${icon("copy")} Chép lệnh</button>
       <a class="btn glass sm" href="https://claude.ai/new" target="_blank" rel="noopener">${icon("external")} Mở Claude</a>
       <button class="btn primary sm" data-act="paste-brief">${icon("paste")} ${fresh ? "Dán bản mới" : "Dán kết quả"}</button>
     </div>`;
   renderHero();
-  renderAdvHome();
-  renderWidgets();
   // mail
   const m = state.mail, imp = m.recent.filter((x) => x.importance === "haute");
   const shown = (imp.length ? imp : m.recent).slice(0, 2);
@@ -1996,7 +2154,7 @@ function renderHome() {
     <div class="row"><button class="btn primary sm" data-act="read-mail">${icon("mail")} Đọc mail mới</button><button class="btn ghost sm" data-go="inbox">Xem tất cả</button></div>`;
   paintMailMsg();
   // sắp tới
-  const up = upcoming(14).slice(0, 5);
+  const up = upcoming(14).slice(0, 3);
   $("#hUpcoming").innerHTML = up.length ? up.map((a) => evRow(a, true)).join("")
     : `<div class="empty flat"><p>Không có kỳ thi hay hạn nộp nào trong 14 ngày tới. Đọc mail để cập nhật nhé.</p></div>`;
 }
@@ -2432,18 +2590,19 @@ function renderFocus() {
   const subj = subjOf(f ? f.subject : focusPick.subject), z = zOf(subj.id), lv = levelInfo();
   $("#fLevel").textContent = `Cấp ${lv.n} · ${lv.title}`;
   $("#fSetup").hidden = !!f; $("#fRun").hidden = !f;
-  $("#fElem").textContent = z ? `${EL_FR[z - 1]} · ${EL_SYM[z - 1]}` : subj.name;
-  $("#fElemSub").textContent = z ? `${subj.name} · ${z} electron` : "Nguyên tử đang chờ electron đầu tiên";
+  $("#fRoom").innerHTML = roomHtml({ focus: true, mood: f ? "think" : "happy" });
+  $("#fElem").textContent = f ? `${prefs().name} đang lắp mạch cùng bạn… · ${subj.name}${z ? ` · ${EL_FR[z - 1]}` : ""}` : `Chọn môn và thời gian, ${prefs().name} sẽ lắp mạch cùng bạn.`;
+  $("#fCircuit").innerHTML = circuitSvg();
   if (!f) {
     $("#fSubj").innerHTML = subjects().map((s) => `<button data-subj="${esc(s.id)}" aria-pressed="${s.id === focusPick.subject}">${esc(s.name)}</button>`).join("");
     $("#fDur").innerHTML = DURS.map((d) => `<button data-dur="${d}" aria-pressed="${d === focusPick.dur}">${d} phút</button>`).join("");
     const gain = Math.floor(focusPick.dur / 5), target = Math.min(118, z + gain);
-    $("#fHint").textContent = `Xong phiên: +${gain} e⁻ → ${elName(target)}. Màn hình được giữ sáng; khoá máy thì đồng hồ vẫn chạy.`;
+    $("#fHint").textContent = `Xong phiên: +${focusPick.dur * 2} ✦ và +${gain} e⁻ (${elName(target)}). Màn hình được giữ sáng; khoá máy thì đồng hồ vẫn chạy.`;
+    paintCircuit(0);
   } else {
-    $("#fRunHint").textContent = `Đang nuôi nguyên tử “${subj.name}”. Cứ 5 phút trọn vẹn = 1 electron, dừng sớm vẫn giữ phần đã có.`;
+    $("#fRunHint").textContent = `Mỗi phút = 2 ✦, cứ 5 phút trọn vẹn = 1 electron cho “${subj.name}”. Dừng sớm vẫn giữ phần đã có.`;
     tickFocus();
   }
-  mountAtom($("#fStage"), { z: f ? Math.max(z, 1) : z, tint: subj.tint, seed: "stage" + subj.id, scale: 0.95, cx: 0.5, cy: 0.46 });
 }
 async function startFocus() {
   const subj = subjOf(focusPick.subject);
@@ -2459,7 +2618,7 @@ function tickFocus() {
   const left = f.endAt - Date.now();
   if (left <= 0) { finishFocus(true); return; }
   const s = fmtLeft(left);
-  if (state.view === "focus") $("#fTime").textContent = s;
+  if (state.view === "focus") { $("#fTime").textContent = s; paintCircuit(1 - left / (f.dur * 60000)); }
   $$("[data-left]").forEach((el) => (el.textContent = s));
   if (state.view === "home" && $("#wFocusLabel").textContent !== "Đang tập trung") renderHero();
 }
@@ -2485,9 +2644,9 @@ function finishFocus(complete) {
     confetti();
     const z = res.news[res.news.length - 1];
     openSheet({ title: complete ? "Hoàn thành phiên tập trung!" : "Đã dừng phiên tập trung", html: `<div class="reward">
-      ${z ? elemTile(z) : ""}
-      <p class="gain">+${gain} e⁻</p>${gems ? `<p class="gain gems" style="font-size:22px">+${gems} ✦</p>` : ""}
-      <p>${esc(subj.name)}: ${minutes} phút${z ? ` · nguyên tử đã thành <b>${esc(EL_FR[z - 1])}</b>` : ""}${res.news.length > 1 ? ` (mở khoá ${res.news.length} nguyên tố mới)` : ""}.</p>
+      ${z ? elemTile(z) : `<div class="sticker" style="width:110px">${kitten("party")}</div>`}
+      <p class="gain gems">+${gems} ✦</p>
+      <p>${esc(prefs().name)} đã lắp xong mạch cùng bạn! ${esc(subj.name)}: ${minutes} phút · +${gain} e⁻${z ? ` · nguyên tử đã thành <b>${esc(EL_FR[z - 1])}</b>` : ""}${res.news.length > 1 ? ` (mở khoá ${res.news.length} nguyên tố mới)` : ""}.</p>
       ${res.levelUp ? `<p class="tag c-holiday">Lên cấp ${res.levelUp}: ${esc(LEVELS[res.levelUp - 1][1])}!</p>` : ""}
       <p class="muted small">Nghỉ 5 phút, uống nước rồi quay lại nhé.</p>
       <div class="two" style="width:100%"><button class="btn" data-close>Nghỉ đã</button><button class="btn primary" data-act="focus-open">Phiên mới</button></div></div>` });
@@ -2542,14 +2701,16 @@ function buddyLines() {
   if (d.gold) L.push("Hôm nay hoàn hảo luôn! Tự hào về bạn ghê.");
   if (soon) L.push(`${soon.type === "exam" ? "Sắp thi" : "Sắp tới hạn"} “${soon.title}” (${countdown(soon.date)}). Mình ôn cùng nhau nha!`);
   if (due) L.push(`Có ${due} thẻ đang chờ bạn ôn đó~`);
-  if (!d.f) L.push(h < 11 ? "Chào buổi sáng! Nạp vài electron đầu ngày nhé?" : "Hôm nay mình chưa có electron nào… tập trung 25 phút không?");
-  L.push("Mỗi 5 phút tập trung là mình lớn thêm một electron đó!", "Học kiểu Feynman: giảng lại cho mình nghe đi!", "Nhớ uống nước nha.", "Viết tiếng Pháp sai cũng không sao, mình sửa cho!");
+  if (!d.f) L.push(h < 11 ? "Nạp vài electron đầu ngày nhé? Bấm Tập trung là mình lắp mạch cùng bạn!" : "Hôm nay mình chưa lắp được mạch nào… tập trung 25 phút không?");
+  L.push("Mỗi phút tập trung là 2 Tinh thể ✦ để trang trí phòng đó!", "Học kiểu Feynman: giảng lại cho mình nghe đi, meo!", "Nhớ uống nước nha.", "Viết tiếng Pháp sai cũng không sao, mình sửa cho!");
+  const g = greeting();
+  if (g.mood !== "sleep") L[0] = `${g.pre} ${g.word}! ${L[0]}`;
   return L;
 }
 function updateClock() {
   const el = $("#hClock"); if (!el) return;
   const t = todayISO();
-  el.textContent = `${hhmm(Date.now())} · ${wdOf(t)} ${+t.slice(8)}/${+t.slice(5, 7)}`;
+  el.textContent = `${hhmm(Date.now())} · ${wdOf(t)} ${+t.slice(8)}/${+t.slice(5, 7)} · Cấp ${levelInfo().n}`;
 }
 function renderHero() {
   const p = prefs(), g = greeting();
@@ -2557,13 +2718,12 @@ function renderHero() {
   updateClock();
   const L = buddyLines();
   $("#hBubble").textContent = L[lineIdx % L.length];
-  const mood = state.focus?.endAt ? "think" : g.mood === "sleep" ? "sleep" : state.stats.days[todayISO()]?.gold ? "party" : "happy";
-  $("#buddy").innerHTML = mascot("xl", mood);
-  $("#buddy").setAttribute("aria-label", `Chạm vào ${p.name}`);
+  void g;
   const f = state.focus?.endAt ? state.focus : null;
   $("#wFocus").classList.toggle("on", !!f);
   $("#wFocusLabel").textContent = f ? "Đang tập trung" : "Tập trung";
-  $("#wFocus [data-left]").textContent = f ? fmtLeft(f.endAt - Date.now()) : `${p.dur}:00 · +${Math.floor(p.dur / 5)} e⁻`;
+  $("#wFocus [data-left]").textContent = f ? fmtLeft(f.endAt - Date.now()) : `${p.dur}:00 · +${p.dur * 2} ✦`;
+  renderRoom();
 }
 setInterval(updateClock, 20000);
 
@@ -2571,13 +2731,13 @@ setInterval(updateClock, 20000);
 function openSettings() {
   const p = prefs();
   openSheet({ title: "Cài đặt", html: `
-    <label class="field"><span>Tên bé electron</span><input type="text" id="stName" maxlength="20" autocomplete="off"></label>
+    <label class="field"><span>Tên bé mèo</span><input type="text" id="stName" maxlength="20" autocomplete="off"></label>
     <div class="set-grid">
       <label class="set-card">${icon("volume")}Âm thanh<input type="checkbox" class="switch" role="switch" id="stSfx" ${p.sfx ? "checked" : ""}></label>
       <label class="set-card peach">${icon("sun")}Giữ màn hình sáng<input type="checkbox" class="switch" role="switch" id="stWake" ${p.wake ? "checked" : ""}></label>
       <label class="set-card sky">${icon("lock")}Tập trung nghiêm<input type="checkbox" class="switch" role="switch" id="stStrict" ${p.strict ? "checked" : ""}></label>
     </div>
-    <p class="small muted">Âm thanh chỉ là tiếng “ting” nhỏ khi lật thẻ, xong phiên, mở khoá nguyên tố. Tập trung nghiêm: đang tập trung mà rời app quá 15 giây (kể cả khoá màn hình) thì bé electron chạy mất và phiên bị huỷ.</p>
+    <p class="small muted">Âm thanh chỉ là tiếng “ting” nhỏ khi lật thẻ, xong phiên, mở khoá nguyên tố. Tập trung nghiêm: đang tập trung mà rời app quá 15 giây (kể cả khoá màn hình) thì bé mèo chạy mất và phiên bị huỷ.</p>
     <div class="field"><span>Thời gian tập trung mặc định</span><div class="pills" id="stDur">${DURS.map((d) => `<button type="button" data-d="${d}" aria-pressed="${d === p.dur}">${d} phút</button>`).join("")}</div></div>
     <button class="btn primary block" id="stSave">Lưu</button>`,
     onMount: (el) => {
@@ -2752,22 +2912,26 @@ function showTip(target) {
   tip.textContent = `${p.label}: ${p.text}`;
   tip.style.left = clamp(r.left - c.left + r.width / 2, 50, c.width - 50) + "px"; tip.style.top = "0px";
 }
-// ================= phiêu lưu: tranh chibi vẽ bằng SVG (nhân vật gốc của app) =================
-const SB_INK = "#5b3f33", SKIN = "#ffe9de", SKIN_SH = "#f6cdbd";
+// ================= tranh vẽ tay mềm bằng SVG: bé mèo Elec, các Linh Kiện tai mèo, quái vật, cảnh =================
+// Nhân vật gốc của app. Nét mảnh màu nâu, màu pastel, mắt dịu, tai mèo và đuôi.
+const SB_INK = "#664536", SKIN = "#ffeade", SKIN_SH = "#f4cdbd", BLUSH = "#ff9db0";
 let svgN = 0;
 const ART = {
-  ohmi: { hair: "#f2a56b", hair2: "#d9834b", eye: ["#8a4523", "#f4a25a"], cloth: "#ffd2b5", cloth2: "#f39a6b", shoe: "#c46f45", leg: SKIN, back: "bob", front: "side", outfit: "hoodie", acc: "resistor" },
-  capa: { hair: "#93c9f0", hair2: "#5d9fd3", eye: ["#284f8c", "#8ccaf4"], cloth: "#ffffff", cloth2: "#5b80c6", shoe: "#4a6aa8", leg: "#ffffff", back: "twinlow", front: "even", outfit: "sailor", acc: "capacitor" },
-  kirch: { hair: "#7fcf97", hair2: "#4ea86c", eye: ["#245f3e", "#93dcae"], cloth: "#e9f6e1", cloth2: "#5aac70", shoe: "#3f7f52", leg: "#5b6b8c", back: "short", front: "spiky", outfit: "jacket", acc: "arrow" },
-  indu: { hair: "#bba6f0", hair2: "#8f78d9", eye: ["#55399a", "#cab8ff"], cloth: "#f1ebff", cloth2: "#9c84e0", shoe: "#7a63c2", leg: SKIN, back: "cat", front: "even", outfit: "bell", acc: "coil" },
-  bobo: { hair: "#f5cf5f", hair2: "#d8a73a", eye: ["#71520f", "#f3cf72"], cloth: "#fff3c9", cloth2: "#e8b649", shoe: "#b98a2c", leg: "#e98f9c", back: "curly", front: "curly", outfit: "sweater", acc: "beret" },
-  lumi: { hair: "#ffb6ca", hair2: "#f08aa6", eye: ["#bd3f6a", "#ffc3d6"], cloth: "#fff1f5", cloth2: "#f28aa6", shoe: "#e46f8f", leg: SKIN, back: "long", front: "even", outfit: "frill", acc: "led" },
-  tranz: { hair: "#8b7cd9", hair2: "#5d4db0", eye: ["#35287f", "#ab9ef3"], cloth: "#463b70", cloth2: "#f2c661", shoe: "#2f2753", leg: "#463b70", back: "twinhigh", front: "side", outfit: "cape", acc: "transistor" },
-  ope: { hair: "#f4f7f8", hair2: "#9fd8cd", eye: ["#2b7a6f", "#9fe5d8"], cloth: "#ffffff", cloth2: "#5fbcac", shoe: "#3f8f83", leg: "#5b6b8c", back: "pony", front: "center", outfit: "coat", acc: "opamp" },
+  ohmi: { hair: "#f2a970", hair2: "#d9864f", ear: "#ffd1bf", eye: ["#7d3f21", "#e8955a"], cloth: "#ffd8be", cloth2: "#ef9a6c", shoe: "#c46f45", leg: SKIN, back: "bob", front: "side", outfit: "hoodie", acc: "resistor" },
+  capa: { hair: "#9fcdf0", hair2: "#6aa4d6", ear: "#ffd6dc", eye: ["#2a5288", "#86c2ec"], cloth: "#ffffff", cloth2: "#6584c4", shoe: "#4a6aa8", leg: "#ffffff", back: "twinlow", front: "even", outfit: "sailor", acc: "capacitor" },
+  kirch: { hair: "#8bd2a0", hair2: "#58ab74", ear: "#ffd3cf", eye: ["#235a3b", "#8fd5a8"], cloth: "#ecf6e4", cloth2: "#5aac70", shoe: "#3f7f52", leg: "#5f6d8e", back: "short", front: "spiky", outfit: "jacket", acc: "arrow" },
+  indu: { hair: "#c0adf0", hair2: "#9480d8", ear: "#ffd0e0", eye: ["#52389a", "#c3b2fb"], cloth: "#f2ecff", cloth2: "#9c84e0", shoe: "#7a63c2", leg: SKIN, back: "cat", front: "even", outfit: "bell", acc: "coil" },
+  bobo: { hair: "#f4d06a", hair2: "#d6a840", ear: "#ffd3c4", eye: ["#6d500f", "#ecc76a"], cloth: "#fff4cf", cloth2: "#e7b74d", shoe: "#b98a2c", leg: "#ea96a2", back: "curly", front: "curly", outfit: "sweater", acc: "beret" },
+  lumi: { hair: "#ffbccd", hair2: "#ef90aa", ear: "#ffe0e8", eye: ["#b33f68", "#ffb9cf"], cloth: "#fff2f6", cloth2: "#f08fab", shoe: "#e46f8f", leg: SKIN, back: "long", front: "even", outfit: "frill", acc: "led" },
+  tranz: { hair: "#968ad9", hair2: "#6555b4", ear: "#f6d0e6", eye: ["#33287c", "#a79bf0"], cloth: "#4a4074", cloth2: "#f0c869", shoe: "#2f2753", leg: "#4a4074", back: "twinhigh", front: "side", outfit: "cape", acc: "transistor" },
+  ope: { hair: "#f3f5f6", hair2: "#a6d8ce", ear: "#ffd8dc", eye: ["#2a776c", "#9be0d2"], cloth: "#ffffff", cloth2: "#5fbcac", shoe: "#3f8f83", leg: "#5f6d8e", back: "pony", front: "center", outfit: "coat", acc: "opamp" },
 };
-const st = (w = 2.6) => `stroke="${SB_INK}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`;
-const limb = (d, col, w = 12) => `<path d="${d}" fill="none" stroke="${SB_INK}" stroke-width="${w + 5}" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`;
+const st = (w = 2) => `stroke="${SB_INK}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`;
+const limb = (d, col, w = 11) => `<path d="${d}" fill="none" stroke="${SB_INK}" stroke-width="${w + 4}" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`;
+// nét vẽ tay hơi run (chỉ dùng cho hình lớn, đứng yên)
+const roughDefs = (id) => `<filter id="${id}" x="-4%" y="-4%" width="108%" height="108%"><feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="5" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.7" xChannelSelector="R" yChannelSelector="G"/></filter>`;
 
+// --- tóc (toạ độ đầu chibi: tâm x=100, mặt từ y=46 tới 154) ---
 function hairBack(c) {
   const f = `fill="${c.hair}" ${st()}`;
   switch (c.back) {
@@ -2776,7 +2940,7 @@ function hairBack(c) {
     case "short": return `<path d="M44 104C40 64 66 40 100 40S160 64 156 104L150 132H50Z" ${f}/>`;
     case "cat": return `<path d="M42 102C38 60 66 38 100 38S162 60 158 102L162 170C150 178 140 172 136 162H64C60 172 50 178 38 170Z" ${f}/>`;
     case "curly": return `<path d="M38 122C22 112 26 88 38 82 30 62 50 44 66 46 74 32 96 28 106 36 118 28 140 32 146 46 162 46 176 64 166 82 180 92 178 116 162 124 166 142 150 154 136 148H64C50 154 34 142 38 122Z" ${f}/>`;
-    case "long": return `<path d="M40 102C36 58 66 36 100 36S164 58 160 102L168 212C166 226 150 232 140 222 132 230 120 228 116 218H84C80 228 68 230 60 222 50 232 34 226 32 212Z" ${f}/><path d="M60 150C58 180 62 204 70 216M140 150C142 180 138 204 130 216" fill="none" stroke="${c.hair2}" stroke-width="3" stroke-linecap="round"/>`;
+    case "long": return `<path d="M40 102C36 58 66 36 100 36S164 58 160 102L168 212C166 226 150 232 140 222 132 230 120 228 116 218H84C80 228 68 230 60 222 50 232 34 226 32 212Z" ${f}/><path d="M60 150C58 180 62 204 70 216M140 150C142 180 138 204 130 216" fill="none" stroke="${c.hair2}" stroke-width="2.4" stroke-linecap="round"/>`;
     case "twinhigh": return `<path d="M42 102C38 60 66 38 100 38S162 60 158 102L158 150H42Z" ${f}/><path d="M56 58C22 58 8 104 16 176 26 150 36 118 62 84Z" ${f}/><path d="M144 58C178 58 192 104 184 176 174 150 164 118 138 84Z" ${f}/>`;
     case "pony": return `<path d="M42 102C38 60 66 38 100 38S162 60 158 102L156 142H44Z" ${f}/><path d="M138 116C172 134 176 190 158 226 154 198 146 172 130 148Z" ${f}/>`;
   }
@@ -2784,90 +2948,162 @@ function hairBack(c) {
 }
 function hairFront(c) {
   const f = `fill="${c.hair}" ${st()}`;
-  const ring = `<path d="M64 60Q100 40 136 60" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="5" stroke-linecap="round"/>`;
+  const ring = `<path d="M66 58Q100 42 134 58" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="4" stroke-linecap="round"/>`;
+  const strands = `<path d="M84 50Q78 66 80 84M116 50Q122 66 120 84" fill="none" stroke="${c.hair2}" stroke-width="1.6" stroke-linecap="round" opacity=".8"/>`;
   switch (c.front) {
-    case "even": return `<path d="M40 110C36 60 64 34 100 34S164 60 160 110C154 102 150 94 148 82 142 92 132 98 122 100 126 92 126 84 124 78 116 90 106 96 96 98 100 90 100 82 98 76 90 88 78 96 66 98 68 92 68 86 66 80 60 92 52 102 40 110Z" ${f}/><path d="M44 98C40 124 42 144 52 160 56 148 58 130 56 108Z" ${f}/><path d="M156 98C160 124 158 144 148 160 144 148 142 130 144 108Z" ${f}/>${ring}`;
-    case "side": return `<path d="M40 110C36 60 64 34 100 34S164 60 160 110C156 98 152 88 146 78 136 94 116 102 90 102 104 94 110 86 112 76 98 90 76 100 56 102 50 104 44 106 40 110Z" ${f}/><path d="M44 98C40 122 44 140 52 154 56 142 58 126 56 106Z" ${f}/>${ring}`;
+    case "even": return `<path d="M40 110C36 60 64 34 100 34S164 60 160 110C154 102 150 94 148 82 142 92 132 98 122 100 126 92 126 84 124 78 116 90 106 96 96 98 100 90 100 82 98 76 90 88 78 96 66 98 68 92 68 86 66 80 60 92 52 102 40 110Z" ${f}/><path d="M44 98C40 124 42 144 52 160 56 148 58 130 56 108Z" ${f}/><path d="M156 98C160 124 158 144 148 160 144 148 142 130 144 108Z" ${f}/>${strands}${ring}`;
+    case "side": return `<path d="M40 110C36 60 64 34 100 34S164 60 160 110C156 98 152 88 146 78 136 94 116 102 90 102 104 94 110 86 112 76 98 90 76 100 56 102 50 104 44 106 40 110Z" ${f}/><path d="M44 98C40 122 44 140 52 154 56 142 58 126 56 106Z" ${f}/><path d="M120 54Q112 70 100 84" fill="none" stroke="${c.hair2}" stroke-width="1.6" stroke-linecap="round" opacity=".8"/>${ring}`;
     case "spiky": return `<path d="M40 108L44 82 34 78 54 62 48 50 72 50 74 36 92 46 100 30 110 46 128 36 130 50 152 50 146 62 166 78 156 82 160 108C152 100 146 94 142 86L134 100 124 88 114 100 104 86 94 100 84 88 74 100 66 88C60 96 50 102 40 108Z" ${f}/>${ring}`;
     case "curly": return `<path d="M42 110C30 100 36 82 46 78 42 62 58 48 72 52 80 40 96 38 104 46 114 38 132 42 136 54 150 52 162 66 156 80 166 88 166 104 158 110 152 100 144 96 138 98 134 88 124 86 116 92 110 84 98 84 92 92 84 86 72 88 70 98 62 96 52 100 42 110Z" ${f}/>${ring}`;
-    case "center": return `<path d="M40 110C36 60 64 34 100 34S164 60 160 110C152 98 142 84 124 74 116 70 106 66 100 60 94 66 84 70 76 74 58 84 48 98 40 110Z" ${f}/><path d="M44 98C40 122 44 140 52 156 56 144 58 128 56 106ZM156 98C160 122 156 140 148 156 144 144 142 128 144 106Z" ${f}/><path d="M100 62V80" stroke="${c.hair2}" stroke-width="3" stroke-linecap="round"/>${ring}`;
+    case "center": return `<path d="M40 110C36 60 64 34 100 34S164 60 160 110C152 98 142 84 124 74 116 70 106 66 100 60 94 66 84 70 76 74 58 84 48 98 40 110Z" ${f}/><path d="M44 98C40 122 44 140 52 156 56 144 58 128 56 106ZM156 98C160 122 156 140 148 156 144 144 142 128 144 106Z" ${f}/><path d="M100 62V80" stroke="${c.hair2}" stroke-width="2.4" stroke-linecap="round"/>${ring}`;
   }
   return "";
 }
-function eyesOf(c, mood, gid) {
+function catEars(c) { // tai mèo cùng màu tóc, lòng tai hồng
+  const f = `fill="${c.hair}" ${st()}`;
+  return `<path d="M54 72C47 54 46 36 52 20 64 26 76 36 85 48Z" ${f}/><path d="M59 62C55 50 54 38 57 29 64 33 72 40 78 48Z" fill="${c.ear}"/>`
+    + `<path d="M146 72C153 54 154 36 148 20 136 26 124 36 115 48Z" ${f}/><path d="M141 62C145 50 146 38 143 29 136 33 128 40 122 48Z" fill="${c.ear}"/>`;
+}
+function tailOf(c) {
+  if (c.acc === "coil") return `<path d="M128 204C150 210 162 196 154 186 146 178 136 190 146 196 158 202 170 188 164 176" fill="none" stroke="${SB_INK}" stroke-width="9" stroke-linecap="round"/><path d="M128 204C150 210 162 196 154 186 146 178 136 190 146 196 158 202 170 188 164 176" fill="none" stroke="${c.hair}" stroke-width="5" stroke-linecap="round"/><circle cx="164" cy="174" r="5.5" fill="${c.hair2}" ${st(1.8)}/>`;
+  const d = "M124 204C148 206 160 188 154 170C152 163 146 161 143 167";
+  return `<path d="${d}" fill="none" stroke="${SB_INK}" stroke-width="11" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${c.hair}" stroke-width="7" stroke-linecap="round"/><path d="M152 176C153 170 150 165 145 166" fill="none" stroke="${c.hair2}" stroke-width="5" stroke-linecap="round"/>`;
+}
+// --- khuôn mặt: mắt dịu kiểu anime (L, R = toạ độ x hai mắt, Y = tâm mắt, k = tỉ lệ) ---
+function eyesOf(c, mood, gid, L = 79, R = 121, Y = 115, k = 1) {
   const [dk] = c.eye;
-  const open = (x, y, s) => `<ellipse cx="${x}" cy="${y}" rx="12.5" ry="15" fill="#fff"/><ellipse cx="${x}" cy="${y + 1.5}" rx="10.8" ry="13.4" fill="url(#${gid})"/><ellipse cx="${x}" cy="${y + 3}" rx="5.4" ry="6.8" fill="${dk}" opacity=".85"/><circle cx="${x - 4}" cy="${y - 4.5}" r="4.6" fill="#fff"/><circle cx="${x + 4.3}" cy="${y + 6.5}" r="2.1" fill="#fff"/><path d="M${x - 13.5} ${y - 6}Q${x} ${y - 20} ${x + 13.5} ${y - 7}" fill="none" ${st(3.8)}/><path d="M${x + s * 13} ${y - 6.5}l${s * 5} -4" fill="none" ${st(3)}/>`;
-  const shut = (x, y) => `<path d="M${x - 11} ${y + 3}Q${x} ${y - 9} ${x + 11} ${y + 3}" fill="none" ${st(3.6)}/>`;
-  const down = (x, y) => `<path d="M${x - 11} ${y - 1}Q${x} ${y + 8} ${x + 11} ${y - 1}" fill="none" ${st(3.4)}/>`;
-  const dot = (x, y) => `<ellipse cx="${x}" cy="${y}" rx="11" ry="13" fill="#fff" ${st(2.4)}/><circle cx="${x}" cy="${y + 1}" r="3.6" fill="${SB_INK}"/>`;
-  const L = 78, R = 122, Y = 113;
+  const open = (x, y, s) => `<ellipse cx="${x}" cy="${y}" rx="${10.5 * k}" ry="${12.5 * k}" fill="#fff"/><ellipse cx="${x}" cy="${y + 1.6 * k}" rx="${8.6 * k}" ry="${10.8 * k}" fill="url(#${gid})"/><ellipse cx="${x}" cy="${y + 3 * k}" rx="${4.2 * k}" ry="${5.6 * k}" fill="${dk}" opacity=".9"/>`
+    + `<circle cx="${x - 3.2 * k}" cy="${y - 3.6 * k}" r="${3.1 * k}" fill="#fff"/><circle cx="${x + 3.6 * k}" cy="${y + 5.4 * k}" r="${1.4 * k}" fill="#fff" opacity=".9"/>`
+    + `<path d="M${x - 12 * k} ${y - 5 * k}Q${x} ${y - 15.5 * k} ${x + 12 * k} ${y - 6 * k}" fill="none" ${st(2.9 * k)}/><path d="M${x + s * 11.5 * k} ${y - 5.6 * k}l${s * 3.6 * k} ${-2.6 * k}" fill="none" ${st(2 * k)}/>`
+    + `<path d="M${x - 5 * k} ${y + 13.4 * k}Q${x} ${y + 14.8 * k} ${x + 5 * k} ${y + 13.4 * k}" fill="none" stroke="${SB_INK}" stroke-width="${1.1 * k}" stroke-linecap="round" opacity=".55"/>`;
+  const shut = (x, y) => `<path d="M${x - 10 * k} ${y + 3 * k}Q${x} ${y - 8 * k} ${x + 10 * k} ${y + 3 * k}" fill="none" ${st(2.7 * k)}/>`;
+  const down = (x, y) => `<path d="M${x - 10 * k} ${y}Q${x} ${y + 7 * k} ${x + 10 * k} ${y}" fill="none" ${st(2.6 * k)}/>`;
+  const dot = (x, y) => `<ellipse cx="${x}" cy="${y}" rx="${9.5 * k}" ry="${11.5 * k}" fill="#fff" ${st(1.8 * k)}/><circle cx="${x}" cy="${y + k}" r="${3.2 * k}" fill="${SB_INK}"/>`;
   if (mood === "joy") return shut(L, Y) + shut(R, Y);
   if (mood === "sleep") return down(L, Y) + down(R, Y);
   if (mood === "wink") return open(L, Y, -1) + shut(R, Y);
   if (mood === "shock") return dot(L, Y) + dot(R, Y);
   return open(L, Y, -1) + open(R, Y, 1);
 }
-function mouthOf(mood) {
+function mouthOf(mood, x = 100, y = 131, k = 1) {
+  const P = (dx, dy) => `${x + dx * k} ${y + dy * k}`;
   switch (mood) {
-    case "joy": case "wow": return `<path d="M91 129Q100 144 109 129Z" fill="#f27e92" ${st(2.4)}/>`;
-    case "shock": return `<ellipse cx="100" cy="134" rx="4.5" ry="5.5" fill="#f27e92" ${st(2.2)}/>`;
-    case "sad": return `<path d="M94 135Q100 129 106 135" fill="none" ${st(2.6)}/>`;
-    case "angry": return `<path d="M93 133Q100 129 107 133" fill="none" ${st(2.6)}/>`;
-    case "sleep": return `<ellipse cx="100" cy="133" rx="3" ry="2.4" fill="#f27e92" ${st(1.8)}/>`;
-    case "cat": return `<path d="M91 129Q95.5 135 100 129Q104.5 135 109 129" fill="none" ${st(2.5)}/>`;
+    case "joy": case "wow": return `<path d="M${P(-7, -1)}Q${P(0, 12)} ${P(7, -1)}Z" fill="#f08a99" ${st(1.9 * k)}/>`;
+    case "shock": return `<ellipse cx="${x}" cy="${y + 3 * k}" rx="${3.8 * k}" ry="${4.6 * k}" fill="#f08a99" ${st(1.8 * k)}/>`;
+    case "sad": return `<path d="M${P(-5, 4)}Q${P(0, -1)} ${P(5, 4)}" fill="none" ${st(2.1 * k)}/>`;
+    case "angry": return `<path d="M${P(-6, 3)}Q${P(0, -1)} ${P(6, 3)}" fill="none" ${st(2.1 * k)}/>`;
+    case "sleep": return `<ellipse cx="${x}" cy="${y + 2 * k}" rx="${2.6 * k}" ry="${2 * k}" fill="#f08a99" ${st(1.5 * k)}/>`;
+    case "cat": return `<path d="M${P(-8, -1)}Q${P(-4, 4)} ${P(0, -1)}Q${P(4, 4)} ${P(8, -1)}" fill="none" ${st(2 * k)}/>`;
   }
-  return `<path d="M93 130Q100 137 107 130" fill="none" ${st(2.6)}/>`;
+  return `<path d="M${P(-6, 0)}Q${P(0, 5.5)} ${P(6, 0)}" fill="none" ${st(2.1 * k)}/>`;
 }
-function browsOf(mood) {
-  if (mood === "angry") return `<path d="M67 90L87 97M133 90L113 97" fill="none" ${st(3.4)}/>`;
-  if (mood === "sad") return `<path d="M68 97L86 91M132 97L114 91" fill="none" ${st(3.2)}/>`;
-  return "";
+function browsOf(mood, L = 79, R = 121, Y = 115, k = 1) {
+  const b = (x, s, a) => `M${x - 8 * k} ${Y - 22 * k + a * s}Q${x} ${Y - 25 * k} ${x + 8 * k} ${Y - 22 * k - a * s}`;
+  const style = `fill="none" stroke="${SB_INK}" stroke-width="${1.8 * k}" stroke-linecap="round" opacity=".85"`;
+  if (mood === "angry") return `<path d="${b(L, 1, 4 * k)} ${b(R, -1, 4 * k)}" ${style}/>`;
+  if (mood === "sad") return `<path d="${b(L, -1, 3 * k)} ${b(R, 1, 3 * k)}" ${style}/>`;
+  return `<path d="${b(L, 0, 0)} ${b(R, 0, 0)}" ${style} opacity=".55"/>`;
 }
+const blushOf = (Lx, Rx, y, k = 1) => `<ellipse cx="${Lx}" cy="${y}" rx="${9 * k}" ry="${5 * k}" fill="${BLUSH}" opacity=".38"/><ellipse cx="${Rx}" cy="${y}" rx="${9 * k}" ry="${5 * k}" fill="${BLUSH}" opacity=".38"/>`
+  + `<path d="M${Lx - 4 * k} ${y}l${2.4 * k} ${-3.4 * k}M${Lx + 1 * k} ${y + 1 * k}l${2.4 * k} ${-3.4 * k}M${Rx - 3 * k} ${y + 1 * k}l${2.4 * k} ${-3.4 * k}M${Rx + 2 * k} ${y}l${2.4 * k} ${-3.4 * k}" stroke="#ef7f98" stroke-width="${1.2 * k}" stroke-linecap="round" opacity=".8"/>`;
+
+// --- quần áo chibi ---
 function outfitOf(c) {
   const body = `<path d="M74 158Q100 150 126 158L139 206Q100 218 61 206Z" fill="${c.cloth}" ${st()}/>`;
-  const hem = (col) => `<path d="M63 199Q100 210 137 199" fill="none" stroke="${col}" stroke-width="5"/>`;
+  const hem = (col) => `<path d="M63 199Q100 210 137 199" fill="none" stroke="${col}" stroke-width="4.5"/>`;
   switch (c.outfit) {
-    case "hoodie": return body + hem(c.cloth2) + `<path d="M76 158C82 172 118 172 124 158" fill="${c.cloth2}" ${st(2.2)}/><path d="M94 166V180M106 166V180" ${st(2)}/><circle cx="94" cy="182" r="2.4" fill="#fff" ${st(1.6)}/><circle cx="106" cy="182" r="2.4" fill="#fff" ${st(1.6)}/><path d="M84 190H116V200Q100 204 84 200Z" fill="${c.cloth2}" ${st(2)}/>`;
-    case "sailor": return body + hem(c.cloth2) + `<path d="M74 158L100 186 126 158Q114 168 100 168 86 168 74 158Z" fill="${c.cloth2}" ${st(2.2)}/><path d="M92 176L100 188 108 176 100 182Z" fill="#ef6f7f" ${st(2)}/><path d="M66 194Q100 204 134 194" fill="none" stroke="#fff" stroke-width="2"/>`;
-    case "jacket": return body + hem(c.cloth2) + `<path d="M100 158V210" ${st(2.2)}/><path d="M76 160L96 176 100 160M124 160L104 176 100 160" fill="${c.cloth2}" ${st(2)}/><path d="M82 192H92M88 188l4 4-4 4M108 192H118M114 188l4 4-4 4" fill="none" stroke="${c.cloth2}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>`;
-    case "bell": return body + hem(c.cloth2) + `<path d="M78 160Q100 172 122 160" fill="none" stroke="${c.cloth2}" stroke-width="6" stroke-linecap="round"/><circle cx="100" cy="171" r="6" fill="#f4c94f" ${st(2.2)}/><path d="M97 173h6" ${st(1.6)}/><path d="M70 196Q100 206 130 196" fill="none" stroke="#fff" stroke-width="2.4" stroke-dasharray="3 5"/>`;
-    case "sweater": return body + `<path d="M68 176Q100 184 132 176M66 188Q100 196 134 188" fill="none" stroke="${c.cloth2}" stroke-width="5"/>` + hem(c.cloth2) + `<path d="M84 158Q100 168 116 158" fill="none" stroke="${c.cloth2}" stroke-width="6" stroke-linecap="round"/>`;
-    case "frill": return `<path d="M60 202Q66 214 74 206 80 216 88 208 94 218 100 208 106 218 112 208 120 216 126 206 134 214 140 202Z" fill="#fff" ${st(2.2)}/>` + body + hem(c.cloth2) + `<path d="M100 172L86 164 86 180ZM100 172L114 164 114 180Z" fill="${c.cloth2}" ${st(2)}/><circle cx="100" cy="172" r="3.6" fill="#ffe27a" ${st(1.8)}/>`;
-    case "cape": return body + hem(c.cloth2) + `<path d="M78 160Q100 176 122 160" fill="none" stroke="${c.cloth2}" stroke-width="3"/><circle cx="100" cy="178" r="3" fill="${c.cloth2}" ${st(1.6)}/><circle cx="100" cy="190" r="3" fill="${c.cloth2}" ${st(1.6)}/>`;
-    case "coat": return body + `<path d="M74 158L94 186 100 160 106 186 126 158" fill="#dff3ef" ${st(2.2)}/><path d="M100 160V212" ${st(2)}/><path d="M80 196H90M110 196H120" stroke="${c.cloth2}" stroke-width="3" stroke-linecap="round"/><path d="M112 168h8v10h-8z" fill="#fff" ${st(1.6)}/><path d="M115 166v-4" stroke="${c.cloth2}" stroke-width="2"/>`;
+    case "hoodie": return body + hem(c.cloth2) + `<path d="M76 158C82 172 118 172 124 158" fill="${c.cloth2}" ${st(1.8)}/><path d="M94 166V180M106 166V180" ${st(1.6)}/><circle cx="94" cy="182" r="2.2" fill="#fff" ${st(1.3)}/><circle cx="106" cy="182" r="2.2" fill="#fff" ${st(1.3)}/><path d="M84 190H116V200Q100 204 84 200Z" fill="${c.cloth2}" ${st(1.6)}/>`;
+    case "sailor": return body + hem(c.cloth2) + `<path d="M74 158L100 186 126 158Q114 168 100 168 86 168 74 158Z" fill="${c.cloth2}" ${st(1.8)}/><path d="M92 176L100 188 108 176 100 182Z" fill="#ef6f7f" ${st(1.6)}/><path d="M66 194Q100 204 134 194" fill="none" stroke="#fff" stroke-width="1.8"/>`;
+    case "jacket": return body + hem(c.cloth2) + `<path d="M100 158V210" ${st(1.8)}/><path d="M76 160L96 176 100 160M124 160L104 176 100 160" fill="${c.cloth2}" ${st(1.6)}/><path d="M82 192H92M88 188l4 4-4 4M108 192H118M114 188l4 4-4 4" fill="none" stroke="${c.cloth2}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`;
+    case "bell": return body + hem(c.cloth2) + `<path d="M78 160Q100 172 122 160" fill="none" stroke="${c.cloth2}" stroke-width="5.5" stroke-linecap="round"/><circle cx="100" cy="171" r="5.5" fill="#f4c94f" ${st(1.8)}/><path d="M97 173h6" ${st(1.3)}/><path d="M70 196Q100 206 130 196" fill="none" stroke="#fff" stroke-width="2.2" stroke-dasharray="3 5"/>`;
+    case "sweater": return body + `<path d="M68 176Q100 184 132 176M66 188Q100 196 134 188" fill="none" stroke="${c.cloth2}" stroke-width="4.5"/>` + hem(c.cloth2) + `<path d="M84 158Q100 168 116 158" fill="none" stroke="${c.cloth2}" stroke-width="5.5" stroke-linecap="round"/>`;
+    case "frill": return `<path d="M60 202Q66 214 74 206 80 216 88 208 94 218 100 208 106 218 112 208 120 216 126 206 134 214 140 202Z" fill="#fff" ${st(1.8)}/>` + body + hem(c.cloth2) + `<path d="M100 172L86 164 86 180ZM100 172L114 164 114 180Z" fill="${c.cloth2}" ${st(1.6)}/><circle cx="100" cy="172" r="3.4" fill="#ffe27a" ${st(1.5)}/>`;
+    case "cape": return body + hem(c.cloth2) + `<path d="M78 160Q100 176 122 160" fill="none" stroke="${c.cloth2}" stroke-width="2.6"/><circle cx="100" cy="178" r="2.8" fill="${c.cloth2}" ${st(1.3)}/><circle cx="100" cy="190" r="2.8" fill="${c.cloth2}" ${st(1.3)}/>`;
+    case "coat": return body + `<path d="M74 158L94 186 100 160 106 186 126 158" fill="#dff3ef" ${st(1.8)}/><path d="M100 160V212" ${st(1.6)}/><path d="M80 196H90M110 196H120" stroke="${c.cloth2}" stroke-width="2.6" stroke-linecap="round"/><path d="M112 168h8v10h-8z" fill="#fff" ${st(1.3)}/><path d="M115 166v-4" stroke="${c.cloth2}" stroke-width="1.8"/>`;
   }
   return body;
 }
-function behindBody(c) {
-  if (c.outfit === "cape") return `<path d="M76 158L44 226Q100 242 156 226L124 158Z" fill="#5d4db0" ${st()}/><path d="M76 158L60 150 70 168ZM124 158L140 150 130 168Z" fill="#f2c661" ${st(2)}/>`;
-  if (c.acc === "coil") return `<path d="M128 204C150 210 162 196 154 186 146 178 136 190 146 196 158 202 170 188 164 176" fill="none" stroke="${SB_INK}" stroke-width="10" stroke-linecap="round"/><path d="M128 204C150 210 162 196 154 186 146 178 136 190 146 196 158 202 170 188 164 176" fill="none" stroke="${c.hair}" stroke-width="5.5" stroke-linecap="round"/><circle cx="164" cy="174" r="6" fill="${c.hair2}" ${st(2.2)}/>`;
-  return "";
-}
+function capeBack(c) { return c.outfit === "cape" ? `<path d="M76 158L44 226Q100 242 156 226L124 158Z" fill="#6555b4" ${st()}/><path d="M76 158L60 150 70 168ZM124 158L140 150 130 168Z" fill="#f0c869" ${st(1.6)}/>` : ""; }
 function accOf(c) {
   switch (c.acc) {
-    case "resistor": return `<g transform="translate(150 78) rotate(38)"><path d="M-20 0H20" ${st(2.6)}/><rect x="-12" y="-6.5" width="24" height="13" rx="6.5" fill="#f4dca8" ${st(2.2)}/><path d="M-6 -6V6M-1 -6V6M5 -6V6" stroke-width="3" stroke="#d64541"/><path d="M5 -6V6" stroke-width="3" stroke="#8a5a3c"/></g>`;
-    case "capacitor": return `<g transform="translate(56 76) rotate(-24)"><path d="M-14 0H-3M3 0H14" ${st(2.6)}/><path d="M-3 -10V10M3 -10V10" stroke="#3d5f9e" stroke-width="4.4" stroke-linecap="round"/><path d="M-11 -9h5M-8.5 -11.5v5" stroke="#ef6f7f" stroke-width="2.2" stroke-linecap="round"/></g><path d="M140 140q8 4 8 12-6-2-8-12zM140 140q-8 4-8 12 6-2 8-12z" fill="#ef6f7f" ${st(1.8)}/><path d="M60 140q8 4 8 12-6-2-8-12zM60 140q-8 4-8 12 6-2 8-12z" fill="#ef6f7f" ${st(1.8)}/>`;
-    case "arrow": return `<path d="M102 34C98 22 104 12 116 8" fill="none" stroke="${SB_INK}" stroke-width="8" stroke-linecap="round"/><path d="M102 34C98 22 104 12 116 8" fill="none" stroke="${c.hair}" stroke-width="4" stroke-linecap="round"/><path d="M110 0L126 6 114 16Z" fill="${c.hair}" ${st(2.2)}/>`;
-    case "coil": return `<path d="M54 70L48 24 84 46Z" fill="${c.hair}" ${st()}/><path d="M58 62L55 36 74 49Z" fill="#ffc4d4"/><path d="M146 70L152 24 116 46Z" fill="${c.hair}" ${st()}/><path d="M142 62L145 36 126 49Z" fill="#ffc4d4"/>`;
-    case "beret": return `<path d="M54 64C54 40 132 28 152 50 156 60 142 66 122 64L74 68C62 70 54 70 54 64Z" fill="#ec8696" ${st()}/><circle cx="106" cy="38" r="4.5" fill="#ec8696" ${st(2)}/><path d="M118 48h6a5 5 0 0 1 0 10h-6z" fill="#fff" ${st(1.6)}/>`;
-    case "led": return `<g transform="translate(100 36)"><path d="M-18 6L-14 -9-5 1 0-14 5 1 14-9 18 6Z" fill="#ffe17a" ${st(2.2)}/><circle cx="0" cy="-15" r="3" fill="#ff8fb0" ${st(1.6)}/></g><g transform="translate(140 52) rotate(18)"><path d="M-6 -7L6 0-6 7Z" fill="#ff8fb0" ${st(2)}/><path d="M6 -8V8M-12 0h-4M6 0h8" ${st(2.2)}/><path d="M2 -12l4 -6M8 -10l6 -4" stroke="#f0bd3e" stroke-width="2.2" stroke-linecap="round"/></g>`;
-    case "transistor": return `<g transform="translate(60 66) rotate(-22)"><circle r="10" fill="#2c2447" stroke="#fff" stroke-width="2.4"/><path d="M-3 -6V6M-3 0H-12M-3 -3L6 -9M-3 3L6 9" stroke="#f2c661" stroke-width="2.2" stroke-linecap="round"/><path d="M3 6.5l3 2.5-4 .8" fill="#f2c661"/></g>`;
-    case "opamp": return `<g transform="translate(142 62) rotate(14)"><path d="M-11 -13L15 0-11 13Z" fill="#fff" ${st(2.2)}/><path d="M-8 -5h5M-5.5 -7.5v5M-8 5h5" stroke="${c.cloth2}" stroke-width="2" stroke-linecap="round"/></g>`;
+    case "resistor": return `<g transform="translate(152 84) rotate(38)"><path d="M-19 0H19" ${st(2.2)}/><rect x="-11" y="-6" width="22" height="12" rx="6" fill="#f4dca8" ${st(1.8)}/><path d="M-5 -6V6M0 -6V6" stroke-width="2.6" stroke="#d64541"/><path d="M5 -6V6" stroke-width="2.6" stroke="#8a5a3c"/></g>`;
+    case "capacitor": return `<g transform="translate(58 86) rotate(-24)"><path d="M-13 0H-3M3 0H13" ${st(2.2)}/><path d="M-3 -9V9M3 -9V9" stroke="#3d5f9e" stroke-width="4" stroke-linecap="round"/><path d="M-10 -8h4.5M-7.8 -10.2v4.5" stroke="#ef6f7f" stroke-width="2" stroke-linecap="round"/></g><path d="M140 140q8 4 8 12-6-2-8-12zM140 140q-8 4-8 12 6-2 8-12z" fill="#ef6f7f" ${st(1.5)}/><path d="M60 140q8 4 8 12-6-2-8-12zM60 140q-8 4-8 12 6-2 8-12z" fill="#ef6f7f" ${st(1.5)}/>`;
+    case "arrow": return `<path d="M102 34C98 22 104 12 116 8" fill="none" stroke="${SB_INK}" stroke-width="7" stroke-linecap="round"/><path d="M102 34C98 22 104 12 116 8" fill="none" stroke="${c.hair}" stroke-width="3.6" stroke-linecap="round"/><path d="M110 0L126 6 114 16Z" fill="${c.hair}" ${st(1.8)}/>`;
+    case "beret": return `<path d="M58 62C58 40 132 30 150 50 154 60 140 64 122 62L76 66C66 68 58 68 58 62Z" fill="#ec8696" ${st()}/><circle cx="106" cy="40" r="4.2" fill="#ec8696" ${st(1.6)}/><path d="M118 50h6a5 5 0 0 1 0 10h-6z" fill="#fff" ${st(1.3)}/>`;
+    case "led": return `<g transform="translate(100 34)"><path d="M-17 6L-13 -8-5 1 0-13 5 1 13-8 17 6Z" fill="#ffe17a" ${st(1.8)}/><circle cx="0" cy="-14" r="2.8" fill="#ff8fb0" ${st(1.3)}/></g><g transform="translate(138 58) rotate(18)"><path d="M-6 -7L6 0-6 7Z" fill="#ff8fb0" ${st(1.6)}/><path d="M6 -8V8M-12 0h-4M6 0h8" ${st(1.8)}/><path d="M2 -12l4 -6M8 -10l6 -4" stroke="#f0bd3e" stroke-width="2" stroke-linecap="round"/></g>`;
+    case "transistor": return `<g transform="translate(58 84) rotate(-22)"><circle r="9.5" fill="#2c2447" stroke="#fff" stroke-width="2.2"/><path d="M-3 -6V6M-3 0H-11M-3 -3L6 -9M-3 3L6 9" stroke="#f0c869" stroke-width="2" stroke-linecap="round"/></g>`;
+    case "opamp": return `<g transform="translate(148 86) rotate(14)"><path d="M-10 -12L14 0-10 12Z" fill="#fff" ${st(1.8)}/><path d="M-7 -4.6h4.6M-4.7 -6.9v4.6M-7 4.6h4.6" stroke="${c.cloth2}" stroke-width="1.8" stroke-linecap="round"/></g>`;
   }
   return "";
 }
+const zzz = (x, y, k = 1) => `<text x="${x}" y="${y}" font-family="Baloo 2, sans-serif" font-weight="800" font-size="${20 * k}" fill="${SB_INK}">z</text><text x="${x + 15 * k}" y="${y - 17 * k}" font-family="Baloo 2, sans-serif" font-weight="800" font-size="${14 * k}" fill="${SB_INK}">z</text>`;
+const eyeGrad = (gid, c) => `<linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c.eye[0]}"/><stop offset="1" stop-color="${c.eye[1]}"/></linearGradient>`;
+
+// nhân vật toàn thân (nhỏ): phòng, thẻ nhân vật, đội hình
 function chibi(id, { mood = "happy", cls = "" } = {}) {
   const c = ART[id]; if (!c) return "";
   const gid = "ce" + (++svgN);
-  const [dk, lt] = c.eye;
-  const glasses = c.acc === "beret" ? `<circle cx="78" cy="113" r="17" fill="#fff" fill-opacity=".18" ${st(2.6)}/><circle cx="122" cy="113" r="17" fill="#fff" fill-opacity=".18" ${st(2.6)}/><path d="M95 110Q100 106 105 110" fill="none" ${st(2.4)}/>` : "";
-  return `<svg class="chibi ${cls}" viewBox="0 -6 200 256" aria-hidden="true"><defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${dk}"/><stop offset="1" stop-color="${lt}"/></linearGradient></defs>
-<ellipse cx="100" cy="243" rx="46" ry="6.5" fill="${SB_INK}" opacity=".13"/>${behindBody(c)}${hairBack(c)}
-${limb("M90 204L89 228", c.leg, 12)}${limb("M110 204L111 228", c.leg, 12)}<ellipse cx="87" cy="233" rx="10.5" ry="6.5" fill="${c.shoe}" ${st(2.4)}/><ellipse cx="113" cy="233" rx="10.5" ry="6.5" fill="${c.shoe}" ${st(2.4)}/>
-${outfitOf(c)}${limb("M77 166Q63 180 66 195", c.cloth, 12)}${limb("M123 166Q137 180 134 195", c.cloth, 12)}<circle cx="66" cy="198" r="7" fill="${SKIN}" ${st(2.3)}/><circle cx="134" cy="198" r="7" fill="${SKIN}" ${st(2.3)}/>
-<rect x="93" y="146" width="14" height="14" rx="5" fill="${SKIN_SH}"/><path d="M46 102C46 66 70 46 100 46S154 66 154 102C154 134 130 154 100 154S46 134 46 102Z" fill="${SKIN}" ${st()}/>
-<ellipse cx="70" cy="128" rx="9.5" ry="5.6" fill="#ff8fab" opacity=".42"/><ellipse cx="130" cy="128" rx="9.5" ry="5.6" fill="#ff8fab" opacity=".42"/><path d="M64 127l3-4M69.5 128l3-4M75 129l3-4M125 129l3-4M130.5 128l3-4M136 127l3-4" stroke="#ef6f8f" stroke-width="1.5" stroke-linecap="round"/>
-${eyesOf(c, mood, gid)}${mouthOf(mood)}${hairFront(c)}${browsOf(mood)}${glasses}${accOf(c)}${mood === "sleep" ? `<text x="150" y="40" font-family="Baloo 2, sans-serif" font-weight="800" font-size="22" fill="${SB_INK}">z</text><text x="166" y="22" font-family="Baloo 2, sans-serif" font-weight="800" font-size="15" fill="${SB_INK}">z</text>` : ""}</svg>`;
+  const glasses = c.acc === "beret" ? `<circle cx="79" cy="115" r="15.5" fill="#fff" fill-opacity=".16" ${st(2)}/><circle cx="121" cy="115" r="15.5" fill="#fff" fill-opacity=".16" ${st(2)}/><path d="M95 112Q100 108 105 112" fill="none" ${st(1.8)}/>` : "";
+  return `<svg class="chibi ${cls}" viewBox="0 -6 200 256" aria-hidden="true"><defs>${eyeGrad(gid, c)}</defs>
+<ellipse cx="100" cy="243" rx="44" ry="6" fill="${SB_INK}" opacity=".12"/>${tailOf(c)}${capeBack(c)}${hairBack(c)}
+${limb("M90 204L89 228", c.leg)}${limb("M110 204L111 228", c.leg)}<ellipse cx="87" cy="233" rx="10" ry="6" fill="${c.shoe}" ${st(1.9)}/><ellipse cx="113" cy="233" rx="10" ry="6" fill="${c.shoe}" ${st(1.9)}/>
+${outfitOf(c)}${limb("M77 166Q63 180 66 195", c.cloth)}${limb("M123 166Q137 180 134 195", c.cloth)}<circle cx="66" cy="198" r="6.5" fill="${SKIN}" ${st(1.8)}/><circle cx="134" cy="198" r="6.5" fill="${SKIN}" ${st(1.8)}/>
+<rect x="93" y="146" width="14" height="14" rx="5" fill="${SKIN_SH}"/>${catEars(c)}<path d="M46 102C46 66 70 46 100 46S154 66 154 102C154 134 130 154 100 154S46 134 46 102Z" fill="${SKIN}" ${st()}/>
+${blushOf(70, 130, 130)}${eyesOf(c, mood, gid)}<path d="M100 123l-1.2 3.2" stroke="${SB_INK}" stroke-width="1.3" stroke-linecap="round" opacity=".45"/>${mouthOf(mood)}${hairFront(c)}${browsOf(mood)}${glasses}${accOf(c)}${mood === "sleep" ? zzz(150, 40) : ""}</svg>`;
+}
+
+// chân dung bán thân: truyện, màn ra nhân vật, hồ sơ — mặt thon hơn, vai áo, nét vẽ tay
+function portrait(id, { mood = "happy", cls = "", rough = true } = {}) {
+  const c = ART[id]; if (!c) return "";
+  const gid = "pe" + (++svgN), fid = "pr" + svgN;
+  const k = 0.96, L = 100, R = 140, Y = 127;
+  const glasses = c.acc === "beret" ? `<circle cx="${L}" cy="${Y}" r="15" fill="#fff" fill-opacity=".16" ${st(2)}/><circle cx="${R}" cy="${Y}" r="15" fill="#fff" fill-opacity=".16" ${st(2)}/><path d="M115 124Q120 120 125 124" fill="none" ${st(1.8)}/>` : "";
+  const torso = `<path d="M10 304C12 258 54 222 120 218C186 222 228 258 230 304Z" fill="${c.cloth}" ${st()}/>`;
+  const collar = {
+    hoodie: `<path d="M 74 230 C 88 248 152 248 166 230 156 222 140 218 120 218 100 218 84 222 74 230 Z" fill="${c.cloth2}" ${st(1.8)}/><path d="M 108 242 V 268 M 132 242 V 268" ${st(1.6)}/><circle cx="108" cy="270" r="3" fill="#fff" ${st(1.3)}/><circle cx="132" cy="270" r="3" fill="#fff" ${st(1.3)}/>`,
+    sailor: `<path d="M 70 228 L 120 276 170 228 C 156 238 138 242 120 242 102 242 84 238 70 228 Z" fill="${c.cloth2}" ${st(1.8)}/><path d="M 108 254 L 120 272 132 254 120 262 Z" fill="#ef6f7f" ${st(1.6)}/><path d="M 78 236 L 120 278 162 236" fill="none" stroke="#fff" stroke-width="2"/>`,
+    jacket: `<path d="M 120 222 V 286" ${st(1.8)}/><path d="M 82 226 L 114 256 120 224 M 158 226 L 126 256 120 224" fill="${c.cloth2}" ${st(1.8)}/>`,
+    bell: `<path d="M 86 226 Q 120 248 154 226" fill="none" stroke="${c.cloth2}" stroke-width="8" stroke-linecap="round"/><circle cx="120" cy="244" r="8" fill="#f4c94f" ${st(1.8)}/><path d="M 115 247 h 10" ${st(1.4)}/>`,
+    sweater: `<path d="M 92 222 Q 120 242 148 222" fill="none" stroke="${c.cloth2}" stroke-width="8" stroke-linecap="round"/><path d="M 40 260 Q 120 276 200 260 M 34 278 Q 120 292 206 278" fill="none" stroke="${c.cloth2}" stroke-width="6"/>`,
+    frill: `<path d="M 84 226 Q 92 238 100 230 108 242 120 232 132 242 140 230 148 238 156 226" fill="#fff" ${st(1.8)}/><path d="M 120 248 L 100 238 100 260 Z M 120 248 L 140 238 140 260 Z" fill="${c.cloth2}" ${st(1.6)}/><circle cx="120" cy="248" r="4.5" fill="#ffe27a" ${st(1.5)}/>`,
+    cape: `<path d="M 58 236 L 84 212 104 226 Z M 182 236 L 156 212 136 226 Z" fill="#6555b4" ${st(1.8)}/><circle cx="120" cy="248" r="5" fill="${c.cloth2}" ${st(1.5)}/><circle cx="120" cy="268" r="5" fill="${c.cloth2}" ${st(1.5)}/>`,
+    coat: `<path d="M 78 224 L 112 270 120 226 128 270 162 224" fill="#dff3ef" ${st(1.8)}/><path d="M 120 226 V 286" ${st(1.6)}/><path d="M 114 232 L 120 248 126 232 Z" fill="${c.cloth2}" ${st(1.4)}/><path d="M 150 256 h 14 v 16 h -14 z" fill="#fff" ${st(1.4)}/><path d="M 154 254 v -6" stroke="${c.cloth2}" stroke-width="2"/>`,
+  }[c.outfit] || "";
+  const art = `<g transform="translate(20 -4) scale(1 1.3)">${hairBack(c)}</g>${torso}${collar}
+<path d="M107 176V222Q120 230 133 222V176Z" fill="${SKIN}" ${st(1.8)}/><path d="M107 186Q120 202 133 186V198Q120 212 107 198Z" fill="${SKIN_SH}"/>
+<g transform="translate(20 4)">${catEars(c)}</g><path d="M68 112C68 74 92 52 120 52S172 74 172 112C172 142 162 166 146 181 137 189 129 193 120 193S103 189 94 181C78 166 68 142 68 112Z" fill="${SKIN}" ${st()}/>
+${blushOf(92, 148, 152, k)}${eyesOf(c, mood, gid, L, R, Y, k)}<path d="M120 145l-1.4 4" stroke="${SB_INK}" stroke-width="1.4" stroke-linecap="round" opacity=".45"/>${mouthOf(mood, 120, 163, 1.05)}
+<g transform="translate(20 4) scale(1 1.04)">${hairFront(c)}</g>${browsOf(mood, L, R, Y + 2, k)}${glasses}<g transform="translate(20 4) scale(1 1.04)">${accOf(c)}</g>${mood === "sleep" ? zzz(176, 56) : ""}`;
+  return `<svg class="chibi portrait ${cls}" viewBox="0 6 240 296" aria-hidden="true"><defs>${eyeGrad(gid, c)}${rough ? roughDefs(fid) : ""}</defs>${rough ? `<g filter="url(#${fid})">${art}</g>` : art}</svg>`;
+}
+
+// bé mèo Elec: mèo con màu kem, vệt tia chớp trên trán, một electron bay quanh đầu
+function kitten(mood = "happy", cls = "") {
+  const I = SB_INK;
+  const eyes = {
+    happy: `<ellipse cx="49" cy="58" rx="4.8" ry="5.8" fill="${I}"/><ellipse cx="71" cy="58" rx="4.8" ry="5.8" fill="${I}"/><circle cx="47.4" cy="56" r="1.8" fill="#fff"/><circle cx="69.4" cy="56" r="1.8" fill="#fff"/>`,
+    think: `<ellipse cx="50" cy="56" rx="4.4" ry="5.4" fill="${I}"/><ellipse cx="72" cy="56" rx="4.4" ry="5.4" fill="${I}"/><circle cx="51.2" cy="53.6" r="1.6" fill="#fff"/><circle cx="73.2" cy="53.6" r="1.6" fill="#fff"/>`,
+    party: `<path d="M43 59q6-7 12 0M65 59q6-7 12 0" fill="none" ${st(2.6)}/>`,
+    sleep: `<path d="M43 58q6 5 12 0M65 58q6 5 12 0" fill="none" ${st(2.4)}/>`,
+  }[mood] || "";
+  const mouth = mood === "party" ? `<path d="M55 66q5 10 10 0z" fill="#f08a99" ${st(1.7)}/>` : mood === "think" ? `<ellipse cx="60" cy="68" rx="2.4" ry="2.8" fill="#f08a99" ${st(1.5)}/>` : `<path d="M54 66q3 3.4 6 0q3 3.4 6 0" fill="none" ${st(1.9)}/>`;
+  const orbit = "M22 22a38 10 0 1 0 76 0a38 10 0 1 0 -76 0";
+  const motion = reduceMotion ? "" : `<animateMotion dur="5s" repeatCount="indefinite" path="${orbit}"/>`;
+  return `<svg class="mascot kitten ${cls}" viewBox="0 0 120 120" aria-hidden="true">
+<ellipse cx="60" cy="113" rx="30" ry="4.5" fill="${I}" opacity=".13"/>
+<path d="M84 104C102 106 108 90 100 80C96 76 91 79 95 84" fill="none" stroke="${I}" stroke-width="10" stroke-linecap="round"/><path d="M84 104C102 106 108 90 100 80C96 76 91 79 95 84" fill="none" stroke="#fff3e0" stroke-width="6" stroke-linecap="round"/><path d="M101 86C103 82 100 78 97 80" fill="none" stroke="#f3c59a" stroke-width="5" stroke-linecap="round"/>
+<path d="M38 78C29 88 31 106 44 110H76C89 106 91 88 82 78Z" fill="#fff3e0" ${st(2)}/><path d="M48 92Q60 98 72 92" fill="none" stroke="#f3c59a" stroke-width="3" stroke-linecap="round"/>
+<ellipse cx="49" cy="108" rx="7" ry="4.6" fill="#fff3e0" ${st(1.8)}/><ellipse cx="71" cy="108" rx="7" ry="4.6" fill="#fff3e0" ${st(1.8)}/>
+<path d="M33 46C30 34 31 22 35 14 44 17 52 23 57 29Z" fill="#fff3e0" ${st(2)}/><path d="M37 40C35 32 36 24 38 19 44 22 49 26 52 30Z" fill="#ffc9cf"/>
+<path d="M87 46C90 34 89 22 85 14 76 17 68 23 63 29Z" fill="#f3c59a" ${st(2)}/><path d="M83 40C85 32 84 24 82 19 76 22 71 26 68 30Z" fill="#ffc9cf"/>
+<path d="M30 58C30 38 44 26 60 26S90 38 90 58C90 74 77 84 60 84S30 74 30 58Z" fill="#fff3e0" ${st(2.1)}/><path d="M66 28C78 29 87 37 89 50 80 47 72 39 66 28Z" fill="#f3c59a"/>
+<path d="M61 30l-4.5 8h5l-3 8 8.5-10.5h-5l3-5.5z" fill="#ffd54d" ${st(1.2)}/>
+<ellipse cx="42" cy="67" rx="5.2" ry="3.2" fill="${BLUSH}" opacity=".5"/><ellipse cx="78" cy="67" rx="5.2" ry="3.2" fill="${BLUSH}" opacity=".5"/>
+${eyes}<path d="M58 62h4l-2 2.4z" fill="#f08a99" ${st(1)}/>${mouth}
+<path d="M34 63h-9M35 68l-8 2.4M86 63h9M85 68l8 2.4" stroke="${I}" stroke-width="1.3" stroke-linecap="round" opacity=".75"/>
+<path d="${orbit}" fill="none" stroke="${I}" stroke-width="1.5" stroke-dasharray="3 4" opacity=".5" transform="rotate(-8 60 22)"/>
+<g transform="rotate(-8 60 22)"><circle cx="${reduceMotion ? 22 : 0}" cy="${reduceMotion ? 22 : 0}" r="4" fill="#ffd54d" ${st(1.4)}>${motion}</circle></g>
+${mood === "party" ? `<path d="M14 18l1.4 3.2 3.2 1.4-3.2 1.4L14 27.2l-1.4-3.2-3.2-1.4 3.2-1.4zM104 12l1 2.4 2.4 1-2.4 1-1 2.4-1-2.4-2.4-1 2.4-1z" fill="#ffd54d" ${st(1)}/>` : ""}${mood === "sleep" ? zzz(88, 30, 0.8) : ""}</svg>`;
 }
 
 const STAR_P = "M7 .8l1.9 3.9 4.3.6-3.1 3 .7 4.3L7 10.6 3.2 12.6l.7-4.3-3.1-3 4.3-.6z";
@@ -2876,75 +3112,149 @@ const starsSvg = (n, cls = "stars") => `<span class="${cls}" role="img" aria-lab
 // --- quái vật (Nhiễu Trắng và đồng bọn) ---
 function bossArt(id, cls = "") {
   const W = (s, vb = "0 0 200 200") => `<svg class="chibi ${cls}" viewBox="${vb}" aria-hidden="true">${s}</svg>`;
-  const angryEyes = (y = 92, col = "#ff5d7a") => `<path d="M62 ${y - 14}L88 ${y - 4}M138 ${y - 14}L112 ${y - 4}" fill="none" ${st(4)}/><ellipse cx="76" cy="${y + 4}" rx="10" ry="11" fill="#fff" ${st(2.6)}/><ellipse cx="124" cy="${y + 4}" rx="10" ry="11" fill="#fff" ${st(2.6)}/><circle cx="78" cy="${y + 6}" r="4.6" fill="${col}"/><circle cx="122" cy="${y + 6}" r="4.6" fill="${col}"/>`;
+  const angryEyes = (y = 92, col = "#ff5d7a") => `<path d="M62 ${y - 14}L88 ${y - 4}M138 ${y - 14}L112 ${y - 4}" fill="none" ${st(3.4)}/><ellipse cx="76" cy="${y + 4}" rx="10" ry="11" fill="#fff" ${st(2.2)}/><ellipse cx="124" cy="${y + 4}" rx="10" ry="11" fill="#fff" ${st(2.2)}/><circle cx="78" cy="${y + 6}" r="4.6" fill="${col}"/><circle cx="122" cy="${y + 6}" r="4.6" fill="${col}"/>`;
   if (id === "nhieu") {
     let dots = "";
     for (let i = 0; i < 46; i++) { const x = 46 + ((i * 37) % 108), y = 58 + ((i * 53) % 96); dots += `<rect x="${x}" y="${y}" width="${3 + (i % 3) * 2}" height="3" rx="1" fill="${i % 2 ? "#fff" : "#9c95ad"}" opacity=".8"/>`; }
-    return W(`<ellipse cx="100" cy="186" rx="56" ry="7" fill="${SB_INK}" opacity=".15"/><path d="M100 12L94 30 106 30Z" fill="#f2c661" ${st(2)}/><path d="M100 30V48" ${st(3)}/>
-<path d="M40 120C24 112 26 86 44 82 40 60 62 46 80 54 88 38 114 38 122 54 140 46 162 62 156 84 174 90 176 116 160 124 168 146 148 166 128 156 118 172 84 172 74 158 52 166 34 146 40 120Z" fill="#d6d1e2" ${st(3)}/>${dots}
-${angryEyes(96)}<path d="M80 136L88 130 96 138 104 130 112 138 120 130" fill="none" ${st(3.2)}/><path d="M28 70l8 6-6 4 8 6M172 70l-8 6 6 4-8 6" fill="none" stroke="#f2c661" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`);
+    return W(`<ellipse cx="100" cy="186" rx="56" ry="7" fill="${SB_INK}" opacity=".15"/><path d="M100 12L94 30 106 30Z" fill="#f2c661" ${st(1.8)}/><path d="M100 30V48" ${st(2.6)}/>
+<path d="M40 120C24 112 26 86 44 82 40 60 62 46 80 54 88 38 114 38 122 54 140 46 162 62 156 84 174 90 176 116 160 124 168 146 148 166 128 156 118 172 84 172 74 158 52 166 34 146 40 120Z" fill="#d6d1e2" ${st(2.6)}/>${dots}
+${angryEyes(96)}<path d="M80 136L88 130 96 138 104 130 112 138 120 130" fill="none" ${st(2.8)}/><path d="M28 70l8 6-6 4 8 6M172 70l-8 6 6 4-8 6" fill="none" stroke="#f2c661" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`);
   }
   if (id === "roi") {
-    const loops = [["#ef6f7f", 0], ["#5d9fd3", 40], ["#f2c661", 80], ["#5aac70", 120], ["#9c84e0", 160]].map(([c, r]) => `<ellipse cx="100" cy="104" rx="62" ry="30" transform="rotate(${r} 100 104)" fill="none" stroke="${SB_INK}" stroke-width="9"/><ellipse cx="100" cy="104" rx="62" ry="30" transform="rotate(${r} 100 104)" fill="none" stroke="${c}" stroke-width="5"/>`).join("");
-    return W(`<ellipse cx="100" cy="186" rx="56" ry="7" fill="${SB_INK}" opacity=".15"/><circle cx="100" cy="104" r="50" fill="#3d3458" ${st(3)}/>${loops}<path d="M152 150L172 172M48 150L30 174" ${st(4)}/><rect x="164" y="166" width="16" height="12" rx="3" fill="#f2c661" ${st(2.2)} transform="rotate(42 172 172)"/><rect x="20" y="168" width="16" height="12" rx="3" fill="#f2c661" ${st(2.2)} transform="rotate(-48 28 174)"/>
+    const loops = [["#ef6f7f", 0], ["#5d9fd3", 40], ["#f2c661", 80], ["#5aac70", 120], ["#9c84e0", 160]].map(([c, r]) => `<ellipse cx="100" cy="104" rx="62" ry="30" transform="rotate(${r} 100 104)" fill="none" stroke="${SB_INK}" stroke-width="8"/><ellipse cx="100" cy="104" rx="62" ry="30" transform="rotate(${r} 100 104)" fill="none" stroke="${c}" stroke-width="4.5"/>`).join("");
+    return W(`<ellipse cx="100" cy="186" rx="56" ry="7" fill="${SB_INK}" opacity=".15"/><circle cx="100" cy="104" r="50" fill="#3d3458" ${st(2.6)}/>${loops}<path d="M152 150L172 172M48 150L30 174" ${st(3.4)}/><rect x="164" y="166" width="16" height="12" rx="3" fill="#f2c661" ${st(1.8)} transform="rotate(42 172 172)"/><rect x="20" y="168" width="16" height="12" rx="3" fill="#f2c661" ${st(1.8)} transform="rotate(-48 28 174)"/>
 <circle cx="100" cy="104" r="34" fill="#3d3458"/>${angryEyes(94, "#ff5d7a")}<path d="M86 124Q100 116 114 124" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`);
   }
   if (id === "xa") {
-    return W(`<ellipse cx="100" cy="190" rx="50" ry="6" fill="${SB_INK}" opacity=".12"/><path d="M48 172C38 116 50 40 100 36S162 116 152 172L138 160 124 176 110 160 96 176 82 160 68 176Z" fill="#dff4ff" fill-opacity=".92" ${st(3)}/>
-<path d="M44 96H22M22 80V112M14 80V112M156 96H178M178 80V112M186 80V112" fill="none" ${st(4)}/><path d="M60 54C70 44 84 40 96 42" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+    return W(`<ellipse cx="100" cy="190" rx="50" ry="6" fill="${SB_INK}" opacity=".12"/><path d="M48 172C38 116 50 40 100 36S162 116 152 172L138 160 124 176 110 160 96 176 82 160 68 176Z" fill="#dff4ff" fill-opacity=".92" ${st(2.6)}/>
+<path d="M44 96H22M22 80V112M14 80V112M156 96H178M178 80V112M186 80V112" fill="none" ${st(3.4)}/><path d="M60 54C70 44 84 40 96 42" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
 <ellipse cx="80" cy="96" rx="11" ry="15" fill="${SB_INK}"/><ellipse cx="120" cy="96" rx="11" ry="15" fill="${SB_INK}"/><circle cx="76" cy="90" r="4" fill="#fff"/><circle cx="116" cy="90" r="4" fill="#fff"/><path d="M84 128Q100 146 116 128Q100 136 84 128Z" fill="${SB_INK}"/><path d="M28 58l6 8-6 2 6 8M172 58l-6 8 6 2-6 8" fill="none" stroke="#6fc3ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`);
   }
   if (id === "dm") {
-    return W(`<ellipse cx="100" cy="192" rx="58" ry="7" fill="${SB_INK}" opacity=".15"/><path d="M58 112L22 186Q100 204 178 186L142 112Z" fill="#3b2d63" ${st(3)}/><path d="M58 112L40 96 60 132ZM142 112L160 96 140 132Z" fill="#7d5fd6" ${st(2.4)}/>
-<path d="M62 132Q100 120 138 132L146 182Q100 194 54 182Z" fill="#4c3b80" ${st(2.6)}/><path d="M100 132V186" stroke="#f2c661" stroke-width="3"/>
-<path d="M56 84C56 54 76 40 100 40S144 54 144 84C144 108 124 124 100 124S56 108 56 84Z" fill="#efe6fb" ${st(3)}/>
-<path d="M48 48H152L146 40H54Z" fill="#2a2045" ${st(2.6)}/><rect x="66" y="-2" width="68" height="44" rx="6" fill="#2a2045" ${st(2.6)}/><rect x="66" y="26" width="68" height="9" fill="#9c6cf0"/><path d="M104 2L94 20H102L96 36 110 16H102L108 2Z" fill="#f2c661" ${st(1.8)}/>
-<path d="M66 70L88 78M134 70L112 78" fill="none" ${st(4)}/><ellipse cx="80" cy="86" rx="8" ry="9" fill="#fff" ${st(2.4)}/><ellipse cx="120" cy="86" rx="8" ry="9" fill="#fff" ${st(2.4)}/><circle cx="81" cy="88" r="4" fill="#b03cff"/><circle cx="119" cy="88" r="4" fill="#b03cff"/><circle cx="120" cy="86" r="12" fill="none" stroke="#f2c661" stroke-width="2.4"/>
-<path d="M72 104L86 98 92 106 100 98 108 106 114 98 128 104 112 108 100 104 88 108Z" fill="#f2c661" ${st(2)}/>`, "0 -14 200 214");
+    return W(`<ellipse cx="100" cy="192" rx="58" ry="7" fill="${SB_INK}" opacity=".15"/><path d="M58 112L22 186Q100 204 178 186L142 112Z" fill="#3b2d63" ${st(2.6)}/><path d="M58 112L40 96 60 132ZM142 112L160 96 140 132Z" fill="#7d5fd6" ${st(2)}/>
+<path d="M62 132Q100 120 138 132L146 182Q100 194 54 182Z" fill="#4c3b80" ${st(2.2)}/><path d="M100 132V186" stroke="#f2c661" stroke-width="3"/>
+<path d="M56 84C56 54 76 40 100 40S144 54 144 84C144 108 124 124 100 124S56 108 56 84Z" fill="#efe6fb" ${st(2.6)}/>
+<path d="M48 48H152L146 40H54Z" fill="#2a2045" ${st(2.2)}/><rect x="66" y="-2" width="68" height="44" rx="6" fill="#2a2045" ${st(2.2)}/><rect x="66" y="26" width="68" height="9" fill="#9c6cf0"/><path d="M104 2L94 20H102L96 36 110 16H102L108 2Z" fill="#f2c661" ${st(1.6)}/>
+<path d="M66 70L88 78M134 70L112 78" fill="none" ${st(3.4)}/><ellipse cx="80" cy="86" rx="8" ry="9" fill="#fff" ${st(2)}/><ellipse cx="120" cy="86" rx="8" ry="9" fill="#fff" ${st(2)}/><circle cx="81" cy="88" r="4" fill="#b03cff"/><circle cx="119" cy="88" r="4" fill="#b03cff"/><circle cx="120" cy="86" r="12" fill="none" stroke="#f2c661" stroke-width="2.2"/>
+<path d="M72 104L86 98 92 106 100 98 108 106 114 98 128 104 112 108 100 104 88 108Z" fill="#f2c661" ${st(1.8)}/>`, "0 -14 200 214");
   }
   if (id === "fuzo") {
-    return W(`<ellipse cx="100" cy="186" rx="44" ry="6" fill="${SB_INK}" opacity=".13"/><rect x="58" y="50" width="84" height="120" rx="34" fill="#eaf6ff" fill-opacity=".85" ${st(3)}/><rect x="54" y="30" width="92" height="30" rx="10" fill="#d9dde4" ${st(3)}/><rect x="54" y="152" width="92" height="30" rx="10" fill="#d9dde4" ${st(3)}/><path d="M100 60C92 80 108 92 100 104M100 118C108 130 92 140 100 152" fill="none" stroke="#c9844b" stroke-width="3" stroke-linecap="round"/>
-<path d="M76 92Q82 86 88 92M112 92Q118 86 124 92" fill="none" ${st(3)}/><path d="M92 112Q100 106 108 112" fill="none" ${st(2.6)}/><ellipse cx="74" cy="104" rx="7" ry="4" fill="#ff8fab" opacity=".45"/><ellipse cx="126" cy="104" rx="7" ry="4" fill="#ff8fab" opacity=".45"/><path d="M118 62l14 10-4 4-14-10z" fill="#fff1bd" ${st(1.8)}/>`);
+    return W(`<ellipse cx="100" cy="186" rx="44" ry="6" fill="${SB_INK}" opacity=".13"/><rect x="58" y="50" width="84" height="120" rx="34" fill="#eaf6ff" fill-opacity=".85" ${st(2.6)}/><rect x="54" y="30" width="92" height="30" rx="10" fill="#d9dde4" ${st(2.6)}/><rect x="54" y="152" width="92" height="30" rx="10" fill="#d9dde4" ${st(2.6)}/><path d="M100 60C92 80 108 92 100 104M100 118C108 130 92 140 100 152" fill="none" stroke="#c9844b" stroke-width="3" stroke-linecap="round"/>
+<path d="M76 92Q82 86 88 92M112 92Q118 86 124 92" fill="none" ${st(2.6)}/><path d="M92 112Q100 106 108 112" fill="none" ${st(2.2)}/><ellipse cx="74" cy="104" rx="7" ry="4" fill="${BLUSH}" opacity=".45"/><ellipse cx="126" cy="104" rx="7" ry="4" fill="${BLUSH}" opacity=".45"/><path d="M118 62l14 10-4 4-14-10z" fill="#fff1bd" ${st(1.6)}/>`);
   }
   return "";
 }
 
-// --- phông nền các cảnh ---
+// --- phông nền các cảnh truyện ---
 function sceneArt(kind, { dark = false } = {}) {
   const u = "sg" + (++svgN);
   const sv = (s) => `<svg class="bg" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${s}${dark ? `<defs><linearGradient id="${u}d" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b1238" stop-opacity=".72"/><stop offset="1" stop-color="#4a2f7a" stop-opacity=".45"/></linearGradient></defs><rect width="400" height="300" fill="url(#${u}d)"/>` : ""}</svg>`;
   const heart = (x, y, s, o = 0.6) => `<path transform="translate(${x} ${y}) scale(${s})" d="M0 6C-6 1.6-10-1.8-10-5.8a5 5 0 0 1 10-1.2 5 5 0 0 1 10 1.2C10-1.8 6 1.6 0 6z" fill="#fff" opacity="${o}"/>`;
   const stars = (n, seed = 3) => { let s = ""; for (let i = 0; i < n; i++) { const x = (i * 97 + seed * 31) % 400, y = (i * 53 + seed * 17) % 150; s += `<circle cx="${x}" cy="${y}" r="${1 + (i % 3) * 0.6}" fill="#fff" opacity="${0.5 + (i % 4) * 0.12}"/>`; } return s; };
-  const tower = (lit, x = 238) => { let w = ""; for (let r = 0; r < 9; r++) for (let c = 0; c < 4; c++) w += `<rect x="${x + 8 + c * 13}" y="${70 + r * 17}" width="8" height="10" rx="1.5" fill="${lit ? ((r + c) % 3 ? "#fff6d6" : "#ffe08a") : "#3a3560"}"/>`; return `<rect x="${x}" y="58" width="64" height="170" rx="4" fill="${lit ? "#f3e6da" : "#56507e"}" stroke="${SB_INK}" stroke-width="2.5"/>${w}<rect x="${x - 4}" y="50" width="72" height="10" rx="3" fill="${lit ? "#e8d3c3" : "#46406c"}" stroke="${SB_INK}" stroke-width="2.5"/>`; };
-  const gril = (lit) => { let s = ""; for (let i = 0; i < 4; i++) { const x = 18 + i * 56; s += `<rect x="${x}" y="178" width="50" height="34" rx="3" fill="${lit ? "#f7ece2" : "#4a4472"}" stroke="${SB_INK}" stroke-width="2"/><path d="M${x + 6} 212v18M${x + 44} 212v18" stroke="${SB_INK}" stroke-width="3"/>`; for (let k = 0; k < 4; k++) s += `<rect x="${x + 5 + k * 11}" y="186" width="7" height="8" rx="1" fill="${lit ? "#bfe1f5" : "#2f2a50"}"/>`; } return s; };
-  const tree = (x, y, s = 1, col = "#a9d98b") => `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 0v22" stroke="${SB_INK}" stroke-width="4"/><circle cx="0" cy="-6" r="18" fill="${col}" stroke="${SB_INK}" stroke-width="2.5"/><circle cx="-8" cy="-12" r="5" fill="#fff" opacity=".4"/></g>`;
+  const tower = (lit, x = 238) => { let w = ""; for (let r = 0; r < 9; r++) for (let c = 0; c < 4; c++) w += `<rect x="${x + 8 + c * 13}" y="${70 + r * 17}" width="8" height="10" rx="1.5" fill="${lit ? ((r + c) % 3 ? "#fff6d6" : "#ffe08a") : "#3a3560"}"/>`; return `<rect x="${x}" y="58" width="64" height="170" rx="4" fill="${lit ? "#f3e6da" : "#56507e"}" stroke="${SB_INK}" stroke-width="2.2"/>${w}<rect x="${x - 4}" y="50" width="72" height="10" rx="3" fill="${lit ? "#e8d3c3" : "#46406c"}" stroke="${SB_INK}" stroke-width="2.2"/>`; };
+  const gril = (lit) => { let s = ""; for (let i = 0; i < 4; i++) { const x = 18 + i * 56; s += `<rect x="${x}" y="178" width="50" height="34" rx="3" fill="${lit ? "#f7ece2" : "#4a4472"}" stroke="${SB_INK}" stroke-width="1.8"/><path d="M${x + 6} 212v18M${x + 44} 212v18" stroke="${SB_INK}" stroke-width="2.6"/>`; for (let k = 0; k < 4; k++) s += `<rect x="${x + 5 + k * 11}" y="186" width="7" height="8" rx="1" fill="${lit ? "#bfe1f5" : "#2f2a50"}"/>`; } return s; };
+  const tree = (x, y, s = 1, col = "#a9d98b") => `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 0v22" stroke="${SB_INK}" stroke-width="3.4"/><circle cx="0" cy="-6" r="18" fill="${col}" stroke="${SB_INK}" stroke-width="2.2"/><circle cx="-8" cy="-12" r="5" fill="#fff" opacity=".4"/></g>`;
   if (kind === "campus" || kind === "night") {
     const lit = kind === "campus";
     return sv(`<defs><linearGradient id="${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${lit ? "#ffd3df" : "#241d4a"}"/><stop offset="1" stop-color="${lit ? "#fff3df" : "#5b4a8a"}"/></linearGradient></defs><rect width="400" height="300" fill="url(#${u})"/>
-${lit ? `<circle cx="340" cy="56" r="26" fill="#fff1a8" stroke="${SB_INK}" stroke-width="2.5"/>${heart(60, 50, 1.6)}${heart(140, 30, 1)}${heart(330, 120, 1.2)}<path d="M40 100q14-16 30 0 12-10 22 4H40z" fill="#fff" stroke="${SB_INK}" stroke-width="2"/>` : `${stars(36)}<path d="M346 40a22 22 0 1 0 14 38 18 18 0 1 1-14-38z" fill="#fff1bd" stroke="${SB_INK}" stroke-width="2"/>`}
-${tower(lit)}${gril(lit)}${tree(320, 214, 1.1, lit ? "#a9d98b" : "#4f6f7f")}${tree(360, 222, 0.8, lit ? "#c3e6a0" : "#476574")}<rect y="228" width="400" height="72" fill="${lit ? "#d6efb9" : "#3c3a66"}" stroke="${SB_INK}" stroke-width="2.5"/><path d="M0 252H400" stroke="${lit ? "#bfe39a" : "#33305a"}" stroke-width="10" stroke-dasharray="26 18"/>`);
+${lit ? `<circle cx="340" cy="56" r="26" fill="#fff1a8" stroke="${SB_INK}" stroke-width="2.2"/>${heart(60, 50, 1.6)}${heart(140, 30, 1)}${heart(330, 120, 1.2)}<path d="M40 100q14-16 30 0 12-10 22 4H40z" fill="#fff" stroke="${SB_INK}" stroke-width="1.8"/>` : `${stars(36)}<path d="M346 40a22 22 0 1 0 14 38 18 18 0 1 1-14-38z" fill="#fff1bd" stroke="${SB_INK}" stroke-width="1.8"/>`}
+${tower(lit)}${gril(lit)}${tree(320, 214, 1.1, lit ? "#a9d98b" : "#4f6f7f")}${tree(360, 222, 0.8, lit ? "#c3e6a0" : "#476574")}<rect y="228" width="400" height="72" fill="${lit ? "#d6efb9" : "#3c3a66"}" stroke="${SB_INK}" stroke-width="2.2"/><path d="M0 252H400" stroke="${lit ? "#bfe39a" : "#33305a"}" stroke-width="10" stroke-dasharray="26 18"/>`);
   }
   if (kind === "metro") {
     let tiles = ""; for (let r = 0; r < 8; r++) for (let c = 0; c < 14; c++) tiles += `<rect x="${c * 30 + (r % 2) * 15 - 15}" y="${40 + r * 18}" width="27" height="15" rx="5" fill="#fbf6ef" stroke="#e4d8cb" stroke-width="1.5"/>`;
-    return sv(`<rect width="400" height="300" fill="#efe6dc"/>${tiles}<path d="M0 40Q200 -30 400 40V0H0Z" fill="#d9cbbd" stroke="${SB_INK}" stroke-width="2.5"/>
-<rect x="120" y="70" width="160" height="38" rx="10" fill="#2f4a8a" stroke="${SB_INK}" stroke-width="3"/><rect x="126" y="76" width="148" height="26" rx="6" fill="none" stroke="#fff" stroke-width="1.6"/><text x="200" y="96" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="20" fill="#fff">Jussieu</text>
-<circle cx="60" cy="88" r="10" fill="#ff6b7f" opacity=".85"/><circle cx="340" cy="88" r="10" fill="#ff6b7f" opacity=".85"/><rect y="186" width="400" height="16" fill="#f2c661" stroke="${SB_INK}" stroke-width="2.5"/><rect y="202" width="400" height="98" fill="#6b5d78"/><path d="M0 240H400M0 270H400" stroke="#c9bfd3" stroke-width="5"/><path d="M20 232v46M80 232v46M140 232v46M200 232v46M260 232v46M320 232v46M380 232v46" stroke="#4f4560" stroke-width="7"/>`);
+    return sv(`<rect width="400" height="300" fill="#efe6dc"/>${tiles}<path d="M0 40Q200 -30 400 40V0H0Z" fill="#d9cbbd" stroke="${SB_INK}" stroke-width="2.2"/>
+<rect x="120" y="70" width="160" height="38" rx="10" fill="#2f4a8a" stroke="${SB_INK}" stroke-width="2.6"/><rect x="126" y="76" width="148" height="26" rx="6" fill="none" stroke="#fff" stroke-width="1.6"/><text x="200" y="96" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="20" fill="#fff">Jussieu</text>
+<circle cx="60" cy="88" r="10" fill="#ff6b7f" opacity=".85"/><circle cx="340" cy="88" r="10" fill="#ff6b7f" opacity=".85"/><rect y="186" width="400" height="16" fill="#f2c661" stroke="${SB_INK}" stroke-width="2.2"/><rect y="202" width="400" height="98" fill="#6b5d78"/><path d="M0 240H400M0 270H400" stroke="#c9bfd3" stroke-width="5"/><path d="M20 232v46M80 232v46M140 232v46M200 232v46M260 232v46M320 232v46M380 232v46" stroke="#4f4560" stroke-width="7"/>`);
   }
   if (kind === "lab") {
     const wave = Array.from({ length: 21 }, (_, i) => `${148 + i * 5},${118 - Math.sin(i / 3.2) * 13}`).join(" ");
-    return sv(`<rect width="400" height="300" fill="#e3f2e6"/><path d="M0 60H400M0 120H400" stroke="#d2e8d6" stroke-width="2"/><rect x="26" y="34" width="92" height="104" rx="10" fill="#2e2a55" stroke="${SB_INK}" stroke-width="3"/>${stars(9, 5).replace(/cx="(\d+)"/g, (m, x) => `cx="${30 + (+x % 84)}"`).replace(/cy="(\d+)"/g, (m, y) => `cy="${40 + (+y % 92)}"`)}<path d="M72 34V138M26 86H118" stroke="${SB_INK}" stroke-width="3"/>
-<rect x="138" y="88" width="118" height="62" rx="10" fill="#d9d3e3" stroke="${SB_INK}" stroke-width="3"/><rect x="146" y="96" width="102" height="44" rx="6" fill="#1f3b33" stroke="${SB_INK}" stroke-width="2"/><polyline points="${wave}" fill="none" stroke="#8ff0a4" stroke-width="2.6"/><circle cx="270" cy="104" r="6" fill="#f2c661" stroke="${SB_INK}" stroke-width="2"/><circle cx="270" cy="128" r="6" fill="#ef6f7f" stroke="${SB_INK}" stroke-width="2"/>
-<path d="M300 150v-36l-10-24h30l-10 24v36z" fill="#d9ecf8" stroke="${SB_INK}" stroke-width="2.5"/><path d="M296 150v-22h18v22z" fill="#ffb6ca" opacity=".8"/><path d="M338 150v-22a12 12 0 0 1 24 0v22z" fill="#fff1bd" stroke="${SB_INK}" stroke-width="2.5"/>
-<rect y="150" width="400" height="22" fill="#e2b98f" stroke="${SB_INK}" stroke-width="2.5"/><rect y="172" width="400" height="128" fill="#c99a70"/><path d="M40 172v128M360 172v128" stroke="#b5845c" stroke-width="8"/><rect x="40" y="128" width="80" height="22" rx="3" fill="#fffaf2" stroke="${SB_INK}" stroke-width="2"/><path d="M48 136h64M48 142h64" stroke="#d9cbbd" stroke-width="2" stroke-dasharray="2 3"/>`);
+    return sv(`<rect width="400" height="300" fill="#e3f2e6"/><path d="M0 60H400M0 120H400" stroke="#d2e8d6" stroke-width="2"/><rect x="26" y="34" width="92" height="104" rx="10" fill="#2e2a55" stroke="${SB_INK}" stroke-width="2.6"/>${stars(9, 5).replace(/cx="(\d+)"/g, (m, x) => `cx="${30 + (+x % 84)}"`).replace(/cy="(\d+)"/g, (m, y) => `cy="${40 + (+y % 92)}"`)}<path d="M72 34V138M26 86H118" stroke="${SB_INK}" stroke-width="2.6"/>
+<rect x="138" y="88" width="118" height="62" rx="10" fill="#d9d3e3" stroke="${SB_INK}" stroke-width="2.6"/><rect x="146" y="96" width="102" height="44" rx="6" fill="#1f3b33" stroke="${SB_INK}" stroke-width="1.8"/><polyline points="${wave}" fill="none" stroke="#8ff0a4" stroke-width="2.6"/><circle cx="270" cy="104" r="6" fill="#f2c661" stroke="${SB_INK}" stroke-width="1.8"/><circle cx="270" cy="128" r="6" fill="#ef6f7f" stroke="${SB_INK}" stroke-width="1.8"/>
+<path d="M300 150v-36l-10-24h30l-10 24v36z" fill="#d9ecf8" stroke="${SB_INK}" stroke-width="2.2"/><path d="M296 150v-22h18v22z" fill="#ffb6ca" opacity=".8"/><path d="M338 150v-22a12 12 0 0 1 24 0v22z" fill="#fff1bd" stroke="${SB_INK}" stroke-width="2.2"/>
+<rect y="150" width="400" height="22" fill="#e2b98f" stroke="${SB_INK}" stroke-width="2.2"/><rect y="172" width="400" height="128" fill="#c99a70"/><path d="M40 172v128M360 172v128" stroke="#b5845c" stroke-width="8"/><rect x="40" y="128" width="80" height="22" rx="3" fill="#fffaf2" stroke="${SB_INK}" stroke-width="1.8"/><path d="M48 136h64M48 142h64" stroke="#d9cbbd" stroke-width="2" stroke-dasharray="2 3"/>`);
   }
   if (kind === "roof") {
     let city = ""; [[0, 40, 58], [36, 30, 76], [62, 44, 50], [104, 26, 88], [128, 50, 62], [176, 34, 72], [208, 42, 54], [248, 30, 92], [276, 48, 58], [322, 36, 70], [356, 44, 60]].forEach(([x, w, h]) => { city += `<rect x="${x}" y="${230 - h}" width="${w}" height="${h}" fill="#3d3366"/>`; for (let k = 0; k < 3; k++) city += `<rect x="${x + 6 + (k % 2) * 12}" y="${236 - h + k * 14}" width="5" height="6" fill="#ffe08a" opacity=".7"/>`; });
     return sv(`<defs><linearGradient id="${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2152"/><stop offset=".7" stop-color="#8f5c9e"/><stop offset="1" stop-color="#ffb3c1"/></linearGradient></defs><rect width="400" height="300" fill="url(#${u})"/>${stars(40, 7)}
-<circle cx="80" cy="64" r="30" fill="#fff4cc" stroke="${SB_INK}" stroke-width="2.5"/><circle cx="70" cy="56" r="6" fill="#f3e3a8"/><circle cx="90" cy="74" r="4" fill="#f3e3a8"/>${city}
+<circle cx="80" cy="64" r="30" fill="#fff4cc" stroke="${SB_INK}" stroke-width="2.2"/><circle cx="70" cy="56" r="6" fill="#f3e3a8"/><circle cx="90" cy="74" r="4" fill="#f3e3a8"/>${city}
 <path d="M318 230L330 108 342 230M322 186H338M326 150H334" fill="none" stroke="#2c2447" stroke-width="5" stroke-linejoin="round"/><circle cx="330" cy="104" r="3" fill="#ffe08a"/>
-<rect y="230" width="400" height="70" fill="#9b8fb0" stroke="${SB_INK}" stroke-width="2.5"/><path d="M0 218H400" stroke="${SB_INK}" stroke-width="3"/>${Array.from({ length: 21 }, (_, i) => `<path d="M${i * 20} 218V232" stroke="${SB_INK}" stroke-width="3"/>`).join("")}`);
+<rect y="230" width="400" height="70" fill="#9b8fb0" stroke="${SB_INK}" stroke-width="2.2"/><path d="M0 218H400" stroke="${SB_INK}" stroke-width="2.6"/>${Array.from({ length: 21 }, (_, i) => `<path d="M${i * 20} 218V232" stroke="${SB_INK}" stroke-width="2.6"/>`).join("")}`);
   }
   return sv(`<rect width="400" height="300" fill="#ffe0e8"/>${heart(80, 80, 2)}${heart(300, 60, 1.4)}${heart(200, 200, 1.8)}`);
+}
+// ================= căn phòng gác mái kiểu Paris + đồ nội thất (SVG, toạ độ phòng 360×330) =================
+// mỗi món đặt vào một "chỗ" cố định trong phòng; small = có thể ra từ cầu nguyện 3★
+const SLOTS = { light: "Đèn trần", wallL: "Tường trái", wallR: "Tường phải", sill: "Bậu cửa sổ", desk: "Góc học", bed: "Góc nghỉ", rug: "Thảm", corner: "Góc phòng" };
+const FURNI = [
+  { id: "lamp", slot: "light", name: "Đèn bóng tròn", price: 120, small: 1, box: [88, 124, 44, 50], svg: () => `<path d="M110 131V151" ${st(1.8)}/><path d="M98 162Q110 146 122 162Z" fill="#f7c873" ${st(1.8)}/><circle cx="110" cy="164" r="4.6" fill="#fff4c2" ${st(1.4)}/>` },
+  { id: "fairy", slot: "light", name: "Dây đèn đom đóm", price: 300, box: [52, 90, 256, 76], svg: () => { const pts = [[66, 156], [86, 148], [104, 138], [122, 126], [140, 116], [160, 104], [180, 98], [200, 104], [220, 116], [238, 126], [256, 138], [274, 148], [294, 156]]; const cols = ["#ffd54d", "#ff9db0", "#9fd3f0", "#a8dc8c"]; return `<path d="M62 158Q92 150 122 128Q152 108 180 100Q208 108 238 128Q268 150 298 158" fill="none" ${st(1.4)}/>${pts.map(([x, y], i) => `<circle cx="${x}" cy="${y + 4}" r="3.4" fill="${cols[i % 4]}" ${st(1)}/>`).join("")}`; } },
+  { id: "clock", slot: "wallL", name: "Đồng hồ tròn", price: 120, small: 1, box: [78, 156, 40, 40], svg: () => `<circle cx="98" cy="176" r="15" fill="#fff8ec" ${st(2)}/><circle cx="98" cy="176" r="11.5" fill="none" stroke="#f2a970" stroke-width="2"/><path d="M98 168V176L104 180" fill="none" ${st(1.8)}/><circle cx="98" cy="176" r="1.6" fill="${SB_INK}"/>` },
+  { id: "frame", slot: "wallL", name: "Tranh mèo con", price: 150, small: 1, box: [74, 152, 48, 44], svg: () => `<rect x="80" y="158" width="36" height="32" rx="3" fill="#f4dca8" ${st(2)}/><rect x="85" y="163" width="26" height="22" rx="2" fill="#dff1fb"/><path d="M90 182C90 174 94 170 98 170S106 174 106 182Z" fill="#fff3e0" ${st(1.3)}/><path d="M92 172l1-5 3 3M104 172l-1-5-3 3" fill="#fff3e0" ${st(1.2)}/><circle cx="96" cy="176" r=".9" fill="${SB_INK}"/><circle cx="100" cy="176" r=".9" fill="${SB_INK}"/>` },
+  { id: "shelf", slot: "wallL", name: "Kệ treo tường", price: 250, box: [62, 160, 78, 40], svg: () => `<rect x="66" y="188" width="70" height="6" rx="2" fill="#d9a070" ${st(1.8)}/><path d="M74 194l4 6M128 194l-4 6" ${st(1.6)}/><rect x="72" y="170" width="7" height="18" fill="#ef9a6c" ${st(1.4)}/><rect x="79" y="173" width="7" height="15" fill="#6aa4d6" ${st(1.4)}/><rect x="86" y="168" width="6" height="20" fill="#a8dc8c" ${st(1.4)}/><path d="M112 188V180H126V188Z" fill="#e8a07a" ${st(1.4)}/><path d="M119 180C114 172 116 166 119 164 122 166 124 172 119 180Z" fill="#8fc45a" ${st(1.3)}/>` },
+  { id: "poster", slot: "wallR", name: "Poster bảng tuần hoàn", price: 200, box: [224, 150, 64, 50], svg: () => { let cells = ""; const cols = ["#ff9bb7", "#93b6ff", "#f1c75e", "#7fd9ab", "#b8adff"]; for (let r = 0; r < 4; r++) for (let c = 0; c < 9; c++) if (!(r === 0 && c > 0 && c < 8) && !(r === 1 && c > 1 && c < 6)) cells += `<rect x="${234 + c * 5}" y="${170 + r * 5}" width="4" height="4" fill="${cols[(r + c) % 5]}"/>`; return `<rect x="228" y="156" width="56" height="40" rx="2" fill="#fffaf2" ${st(2)}/><rect x="234" y="161" width="30" height="5" rx="1" fill="#f2a970"/>${cells}`; } },
+  { id: "calendar", slot: "wallR", name: "Lịch thi", price: 120, small: 1, box: [238, 150, 40, 48], svg: () => `<rect x="244" y="158" width="28" height="34" rx="3" fill="#fff" ${st(2)}/><rect x="244" y="158" width="28" height="9" rx="3" fill="#ef6f7f" ${st(1.6)}/><path d="M250 155v6M266 155v6" ${st(1.8)}/><path d="M249 173h18M249 179h18M249 185h12" stroke="#d9cbbd" stroke-width="2"/><circle cx="263" cy="179" r="4" fill="none" stroke="#ef6f7f" stroke-width="1.6"/>` },
+  { id: "cork", slot: "wallR", name: "Bảng ghim ghi chú", price: 250, box: [222, 148, 70, 52], svg: () => `<rect x="226" y="154" width="62" height="42" rx="3" fill="#e2b07c" ${st(2)}/><rect x="232" y="160" width="16" height="14" fill="#fff1bd" transform="rotate(-6 240 167)"/><rect x="252" y="158" width="16" height="16" fill="#ffd3dc" transform="rotate(5 260 166)"/><rect x="272" y="162" width="12" height="12" fill="#d4e9fa"/><rect x="240" y="178" width="22" height="12" fill="#fff" transform="rotate(3 251 184)"/><circle cx="240" cy="160" r="1.8" fill="#ef6f7f"/><circle cx="260" cy="159" r="1.8" fill="#5aac70"/><circle cx="278" cy="163" r="1.8" fill="#6aa4d6"/>` },
+  { id: "cactus", slot: "sill", name: "Xương rồng tí hon", price: 100, small: 1, box: [156, 158, 26, 30], svg: () => `<path d="M162 186L164 176H174L176 186Z" fill="#e8a07a" ${st(1.6)}/><path d="M169 176V166C169 162 173 162 173 166V176M169 170C165 170 165 166 166 164" fill="#8fc45a" ${st(1.5)}/><circle cx="171" cy="162" r="1.6" fill="#ff9db0"/>` },
+  { id: "tulips", slot: "sill", name: "Bình tulip", price: 150, small: 1, box: [178, 154, 30, 34], svg: () => `<path d="M188 186C184 180 185 174 190 172H196C201 174 202 180 198 186Z" fill="#d4e9fa" ${st(1.6)}/><path d="M191 172L188 162M195 172L198 160M193 172V164" stroke="#5aac70" stroke-width="1.6" fill="none"/><path d="M185 162C185 156 191 156 191 162Z" fill="#ff9db0" ${st(1.3)}/><path d="M195 160C195 154 201 154 201 160Z" fill="#f7c873" ${st(1.3)}/><path d="M190 165C190 159 196 159 196 165Z" fill="#ef6f7f" ${st(1.3)}/>` },
+  { id: "eiffel", slot: "sill", name: "Tháp Eiffel mini", price: 200, small: 1, box: [168, 156, 24, 32], svg: () => `<path d="M172 186L178 168 180 160 182 168 188 186" fill="none" ${st(1.6)}/><path d="M174.5 180H185.5M177 172H183" ${st(1.4)}/><path d="M176 186Q180 181 184 186" fill="none" ${st(1.3)}/>` },
+  { id: "desk", slot: "desk", name: "Bàn học có đèn", price: 400, box: [54, 168, 96, 98], svg: () => `<rect x="60" y="206" width="86" height="9" rx="3" fill="#d9a070" ${st(2)}/><rect x="66" y="215" width="6" height="46" fill="#c98a5a" ${st(1.6)}/><rect x="134" y="215" width="6" height="46" fill="#c98a5a" ${st(1.6)}/><rect x="98" y="215" width="34" height="14" rx="2" fill="#e8b585" ${st(1.6)}/><circle cx="115" cy="222" r="1.8" fill="${SB_INK}"/>
+<path d="M72 206H86" ${st(2.2)}/><path d="M79 205L84 186 76 178" fill="none" ${st(1.8)}/><path d="M70 182L80 170 88 182Z" fill="#9fcdf0" ${st(1.6)}/><path d="M110 206V196H130V206Z" fill="#ef9a6c" ${st(1.4)}/><path d="M112 196V190H128V196Z" fill="#fff1bd" ${st(1.4)}/>` },
+  { id: "deskpc", slot: "desk", name: "Bàn học + laptop", price: 600, box: [54, 168, 96, 98], svg: () => `<rect x="60" y="206" width="86" height="9" rx="3" fill="#d9a070" ${st(2)}/><rect x="66" y="215" width="6" height="46" fill="#c98a5a" ${st(1.6)}/><rect x="134" y="215" width="6" height="46" fill="#c98a5a" ${st(1.6)}/><rect x="98" y="215" width="34" height="14" rx="2" fill="#e8b585" ${st(1.6)}/>
+<path d="M98 205L102 184H132L128 205Z" fill="#d9dde4" ${st(1.8)}/><path d="M104 200L107 188H128L125 200Z" fill="#bfe8ff"/><path d="M94 206H134" ${st(2.4)}/><path d="M110 194l4 3 6-5" fill="none" stroke="#5aac70" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M72 206H86" ${st(2.2)}/><path d="M79 205L84 186 76 178" fill="none" ${st(1.8)}/><path d="M70 182L80 170 88 182Z" fill="#ffbccd" ${st(1.6)}/><rect x="138" y="196" width="8" height="10" rx="2" fill="#fff" ${st(1.4)}/><path d="M146 199q4 2 0 5" fill="none" ${st(1.3)}/>` },
+  { id: "bed", slot: "bed", name: "Giường chăn hồng", price: 500, box: [214, 198, 96, 66], svg: () => `<rect x="222" y="206" width="10" height="48" rx="4" fill="#d9a070" ${st(1.8)}/><rect x="226" y="226" width="80" height="20" rx="7" fill="#fff" ${st(1.8)}/><path d="M244 222H300C305 222 307 226 306 232L304 246H244Z" fill="#ffc9d4" ${st(1.8)}/><path d="M252 230h8M268 236h8M284 230h8" stroke="#fff" stroke-width="2" stroke-linecap="round"/><ellipse cx="238" cy="224" rx="12" ry="7" fill="#fffaf2" ${st(1.6)}/><path d="M230 246v8M302 246v8" ${st(2)}/>` },
+  { id: "beanbag", slot: "bed", name: "Ghế lười xanh", price: 350, box: [222, 216, 84, 54], svg: () => `<path d="M228 260C222 240 236 222 262 222S304 240 298 260Q264 270 228 260Z" fill="#a8dcd0" ${st(2)}/><path d="M240 236C250 228 266 228 274 232" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7"/><path d="M246 252Q262 246 280 252" fill="none" stroke="#7fbfb0" stroke-width="2.4" stroke-linecap="round"/>` },
+  { id: "rug", slot: "rug", name: "Thảm tròn sọc", price: 200, box: [104, 256, 152, 40], svg: () => `<ellipse cx="180" cy="276" rx="72" ry="15" fill="#ffd3dc" ${st(1.8)}/><ellipse cx="180" cy="276" rx="54" ry="10.5" fill="none" stroke="#fff" stroke-width="3"/><ellipse cx="180" cy="276" rx="34" ry="6.5" fill="#ffbccd"/>` },
+  { id: "rugheart", slot: "rug", name: "Thảm hình tim", price: 300, box: [120, 252, 120, 44], svg: () => `<path d="M180 292C150 284 124 276 126 266C128 258 146 256 160 262C166 264 172 266 180 270C188 266 194 264 200 262C214 256 232 258 234 266C236 276 210 284 180 292Z" fill="#ff9db0" ${st(1.8)}/><path d="M180 284C162 279 146 274 147 268" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>` },
+  { id: "monstera", slot: "corner", name: "Cây monstera", price: 250, box: [286, 218, 66, 88], svg: () => `<path d="M304 300L307 276H333L336 300Z" fill="#e8a07a" ${st(1.8)}/><path d="M320 276C316 262 312 250 300 240M320 276C322 258 328 244 338 236M320 276V246" fill="none" stroke="#5aac70" stroke-width="2.2"/><path d="M300 240C290 232 292 222 302 222 312 222 312 236 300 240Z" fill="#8fc45a" ${st(1.5)}/><path d="M338 236C348 228 350 218 340 216 330 216 330 230 338 236Z" fill="#8fc45a" ${st(1.5)}/><path d="M320 246C312 238 314 226 320 224 326 226 328 238 320 246Z" fill="#a8dc8c" ${st(1.5)}/>` },
+  { id: "cattower", slot: "corner", name: "Tháp cho mèo", price: 450, box: [288, 200, 66, 106], svg: () => `<rect x="296" y="292" width="52" height="10" rx="3" fill="#d9a070" ${st(1.8)}/><rect x="306" y="230" width="9" height="62" fill="#f4dca8" ${st(1.6)}/><rect x="330" y="252" width="9" height="40" fill="#f4dca8" ${st(1.6)}/><path d="M309 240h3M309 252h3M309 264h3M309 276h3" stroke="#c9a06a" stroke-width="1.6"/><rect x="292" y="222" width="38" height="9" rx="3" fill="#ef9a6c" ${st(1.6)}/><rect x="322" y="246" width="30" height="8" rx="3" fill="#9fcdf0" ${st(1.6)}/><circle cx="342" cy="262" r="4" fill="#ffd54d" ${st(1.2)}/><path d="M342 254v4" ${st(1.2)}/><path d="M300 222C300 210 322 210 322 222Z" fill="#fff3e0" ${st(1.6)}/>` },
+  { id: "books", slot: "corner", name: "Chồng sách", price: 100, small: 1, box: [28, 268, 42, 36], svg: () => `<rect x="34" y="290" width="30" height="8" rx="2" fill="#6aa4d6" ${st(1.5)}/><rect x="37" y="282" width="26" height="8" rx="2" fill="#ef9a6c" ${st(1.5)}/><rect x="35" y="274" width="28" height="8" rx="2" fill="#a8dc8c" ${st(1.5)}/><path d="M58 274V282M60 282V290" stroke="#fff" stroke-width="1.4"/>` },
+];
+const furniOf = (id) => FURNI.find((f) => f.id === id);
+
+function skyOf(hour) {
+  if (hour >= 6 && hour < 10) return { top: "#ffd9c7", bot: "#fff1d6", line: "#e9b9a6", night: false };
+  if (hour >= 10 && hour < 17) return { top: "#9fd3f0", bot: "#e6f5ff", line: "#b6c8da", night: false };
+  if (hour >= 17 && hour < 20) return { top: "#ffb196", bot: "#ffe2b0", line: "#e0a189", night: false };
+  return { top: "#28285c", bot: "#544b8e", line: "#2c2854", night: true };
+}
+// cả căn phòng; equip = { chỗ: mã món }
+function roomArt({ equip = {}, hour = 12 } = {}) {
+  const u = "rm" + (++svgN), sky = skyOf(hour);
+  const items = Object.values(equip).map(furniOf).filter(Boolean);
+  const order = ["rug", "wallL", "wallR", "sill", "light", "desk", "bed", "corner"];
+  items.sort((a, b) => order.indexOf(a.slot) - order.indexOf(b.slot));
+  let planks = "";
+  for (let i = 1; i < 8; i++) { const xb = 58 + i * (244 / 8), xf = 30 + i * (300 / 8); planks += `M${xb.toFixed(1)} 240L${xf.toFixed(1)} 300`; }
+  const seams = Array.from({ length: 19 }, (_, i) => `M${10 + i * 19} 0V120`).join("");
+  const skyline = `<path d="M150 186V172H156V164H162V172H168V160H172V172H178V168H184V176H190V170H196V186Z" fill="${sky.line}"/><path d="M198 186L202 170 203.5 160 205 170 209 186" fill="none" stroke="${sky.line}" stroke-width="1.6"/><rect x="160" y="150" width="8" height="22" fill="${sky.line}"/>${sky.night ? `<rect x="162" y="154" width="1.6" height="2" fill="#ffe08a"/><rect x="165" y="160" width="1.6" height="2" fill="#ffe08a"/><circle cx="196" cy="128" r="6" fill="#fff4cc"/><circle cx="194" cy="126" r="5" fill="${sky.top}"/><circle cx="166" cy="128" r=".9" fill="#fff"/><circle cx="182" cy="122" r=".8" fill="#fff"/><circle cx="174" cy="138" r=".7" fill="#fff"/>` : `<circle cx="196" cy="130" r="6" fill="#fff1a8"/><path d="M158 136q5-6 12 0 4-3 8 1h-20z" fill="#fff" opacity=".9"/>`}`;
+  const lamp = items.find((f) => f.slot === "light");
+  const glow = sky.night && lamp ? `<radialGradient id="${u}g"><stop offset="0" stop-color="#ffe7a3" stop-opacity=".55"/><stop offset="1" stop-color="#ffe7a3" stop-opacity="0"/></radialGradient><circle cx="${lamp.id === "lamp" ? 110 : 180}" cy="${lamp.id === "lamp" ? 168 : 150}" r="${lamp.id === "lamp" ? 90 : 150}" fill="url(#${u}g)"/>` : "";
+  return `<svg class="room-svg" viewBox="0 0 360 330" aria-hidden="true">
+<defs><linearGradient id="${u}s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${sky.top}"/><stop offset="1" stop-color="${sky.bot}"/></linearGradient>
+<pattern id="${u}p" width="22" height="22" patternUnits="userSpaceOnUse"><path d="M11 13.5C8 11.6 6.5 10.3 6.5 8.9a2.2 2.2 0 0 1 4.5-.5 2.2 2.2 0 0 1 4.5 .5c0 1.4-1.5 2.7-4.5 4.6z" fill="#f2c9b4" opacity=".45"/></pattern>
+<clipPath id="${u}r"><path d="M2 110L180 12 358 110 344 118 180 30 16 118Z"/></clipPath><clipPath id="${u}w"><path d="M150 186V146A30 30 0 0 1 210 146V186Z"/></clipPath></defs>
+<ellipse cx="180" cy="318" rx="158" ry="8" fill="${SB_INK}" opacity=".12"/>
+<rect x="34" y="298" width="28" height="14" rx="6" fill="#c98a5a" ${st(2)}/><rect x="298" y="298" width="28" height="14" rx="6" fill="#c98a5a" ${st(2)}/>
+<rect x="250" y="34" width="26" height="52" fill="#e8a07a" ${st(2)}/><rect x="246" y="28" width="34" height="9" rx="3" fill="#d98c66" ${st(1.8)}/><rect x="252" y="16" width="9" height="13" rx="2" fill="#d9734f" ${st(1.6)}/><rect x="265" y="19" width="9" height="10" rx="2" fill="#d9734f" ${st(1.6)}/>
+<path d="M14 106L180 22 346 106V304H14Z" fill="#e2ad7c" ${st(2.2)}/>
+<path d="M2 110L180 12 358 110 344 118 180 30 16 118Z" fill="#a9b9cc" ${st(2.2)}/><g clip-path="url(#${u}r)"><path d="${seams}" stroke="#8a9cb2" stroke-width="1.4"/></g><path d="M2 110L180 12 358 110" fill="none" ${st(2.6)}/>
+<path d="M30 300V150L180 66 330 150V300Z" fill="#fbefd9" ${st(2)}/>
+<path d="M58 240V160L180 92 302 160V240Z" fill="#fbefd9"/><path d="M58 240V160L180 92 302 160V240Z" fill="url(#${u}p)"/>
+<path d="M30 150L58 160V240L30 300Z" fill="#f2d9bb"/><path d="M330 150L302 160V240L330 300Z" fill="#f2d9bb"/>
+<path d="M30 150L180 66V92L58 160Z" fill="#ead0ae"/><path d="M330 150L180 66V92L302 160Z" fill="#e4c7a2"/><path d="M58 160L180 92 302 160" fill="none" stroke="${SB_INK}" stroke-width="1.4" opacity=".5"/><path d="M96 118L104 138M140 94L146 112M220 94L214 112M264 118L256 138" stroke="#d9b48c" stroke-width="3" stroke-linecap="round"/>
+<path d="M58 240H302L330 300H30Z" fill="#efc488"/><path d="${planks}M44 270H316" stroke="#d9a86a" stroke-width="1.4" fill="none"/><rect x="58" y="234" width="244" height="6" fill="#f3dcc0"/><path d="M58 234H302" stroke="${SB_INK}" stroke-width="1" opacity=".45"/>
+<path d="M150 186V146A30 30 0 0 1 210 146V186Z" fill="url(#${u}s)"/><g clip-path="url(#${u}w)">${skyline}</g><path d="M150 186V146A30 30 0 0 1 210 146V186Z" fill="none" stroke="#c98a5a" stroke-width="5"/><path d="M150 186V146A30 30 0 0 1 210 146V186Z" fill="none" ${st(1.4)}/><path d="M180 116V186M150 156H210" stroke="#c98a5a" stroke-width="3"/>
+<rect x="142" y="186" width="76" height="7" rx="2" fill="#e7b07c" ${st(1.6)}/><path d="M138 120H222" ${st(2)}/><circle cx="138" cy="120" r="3" fill="#e7b07c" ${st(1.3)}/><circle cx="222" cy="120" r="3" fill="#e7b07c" ${st(1.3)}/>
+<path d="M146 121C138 146 140 172 148 192H156C150 170 150 146 157 121Z" fill="#ffd8df" ${st(1.6)}/><path d="M214 121C222 146 220 172 212 192H204C210 170 210 146 203 121Z" fill="#ffd8df" ${st(1.6)}/><path d="M142 168Q150 172 156 168M218 168Q210 172 204 168" fill="none" stroke="#ef90aa" stroke-width="2.4" stroke-linecap="round"/>
+${items.map((f) => `<g data-f="${f.id}">${f.svg()}</g>`).join("")}
+${sky.night ? `<path d="M30 300V150L180 66 330 150V300Z" fill="#2a2350" opacity=".26"/>` : ""}${glow}
+<path d="M30 300V150L180 66 330 150V300" fill="none" ${st(2.2)}/></svg>`;
+}
+function furniThumb(id) {
+  const f = furniOf(id); if (!f) return "";
+  const [x, y, w, h] = f.box, s = Math.max(w, h), pad = 6;
+  return `<svg class="furni" viewBox="${x + w / 2 - s / 2 - pad} ${y + h / 2 - s / 2 - pad} ${s + pad * 2} ${s + pad * 2}" aria-hidden="true">${f.svg()}</svg>`;
 }
 // ================= phiêu lưu: dữ liệu (nhân vật, cốt truyện, câu hỏi) =================
 const ELEM = { nhiet: ["Nhiệt", "#ffd8c2"], ap: ["Điện áp", "#d4e9fa"], dong: ["Dòng điện", "#d5f0d0"], tu: ["Từ trường", "#e6dcfb"], logic: ["Logic", "#fff0b8"], sang: ["Ánh sáng", "#ffd6e3"], tin: ["Tín hiệu", "#d3f1ec"] };
@@ -2976,9 +3286,6 @@ const CHARS = {
 };
 const BOSS = { nhieu: { name: "Bé Nhiễu", hp: 100 }, roi: { name: "Nút Rối", hp: 120 }, xa: { name: "Bóng Xả", hp: 120 }, dm: { name: "Ngài Đoản Mạch", hp: 150 } };
 const SPEAKER = { dm: "Ngài Đoản Mạch", nhieu: "Bé Nhiễu", roi: "Nút Rối", xa: "Bóng Xả", fuzo: "Cầu Chì" };
-const DECOR = [["tulip", "🌷", "Tulipe hồng"], ["cupcake", "🧁", "Cupcake"], ["sprout", "🌱", "Mầm cây"], ["bear", "🧸", "Gấu bông"], ["croissant", "🥐", "Croissant"], ["coffee", "☕", "Café crème"],
-  ["bow", "🎀", "Nơ hồng"], ["moon", "🌙", "Đèn trăng"], ["books", "📚", "Chồng sách"], ["straw", "🍓", "Dâu tây"], ["fish", "🐟", "Cá cho Indu"], ["candle", "🕯️", "Nến thơm"],
-  ["tea", "🍵", "Trà xanh"], ["balloon", "🎈", "Bóng bay"], ["cake", "🍰", "Bánh kem"], ["bulb", "💡", "Bóng đèn"]];
 const BANNER = { name: "Ánh Đèn Một Chiều", feat: "lumi", std5: ["tranz", "ope"], four: ["ohmi", "capa", "kirch", "indu", "bobo"] };
 
 // --- câu hỏi: tiếng Pháp như đề thi, giải thích bằng tiếng Việt; đáp án đúng luôn ở vị trí 0, khi chơi sẽ được xáo ---
@@ -3035,16 +3342,16 @@ const STORY = [
       { s: "night", t: "Thứ Ba, 18:47. Bạn vừa bước ra khỏi giảng đường thì cả campus Jussieu tắt phụt." },
       { t: "Không một bóng đèn. Tháp Zamansky chìm vào bóng tối. Điện thoại còn đúng 1% pin." },
       { c: "elec", m: "happy", t: "Này! Này!! Bạn có nghe thấy mình không?" },
-      { t: "Một đốm sáng nhỏ xíu chui ra từ màn hình điện thoại. Là bé electron trong app học của bạn." },
-      { c: "elec", m: "party", t: "Mình là {name} nè! Đừng hỏi sao mình ra được ngoài này, chính mình cũng không biết luôn~" },
+      { t: "Một bé mèo con tí hon chui ra từ màn hình điện thoại, quanh đầu có một electron bay vòng vòng. Là bé Elec trong app học của bạn." },
+      { c: "elec", m: "party", t: "Mình là {name} nè, meo! Đừng hỏi sao mình ra được ngoài này, chính mình cũng không biết luôn~" },
       { c: "elec", m: "think", t: "Có thứ gì đó đang hút sạch điện của trường. Mình gọi nó là… Nhiễu Trắng." },
       { id: "p1", ch: [
         { t: "Bình tĩnh. Kể mình nghe từ đầu.", r: [{ c: "elec", m: "happy", t: "Bạn ngầu ghê. Được, nghe kỹ nè…" }] },
-        { t: "KHOAN. Electron biết nói á?!", r: [{ c: "elec", m: "party", t: "Biết nói, biết bay, và biết dỗi nếu bạn không tập trung đủ 25 phút mỗi ngày đó nha." }] }] },
+        { t: "KHOAN. Electron biết nói á?!", r: [{ c: "elec", m: "party", t: "Biết nói, biết kêu meo, và biết dỗi nếu bạn không tập trung đủ 25 phút mỗi ngày đó nha." }] }] },
       { fx: "shake", t: "Rè… rè… Một đám mây lốm đốm như TV mất sóng lăn ra từ phòng máy." },
       { c: "nhieu", t: "Rè rè! Điện của Jussieu giờ là của ta! Đèn đóm, wifi, máy chiếu… ăn hết! Rè!" },
       { c: "elec", m: "think", t: "Nó đang ăn dòng điện thật kìa! Mình cần một Linh Kiện để chống lại nó…" },
-      { t: "Dưới chân bạn, một chiếc điện trở nhỏ màu cam khẽ phát sáng. Ba vạch màu nhấp nháy như đang thở." },
+      { t: "Dưới chân bạn, một chiếc điện trở nhỏ màu cam khẽ phát sáng. Ba vạch màu nhấp nháy như đang thở… rồi hai cái tai mèo màu cam vểnh lên." },
       { fx: "flash", join: "ohmi", c: "ohmi", m: "sleep", t: "Ư… ai đánh thức mình vậy? Mình đang ngủ ngon trong cái breadboard mà…" },
       { c: "ohmi", m: "happy", t: "Mình là Ohmi, điện trở 220 Ω! Việc của mình là cản dòng điện… và cản luôn mấy đứa phá hoại!" },
       { id: "p2", ch: [
@@ -3069,7 +3376,7 @@ const STORY = [
       { s: "metro", t: "Ga Jussieu, tuyến 7 và 10. Tàu đứng im giữa sân ga. Đèn khẩn cấp nhấp nháy đỏ." },
       { c: "ohmi", m: "shock", t: "Ghê quá… dây điện ở đây rối như mì spaghetti." },
       { c: "elec", m: "think", t: "Không phải rối bình thường đâu. Dòng điện đang chạy lung tung, chẳng theo quy luật nào hết!" },
-      { t: "Từ dưới đường ray, một cậu bé tóc xanh bạc hà bật lên sân ga. Ngón tay chỉ thẳng về phía bạn, như một mũi tên." },
+      { t: "Từ dưới đường ray, một cậu bé tai mèo, tóc xanh bạc hà bật lên sân ga. Ngón tay chỉ thẳng về phía bạn, như một mũi tên." },
       { c: "kirch", m: "angry", t: "Đứng lại! Ai cho mấy người vào nút giao của tôi?" },
       { c: "kirch", m: "happy", t: "Tôi là Kirch. Ở đây tôi giữ một luật duy nhất: dòng vào bao nhiêu thì dòng ra bấy nhiêu. Không một electron nào được thất lạc." },
       { id: "c1a", ch: [
@@ -3099,7 +3406,7 @@ const STORY = [
     pre: [
       { s: "lab", t: "Phòng thực hành điện tử. Máy dao động ký vẫn đang chạy, vẽ một đường cong cứ lên rồi lại xuống." },
       { c: "elec", m: "think", t: "Lạ ghê… mất điện mà máy vẫn chạy. Năng lượng lấy từ đâu ra vậy?" },
-      { t: "Trên bàn thí nghiệm, một chiếc tụ điện màu xanh đang ngủ. Trên đầu nổi bong bóng “z z z”." },
+      { t: "Trên bàn thí nghiệm, một cô bé tai mèo tóc xanh đang ngủ gục cạnh chiếc tụ điện. Trên đầu nổi bong bóng “z z z”." },
       { c: "capa", m: "sleep", t: "Ưm… năm phút nữa thôi… mình mới nạp được 63% à…" },
       { c: "kirch", m: "angry", t: "Dậy! Cả campus đang mất điện mà cậu ngủ được à?" },
       { c: "capa", m: "wow", t: "Ơ… Mình là Capa. Mình tích điện rồi xả ra khi mọi người cần. Nhưng có ai đó cứ hút cạn năng lượng của mình…" },
@@ -3138,7 +3445,7 @@ const STORY = [
       { fx: "shake", t: "Ông ta giơ tay. Mọi dây điện trên sân thượng chập vào nhau, toé lửa tím rực." },
       { c: "kirch", m: "shock", t: "Ông ta nối tắt hết rồi! Dòng điện sẽ chạy loạn, không gì cản nổi!" },
       { c: "ohmi", m: "sad", t: "Mình… mình cản không xuể…" },
-      { fx: "flash", t: "Giữa những tia lửa, một ánh hồng dịu dàng bật lên. Một cô gái tóc hồng đội vương miện hình diode bước ra." },
+      { fx: "flash", t: "Giữa những tia lửa, một ánh hồng dịu dàng bật lên. Một cô gái tai mèo tóc hồng, đội vương miện hình diode bước ra." },
       { join: "lumi", c: "lumi", m: "happy", t: "Đừng sợ. Mình là Lumi, một chiếc đèn LED. Mình chỉ cho dòng điện đi theo một chiều." },
       { c: "lumi", m: "joy", t: "Giống như thời gian vậy. Không quay lại được… nhưng luôn có thể đi tiếp, và toả sáng." },
       { c: "lumi", m: "happy", t: "Cho mình mượn kiến thức của bạn nhé. Diode, ngưỡng, chiều dòng điện… mình tin bạn!" },
@@ -3161,7 +3468,8 @@ const STORY = [
     ] },
 ];
 // ================= phiêu lưu: Hành trình Mạch Lớn =================
-const ADV0 = () => ({ gems: 0, welcome: 0, pulls: 0, p5: 0, p4: 0, guar: 0, own: {}, decor: {}, show: [], party: [], comp: "", done: [], choice: {}, aff: {}, prog: null, day: {}, hist: [] });
+// furni/equip: đồ nội thất đã có và món đang đặt ở từng chỗ trong phòng (tặng sẵn thảm + chồng sách)
+const ADV0 = () => ({ gems: 0, welcome: 0, pulls: 0, p5: 0, p4: 0, guar: 0, own: {}, furni: { rug: 1, books: 1 }, equip: { rug: "rug", corner: "books" }, party: [], comp: "", done: [], choice: {}, aff: {}, prog: null, day: {}, hist: [] });
 const adv = () => (state.adv ||= ADV0());
 const saveAdv = () => save("adv", state.adv);
 const owned = (id) => adv().own[id] !== undefined;
@@ -3170,12 +3478,11 @@ const COST = 100;
 let advSeg = "story";
 const pickOne = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const fmtN = (n) => Math.round(n).toLocaleString("vi-VN");
-const decorOf = (id) => DECOR.find((d) => d[0] === id);
 const speakerName = (c) => (c === "elec" ? prefs().name : CHARS[c]?.name || SPEAKER[c] || "");
 const elChip = (el) => `<span class="el-chip" style="--ec:${ELEM[el][1]}">${esc(ELEM[el][0])}</span>`;
 
 // --- ví Tinh thể ✦: kiếm được khi học ---
-function advDay() { const a = adv(), t = todayISO(); if (a.day?.d !== t) a.day = { d: t, fe: 0, tr: 0, q: [], gold: 0, gift: 0 }; return a.day; }
+function advDay() { const a = adv(), t = todayISO(); if (a.day?.d !== t) a.day = { d: t, fe: 0, tr: 0, q: [], gold: 0, gift: 0, visit: 0 }; return a.day; }
 function earn(n) {
   n = Math.round(n); if (!(n > 0)) return 0;
   adv().gems += n; saveAdv(); gemPop(n); paintGems();
@@ -3215,13 +3522,14 @@ function grantChar(id) { // trả về true nếu là nhân vật mới
   if (!a.comp) a.comp = id;
   return true;
 }
-function grantDecor(id) {
-  const a = adv(), isNew = !a.decor[id];
-  a.decor[id] = (a.decor[id] || 0) + 1;
-  if (isNew && a.show.length < 5) a.show.push(id);
-  if (!isNew) a.gems += 10;
-  return isNew;
+function grantFurni(id) { // cầu nguyện 3★: món nội thất nhỏ; trùng thì hoàn 15 ✦
+  const a = adv(), f = furniOf(id); if (!f) return false;
+  if (a.furni[id]) { a.gems += 15; return false; }
+  a.furni[id] = 1;
+  if (!a.equip[f.slot]) a.equip[f.slot] = id;
+  return true;
 }
+function pickSmallFurni(a) { const pool = FURNI.filter((f) => f.small), fresh = pool.filter((f) => !a.furni[f.id]); return pickOne(fresh.length ? fresh : pool).id; }
 const partyOf = () => adv().party.filter((id) => owned(id) && CHARS[id]);
 const affHearts = (id) => Math.min(5, Math.floor((adv().aff[id] || 0) / 3));
 
@@ -3246,15 +3554,7 @@ function setProg(p) { if (p && isDone(p.ch)) return; adv().prog = p; saveAdv(); 
 
 // --- màn Phiêu lưu ---
 function renderAdv() {
-  const a = adv();
-  if (!a.welcome && dataReady) {
-    a.welcome = 1; a.gems += 1000; saveAdv();
-    setTimeout(() => openSheet({ title: "Chào mừng đến Hành trình Mạch Lớn!", html: `<div class="reward">
-      <div class="sticker" style="width:120px">${chibi("lumi", { mood: "joy" })}</div>
-      <p class="gain gems">+1 000 ✦</p>
-      <p>Quà khởi đầu: đủ cho <b>10 lần cầu nguyện</b>. Học là có thêm Tinh thể: tập trung 1 phút = 2 ✦, ôn 1 thẻ = 1 ✦, tự giảng Feynman = 20 ✦, mỗi nhiệm vụ hằng ngày = 30 ✦.</p>
-      <div class="two" style="width:100%"><button class="btn" data-close data-go="wish">Cầu nguyện</button><button class="btn primary" data-act="adv-play" data-id="p">Vào truyện</button></div></div>` }), 60);
-  }
+  maybeWelcome();
   $$("#advSeg button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.seg === advSeg)));
   $("#advGem").innerHTML = gemPill();
   const d = advDay();
@@ -3296,7 +3596,8 @@ function openChapters() {
 }
 function claimGift() {
   const d = advDay(); if (d.gift) return;
-  d.gift = 1; earn(50); sfx("chime"); toast("Quà hôm nay: +50 ✦. Mai quay lại nhận tiếp nhé!"); renderAdv();
+  d.gift = 1; earn(50); sfx("chime"); toast("Quà hôm nay: +50 ✦. Mai quay lại nhận tiếp nhé!");
+  if (!sheetRoot.hidden && $("#sheetRoot .qpanel")) openQuests(); render();
 }
 
 // --- cầu nguyện (gacha) ---
@@ -3310,7 +3611,7 @@ function rollOne(a) {
     return { id, r: 5 };
   }
   if (a.p4 >= 10 || x < r5 + 0.13) { a.p4 = 0; return { id: pickOne(BANNER.four), r: 4 }; }
-  return { id: pickOne(DECOR)[0], r: 3 };
+  return { id: pickSmallFurni(a), r: 3 };
 }
 function wish(n) {
   const a = adv(), cost = COST * n;
@@ -3322,14 +3623,14 @@ function wish(n) {
   }
   a.gems -= cost;
   const res = [];
-  for (let i = 0; i < n; i++) { const r = rollOne(a); r.isNew = r.r >= 4 ? grantChar(r.id) : grantDecor(r.id); res.push(r); }
+  for (let i = 0; i < n; i++) { const r = rollOne(a); r.isNew = r.r >= 4 ? grantChar(r.id) : grantFurni(r.id); res.push(r); }
   a.hist = [...res.map((r) => ({ id: r.id, r: r.r, t: Date.now() })).reverse(), ...a.hist].slice(0, 60);
   saveAdv(); paintGems();
   playWish(res);
 }
-const nameOf = (r) => (r.r >= 4 ? CHARS[r.id].name : decorOf(r.id)?.[2] || r.id);
+const nameOf = (r) => (r.r >= 4 ? CHARS[r.id]?.name : furniOf(r.id)?.name) || r.id;
 function gcard(r, i) {
-  return `<div class="gcard r${r.r}" style="animation-delay:${(i * 0.07).toFixed(2)}s">${starsSvg(r.r, "st")}${r.isNew ? `<span class="new">MỚI</span>` : ""}${r.r >= 4 ? `<div class="g-art">${chibi(r.id, { mood: "joy" })}</div>` : `<span class="em" aria-hidden="true">${decorOf(r.id)?.[1] || "✦"}</span>`}<span class="nm">${esc(nameOf(r))}</span></div>`;
+  return `<div class="gcard r${r.r}" style="animation-delay:${(i * 0.07).toFixed(2)}s">${starsSvg(r.r, "st")}${r.isNew ? `<span class="new">MỚI</span>` : ""}${r.r >= 4 ? `<div class="g-art">${chibi(r.id, { mood: "joy" })}</div>` : `<span class="g-furni">${furniThumb(r.id)}</span>`}<span class="nm">${esc(nameOf(r))}</span></div>`;
 }
 function playWish(res) {
   const best = Math.max(...res.map((r) => r.r));
@@ -3346,7 +3647,7 @@ function playWish(res) {
     const k = step - 1;
     if (k < splashes.length) {
       const r = splashes[k], c = CHARS[r.id];
-      ov.innerHTML = `<span class="g-burst"></span><div class="g-splash"><div class="sticker g-big">${chibi(r.id, { mood: "joy" })}</div>${starsSvg(r.r, "stars big")}<p class="g-name">${esc(c.name)}</p><p class="g-role">${esc(c.role)} · ${esc(ELEM[c.el][0])}${r.isNew ? " · Mới!" : ""}</p><p class="g-quote">“${esc(c.quotes[0])}”</p><p class="g-hint">Chạm để tiếp tục</p></div>`;
+      ov.innerHTML = `<span class="g-burst"></span><div class="g-splash"><div class="sticker g-big">${portrait(r.id, { mood: "joy" })}</div>${starsSvg(r.r, "stars big")}<p class="g-name">${esc(c.name)}</p><p class="g-role">${esc(c.role)} · ${esc(ELEM[c.el][0])}${r.isNew ? " · Mới!" : ""}</p><p class="g-quote">“${esc(c.quotes[0])}”</p><p class="g-hint">Chạm để tiếp tục</p></div>`;
       if (r.r === 5) confetti();
       return;
     }
@@ -3361,7 +3662,7 @@ function renderWish() {
   const a = adv(), left = 50 - a.p5, f = CHARS[BANNER.feat];
   $("#advWish").innerHTML = `
     <article class="sb-card wish-banner hearts-bg">
-      <div class="who sticker">${chibi(BANNER.feat, { mood: "happy" })}</div>
+      <div class="who sticker">${portrait(BANNER.feat, { mood: "happy", rough: false })}</div>
       <div class="info">
         <span class="pill-note">Sự kiện cầu nguyện</span>
         <span class="logo-t" style="--lc:#ff9bb8">${esc(BANNER.name)}</span>
@@ -3383,7 +3684,7 @@ function openRates() {
     <p><b>5★</b> (Lumi, Tranz, Ope): 1,6% mỗi lượt. Từ lượt thứ 36 tỉ lệ tăng dần, lượt thứ 50 chắc chắn ra 5★.</p>
     <p><b>50/50:</b> 5★ đầu tiên có một nửa khả năng là Lumi. Nếu ra Tranz hoặc Ope thì 5★ kế tiếp chắc chắn là Lumi.</p>
     <p><b>4★</b> (Ohmi, Capa, Kirch, Indu, Bobo): 13%, và cứ 10 lượt chắc chắn có ít nhất một 4★.</p>
-    <p><b>3★</b>: đồ trang trí cho màn Hôm nay. Trùng đồ được hoàn 10 ✦.</p>
+    <p><b>3★</b>: đồ nội thất nhỏ cho căn phòng ở màn Hôm nay. Trùng đồ được hoàn 15 ✦.</p>
     <p>Trùng nhân vật thì tăng Cung (C1 → C6). Từ C6, trùng 4★ hoàn 20 ✦, trùng 5★ hoàn 50 ✦.</p>
     <p class="muted">Đã cầu nguyện ${fmtN(adv().pulls)} lần · ${adv().p5} lượt kể từ 5★ gần nhất.</p></div>` });
 }
@@ -3397,7 +3698,6 @@ function renderTeam() {
   const a = adv(), party = partyOf();
   const slots = [0, 1, 2].map((i) => { const id = party[i]; return id ? `<button class="sb-card ccard" data-act="char" data-id="${id}" style="--cbg:${CHARS[id].bg}"><div class="chibi-box">${chibi(id)}</div><span class="nm">${esc(CHARS[id].name)}</span></button>` : `<div class="sb-card ccard" style="--cbg:#fff;opacity:.7;cursor:default"><div class="chibi-box" style="height:82px;display:grid;place-items:center;font:800 26px var(--display)">+</div><span class="nm">Trống</span></div>`; }).join("");
   const ids = Object.keys(CHARS).sort((x, y) => CHARS[y].r - CHARS[x].r);
-  const nDecor = Object.keys(a.decor).length;
   $("#advTeam").innerHTML = `
     <div class="sec-head"><span class="label">Đội hình (tối đa 3)</span><span class="small muted">Mỗi người một kỹ năng / trận</span></div>
     <div class="roster">${slots}</div>
@@ -3406,16 +3706,14 @@ function renderTeam() {
       const c = CHARS[id], has = owned(id);
       return `<button class="sb-card ccard ${has ? "" : "locked"}" data-act="char" data-id="${id}" style="--cbg:${has ? c.bg : "#f3ece4"}" aria-label="${esc(c.name)}${has ? "" : ", chưa có"}">${a.party.includes(id) ? `<span class="tm">Đội</span>` : ""}${has && a.own[id] ? `<span class="cl">C${a.own[id]}</span>` : ""}<div class="chibi-box">${chibi(id)}</div><span class="nm">${has ? esc(c.name) : "???"}</span>${starsSvg(c.r)}</button>`;
     }).join("")}</div>
-    <div class="sec-head"><span class="label">Trang trí màn Hôm nay</span><span class="small muted">${nDecor}/${DECOR.length} · chọn tối đa 5</span></div>
-    <div class="decor-grid">${DECOR.map(([id, em, name]) => { const n = a.decor[id] || 0, on = a.show.includes(id);
-      return `<button class="sb-card dcard ${n ? "" : "locked"}" data-act="decor" data-id="${id}" ${n ? `aria-pressed="${on}"` : "disabled"} style="--bgc:${on ? "#e2efc6" : "#fffaf2"};background:var(--bgc)"><span class="em" aria-hidden="true">${em}</span>${n ? esc(name) : "???"}${n > 1 ? ` ×${n}` : ""}</button>`; }).join("")}</div>`;
+    <button class="btn soft block" data-act="decor">Trang trí phòng của ${esc(prefs().name)}</button>`;
 }
 function openChar(id) {
   const c = CHARS[id], a = adv(), has = owned(id);
   if (!has) return openSheet({ title: "Nhân vật bí ẩn", html: `<div class="reward"><div class="sticker" style="width:120px;filter:brightness(0) opacity(.2)">${chibi(id)}</div><p>${starsSvg(c.r)} ${elChip(c.el)}</p><p class="muted small">${c.r === 5 ? "Gặp được khi cầu nguyện." : "Gặp được trong truyện hoặc khi cầu nguyện."}</p></div>` });
   const inParty = a.party.includes(id), isComp = a.comp === id, h = affHearts(id);
   openSheet({ title: c.name, html: `<div class="prof">
-    <div class="prof-art" style="--cbg:${c.bg}"><div class="chibi-box sticker">${chibi(id, { mood: "joy" })}</div></div>
+    <div class="prof-art" style="--cbg:${c.bg}"><div class="chibi-box sticker">${portrait(id, { mood: "joy" })}</div></div>
     <div class="row" style="gap:6px;flex-wrap:wrap">${starsSvg(c.r)} ${elChip(c.el)} <span class="el-chip" style="--ec:#fff">${esc(c.role)}</span>${a.own[id] ? `<span class="el-chip" style="--ec:#fff1bd">Cung C${a.own[id]}</span>` : ""}</div>
     <p class="small">${esc(c.bio)}</p>
     <div class="explain"><b>${esc(c.skill[0])}</b>: ${esc(c.skill[1])}</div>
@@ -3430,13 +3728,6 @@ function toggleParty(id) {
   saveAdv(); closeSheet(); renderAdv();
 }
 function setComp(id) { adv().comp = id; saveAdv(); closeSheet(); render(); toast(`${CHARS[id].name} sẽ ở cạnh bạn ở màn Hôm nay`); }
-function toggleDecor(id) {
-  const a = adv();
-  if (a.show.includes(id)) a.show = a.show.filter((x) => x !== id);
-  else { if (a.show.length >= 5) return toast("Tối đa 5 món. Bỏ bớt một món trước nhé"); a.show.push(id); }
-  saveAdv(); renderTeam();
-}
-
 // --- trình đọc truyện (visual novel) ---
 const vn = { ch: null, part: "pre", lines: [], i: 0, cast: [], typing: 0, full: "", scene: "" };
 function playChapter(id) {
@@ -3459,8 +3750,8 @@ function startVN(id, part, from = 0) {
 }
 function castIn(c) { const k = vn.cast.indexOf(c); if (k >= 0) return; vn.cast.push(c); if (vn.cast.length > 2) vn.cast.shift(); }
 function actorArt(c, mood) {
-  if (c === "elec") return mascot("", ({ happy: "happy", party: "party", think: "think", sleep: "sleep" })[mood] || "happy");
-  if (CHARS[c]) return chibi(c, { mood: mood || "happy" });
+  if (c === "elec") return kitten(({ happy: "happy", party: "party", think: "think", sleep: "sleep" })[mood] || "happy");
+  if (CHARS[c]) return portrait(c, { mood: mood || "happy" });
   return bossArt(c);
 }
 function paintStage(line) {
@@ -3731,24 +4022,11 @@ Cours :
   return qs;
 }
 
-// --- ở màn Hôm nay: thẻ phiêu lưu, bạn đồng hành, đồ trang trí ---
-function renderAdvHome() {
-  const box = $("#hAdv"); if (!box) return;
-  const a = adv(), ch = currentChapter(), allDone = STORY.every((c) => isDone(c.id)), cs = chapterState(ch);
-  box.innerHTML = `<div class="ah-top hearts-bg"><span class="logo-t sm" style="--lc:#ff9bb8">Mạch Lớn</span>${gemPill()}</div>
-    <div class="ah-body"><div class="ah-txt"><span class="chap-no">${allDone ? "Đã cứu campus" : esc(ch.no)}</span><strong>${esc(allDone ? "Còn tiếp: Thành phố Xoay Chiều" : ch.title)}</strong>
-      <span class="small" style="color:var(--sb-ink-2)">${allDone ? "Gặp lại các Linh Kiện trong phần Nhân vật." : cs.lock ? esc(cs.text) : a.prog?.ch === ch.id ? "Đang đọc dở, vào đọc tiếp nhé!" : "Sẵn sàng phiêu lưu!"}</span>
-      <div class="ah-btns"><button class="adv-btn" data-go="adv">${icon("map")} Phiêu lưu</button><button class="adv-btn lav" data-go="wish">✦ Cầu nguyện</button></div></div>
-      <div class="ah-art sticker">${chibi(ch.cover, { mood: cs.lock ? "sleep" : "happy" })}</div></div>`;
-  const scene = $(".hero .scene");
-  scene.querySelector(".companion")?.remove(); scene.querySelector(".scene-decor")?.remove();
-  if (a.comp && owned(a.comp)) scene.insertAdjacentHTML("beforeend", `<button class="companion sticker" data-act="comp-talk" aria-label="Chạm vào ${esc(CHARS[a.comp].name)}">${chibi(a.comp, { mood: "happy" })}</button>`);
-  if (a.show.length) scene.insertAdjacentHTML("beforeend", `<div class="scene-decor" aria-hidden="true">${a.show.map((id) => decorOf(id)?.[1] || "").join("")}</div>`);
-}
+// --- ở màn Hôm nay: bạn đồng hành nói chuyện ---
 function compTalk(el) {
   const id = adv().comp, c = CHARS[id]; if (!c) return;
   $("#hBubble").textContent = `${c.name}: ${pickOne(c.quotes)}`;
-  el.classList.remove("hop"); void el.offsetWidth; el.classList.add("hop"); audioCtx(); sfx("pop");
+  hopEl(el); sfx("pop");
 }
 
 // --- trình đọc & trận đấu: sự kiện ---
@@ -3764,11 +4042,164 @@ $("#btQ").addEventListener("click", (e) => { const o = e.target.closest("[data-o
 $("#btParty").addEventListener("click", (e) => { const b = e.target.closest("[data-skill]"); if (b && !b.disabled) useSkill(b.dataset.skill); });
 $("#btExit").addEventListener("click", exitBattle);
 $("#advSeg").addEventListener("click", (e) => { const b = e.target.closest("[data-seg]"); if (!b) return; advSeg = b.dataset.seg; const v = Object.keys(ADV_SEG).find((k) => ADV_SEG[k] === advSeg); state.view = v; history.replaceState(null, "", "#" + v); renderAdv(); sfx("tick"); });
+// ================= căn phòng: bé mèo Elec, bạn đồng hành, khách ghé thăm, trang trí, nhiệm vụ =================
+// Vòng chơi: Tập trung → Elec lắp mạch cùng bạn → nhận Tinh thể ✦ → trang trí phòng / cầu nguyện gặp bạn mới
+function hideSplash() {
+  const s = $("#splash"); if (!s || s.classList.contains("out")) return;
+  s.classList.add("out"); setTimeout(() => { s.hidden = true; }, 380);
+}
+setTimeout(hideSplash, 4500); // phòng khi dữ liệu tải quá lâu
+
+function maybeWelcome() {
+  const a = adv();
+  if (a.welcome || !dataReady || loadFailed) return;
+  a.welcome = 1; a.gems += 1000; saveAdv(); paintGems();
+  const n = esc(prefs().name);
+  setTimeout(() => openSheet({ title: `Chào mừng tới phòng của ${prefs().name}!`, html: `<div class="reward">
+    <div style="width:130px">${kitten("party")}</div>
+    <p class="gain gems">+1 000 ✦</p>
+    <ol class="loop"><li><span><b>Bấm Tập trung</b>: ${n} lắp mạch cùng bạn.</span></li><li><span><b>Xong phiên nhận Tinh thể ✦</b>: 1 phút = 2 ✦.</span></li><li><span><b>Trang trí phòng</b> hoặc <b>cầu nguyện</b> để gặp các Linh Kiện tai mèo, rồi đọc truyện cùng họ.</span></li></ol>
+    <div class="two" style="width:100%"><button class="btn" data-act="decor">Trang trí</button><button class="btn primary" data-act="focus-open">Tập trung</button></div></div>` }), 60);
+}
+
+// --- ai đang ở trong phòng ---
+function kitMood() { const h = parisHour(); return state.focus?.endAt ? "think" : h >= 23 || h < 6 ? "sleep" : state.stats.days[todayISO()]?.gold ? "party" : "happy"; }
+function visitorToday() { // mỗi ngày một bạn trong đội hình ghé chơi (không phải bạn đồng hành)
+  const a = adv(), pool = Object.keys(a.own).filter((id) => CHARS[id] && id !== a.comp).sort();
+  return pool.length ? pool[hashOf(todayISO()) % pool.length] : null;
+}
+function roomHtml({ focus = false, mood } = {}) {
+  const a = adv(), name = prefs().name, comp = a.comp && owned(a.comp) ? a.comp : "", vis = focus ? null : visitorToday(), d = advDay();
+  return roomArt({ equip: a.equip, hour: parisHour() })
+    + `<button class="dweller kit" data-act="buddy" aria-label="Chạm vào ${esc(name)}">${kitten(mood || kitMood())}</button>`
+    + (comp ? `<button class="dweller comp" data-act="comp-talk" aria-label="Chạm vào ${esc(CHARS[comp].name)}">${chibi(comp)}</button>` : "")
+    + (vis ? `<button class="dweller visit" data-act="visitor" aria-label="${esc(CHARS[vis].name)} ghé thăm${d.visit ? "" : ", có quà"}">${chibi(vis, { mood: "wink" })}${d.visit ? "" : `<span class="gift" aria-hidden="true">🎁</span>`}</button>` : "");
+}
+function renderRoom() {
+  const box = $("#hRoom"); if (!box) return;
+  box.innerHTML = roomHtml();
+  const q = quests(), done = q.filter((x) => x.p >= 1).length, d = advDay(), qb = $("#hQuest");
+  $("#hQuestTxt").textContent = `Nhiệm vụ ${done}/3`;
+  qb.setAttribute("aria-label", `Nhiệm vụ ${done}/3${d.gift ? "" : ", có quà hôm nay"}`);
+  qb.querySelector(".dot-new")?.remove();
+  if (!d.gift) qb.insertAdjacentHTML("beforeend", `<span class="dot-new" aria-hidden="true">1</span>`);
+  const ch = currentChapter(), avail = !isDone(ch.id) && !chapterState(ch).lock, sb = $("#hudStory");
+  sb.querySelector(".dot-new")?.remove();
+  if (avail) sb.insertAdjacentHTML("beforeend", `<span class="dot-new" aria-hidden="true">!</span>`);
+  sb.setAttribute("aria-label", `Truyện${avail ? `: ${ch.no} đang chờ bạn` : ""}`);
+  paintGems();
+}
+function hopEl(el) { el.classList.remove("hop"); void el.offsetWidth; el.classList.add("hop"); audioCtx(); }
+function tapVisitor(el) {
+  const id = visitorToday(); if (!id) return;
+  const c = CHARS[id], d = advDay();
+  if (!d.visit) { d.visit = 1; earn(20); el.querySelector(".gift")?.remove(); $("#hBubble").textContent = `${c.name} ghé chơi và tặng bạn 20 ✦! “${pickOne(c.quotes)}”`; sfx("chime"); }
+  else { $("#hBubble").textContent = `${c.name}: ${pickOne(c.quotes)}`; sfx("pop"); }
+  hopEl(el);
+}
+
+// --- trang trí phòng: mua bằng ✦, mỗi chỗ đặt một món ---
+let decorSlot = "all";
+function openDecor() {
+  openSheet({ title: "Trang trí phòng", html: `<div class="decor-prev" id="dcPrev"></div>
+    <div class="row" style="justify-content:space-between;align-items:center;gap:8px"><span class="small muted">Mua bằng Tinh thể kiếm được khi học. Chạm món đã có để đặt hoặc cất đi.</span>${gemPill()}</div>
+    <div class="slot-tabs" id="dcTabs" role="group" aria-label="Chỗ trong phòng"></div><div class="furni-grid" id="dcGrid"></div>`,
+    onMount: (el) => { paintDecor(el); el.addEventListener("click", (e) => decorClick(e, el)); } });
+}
+function paintDecor(el) {
+  const a = adv();
+  $("#dcPrev", el).innerHTML = roomArt({ equip: a.equip, hour: parisHour() });
+  $("#dcTabs", el).innerHTML = [["all", "Tất cả"], ...Object.entries(SLOTS)].map(([k, v]) => `<button data-slot="${k}" aria-pressed="${k === decorSlot}">${esc(v)}</button>`).join("");
+  $("#dcGrid", el).innerHTML = FURNI.filter((f) => decorSlot === "all" || f.slot === decorSlot).map((f) => {
+    const has = !!a.furni[f.id], on = a.equip[f.slot] === f.id;
+    return `<div class="fcard ${on ? "on" : ""}" data-f="${f.id}">${furniThumb(f.id)}<span>${esc(f.name)}</span><span class="small muted" style="margin-top:-3px">${esc(SLOTS[f.slot])}</span>
+      ${has ? `<button class="btn" data-equip="${f.id}" aria-pressed="${on}">${on ? "Đang dùng ✓" : "Đặt vào phòng"}</button>` : `<button class="btn buy" data-buy="${f.id}">${f.price} ✦</button>`}</div>`;
+  }).join("");
+  paintGems();
+}
+function decorClick(e, el) {
+  const t = e.target.closest("[data-slot]");
+  if (t) { decorSlot = t.dataset.slot; sfx("tick"); return paintDecor(el); }
+  const q = e.target.closest("[data-equip]"), a = adv();
+  if (q) {
+    const f = furniOf(q.dataset.equip);
+    if (a.equip[f.slot] === f.id) delete a.equip[f.slot]; else a.equip[f.slot] = f.id;
+    saveAdv(); sfx("pop"); paintDecor(el); renderRoom(); return;
+  }
+  const b = e.target.closest("[data-buy]"); if (!b) return;
+  const f = furniOf(b.dataset.buy);
+  if (a.gems < f.price) return toast(`Còn thiếu ${fmtN(f.price - a.gems)} ✦ · tập trung ${Math.ceil((f.price - a.gems) / 2)} phút là đủ`);
+  if (!b.classList.contains("armed")) { // chạm lần hai mới mua, tránh lỡ tay
+    b.classList.add("armed"); b.textContent = `Mua? −${f.price} ✦`;
+    setTimeout(() => { if (b.isConnected && b.classList.contains("armed")) { b.classList.remove("armed"); b.textContent = `${f.price} ✦`; } }, 3000);
+    return;
+  }
+  a.gems -= f.price; a.furni[f.id] = 1; a.equip[f.slot] = f.id; saveAdv();
+  sfx("unlock"); confetti(); toast(`Đã đặt “${f.name}” vào phòng!`);
+  paintDecor(el); renderRoom();
+}
+
+// --- nhiệm vụ hằng ngày, quà, chuỗi ngày, cấp ---
+function openQuests() {
+  const q = quests(), d = advDay(), n = streak(), best = bestStreak(), lv = levelInfo(), t = todayISO();
+  const first = t.slice(0, 8) + "01", pad = (new Date(first + "T12:00:00Z").getUTCDay() + 6) % 7;
+  const days = new Date(Date.UTC(+t.slice(0, 4), +t.slice(5, 7), 0)).getUTCDate();
+  let heat = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"].map((x) => `<span>${x}</span>`).join("") + '<i class="pad"></i>'.repeat(pad);
+  for (let k = 1; k <= days; k++) {
+    const iso = t.slice(0, 8) + String(k).padStart(2, "0"), x = state.stats.days[iso] || {};
+    const score = (x.f || 0) + (x.r || 0) + (x.m || 0) * 2;
+    heat += `<i class="${score >= 50 ? "l3" : score >= 20 ? "l2" : score > 0 ? "l1" : ""} ${x.gold ? "gold" : ""} ${iso === t ? "today" : ""}" title="${iso}"></i>`;
+  }
+  openSheet({ title: "Nhiệm vụ hôm nay", html: `<div class="qpanel">
+    <div class="gift-row"><span aria-hidden="true" style="font-size:26px">🎁</span><span style="flex:1;min-width:0"><b>Quà mỗi ngày</b><br><span class="small">Ghé phòng mỗi ngày để nhận 50 ✦</span></span><button class="btn primary sm" data-act="gift" ${d.gift ? "disabled" : ""}>${d.gift ? "Đã nhận" : "Nhận +50 ✦"}</button></div>
+    <ul class="quests">${q.map((x) => `<li><span class="qdot ${x.p >= 1 ? "done" : ""}" style="--p:${x.p.toFixed(2)}">${x.p >= 1 ? icon("check") : ""}</span><span>${esc(x.t)}<small>${esc(x.v)}</small></span>${x.p >= 1 ? `<span class="q-reward done">+30 ✦ ✓</span>` : x.act ? `<button class="btn space-btn" data-act="${x.act[0]}">${x.act[1]}</button>` : `<span class="q-reward">+30 ✦</span>`}</li>`).join("")}</ul>
+    <p class="small muted" style="margin-top:-6px">Xong cả 3 nhiệm vụ là ngày hoàn hảo: thêm 60 ✦.</p>
+    <button class="lvl" data-go="lab" style="all:unset;cursor:pointer;display:grid;gap:6px"><span class="lvl-top"><span>Cấp ${lv.n} · <b>${esc(lv.title)}</b></span><span>${lv.t} e⁻${lv.next ? " / " + lv.next : ""}</span></span><span class="xp"><i style="width:${Math.round(lv.pct * 100)}%"></i></span></button>
+    <div class="heat-head"><p class="w-title">Tháng ${+t.slice(5, 7)}</p><span class="flame">${icon("flame")} ${n} ngày liên tiếp</span></div>
+    <div class="heat">${heat}</div>
+    <p class="small muted">Kỷ lục chuỗi ngày: ${best} ngày.</p></div>` });
+}
+function openEarnInfo() {
+  openSheet({ title: "Tinh thể ✦", html: `<div class="stack">
+    <p class="center"><span class="gem" style="font-size:22px;padding:6px 16px"><b>✦</b> ${fmtN(adv().gems)}</span></p>
+    <ul class="earn-list">
+      <li><b>Tập trung</b><span>1 phút = 2 ✦</span></li><li><b>Ôn flashcards</b><span>1 thẻ = 1 ✦</span></li>
+      <li><b>Tự giảng Feynman</b><span>20 ✦ (5 lần/ngày)</span></li><li><b>Nhiệm vụ hằng ngày</b><span>30 ✦ mỗi cái · ngày hoàn hảo 60 ✦</span></li>
+      <li><b>Quà mỗi ngày · khách ghé chơi</b><span>50 ✦ · 20 ✦</span></li><li><b>Thắng đấu tập</b><span>100 ✦ (3 lần/ngày)</span></li><li><b>Xong một chương truyện</b><span>300–500 ✦</span></li></ul>
+    <p class="small muted">Không có tiền thật nào ở đây cả: mọi Tinh thể đều đến từ việc học.</p>
+    <div class="two"><button class="btn" data-act="decor">Trang trí phòng</button><button class="btn primary" data-close data-go="wish">Cầu nguyện</button></div></div>` });
+}
+
+// --- màn tập trung: mạch 5 linh kiện sáng dần theo thời gian ---
+const PARTS = [["r", "R"], ["c", "C"], ["l", "L"], ["d", "D"], ["led", "LED"]];
+function circuitSvg() {
+  const xs = [30, 90, 150, 210, 270];
+  const shape = (k, x) => ({
+    r: `<rect class="part r" x="${x - 16}" y="16" width="32" height="14" rx="5"/>`,
+    c: `<path class="part c" d="M${x - 5} 9V37M${x + 5} 9V37" style="fill:none;stroke-width:4"/>`,
+    l: `<path class="part l" d="M${x - 18} 23c0-10 9-10 9 0c0-10 9-10 9 0c0-10 9-10 9 0c0-10 9-10 9 0" style="fill:none"/>`,
+    d: `<path class="part d" d="M${x - 9} 12L${x + 7} 23 ${x - 9} 34Z"/><path class="part d" d="M${x + 8} 12V34" style="fill:none"/>`,
+    led: `<circle class="glow" cx="${x}" cy="23" r="20"/><path class="part led" d="M${x - 9} 12L${x + 7} 23 ${x - 9} 34Z"/><path class="part led" d="M${x + 8} 12V34M${x + 3} 7l5-5M${x + 10} 10l6-4" style="fill:none"/>`,
+  })[k];
+  let wires = `<path class="wire" data-w="0" d="M4 23H${xs[0] - 18}"/>`, parts = "";
+  for (let i = 0; i < 5; i++) {
+    parts += `<g data-p="${i}">${shape(PARTS[i][0], xs[i])}<text x="${xs[i]}" y="54">${PARTS[i][1]}</text></g>`;
+    wires += i < 4 ? `<path class="wire" data-w="${i + 1}" d="M${xs[i] + 18} 23H${xs[i + 1] - 18}"/>` : `<path class="wire" data-w="5" d="M${xs[4] + 18} 23H296"/>`;
+  }
+  return `<svg viewBox="0 0 300 60" role="img" aria-label="Mạch đang lắp: 0/5 linh kiện">${wires}${parts}</svg>`;
+}
+function paintCircuit(p) {
+  const box = $("#fCircuit"); if (!box) return;
+  const n = Math.floor(clamp(p, 0, 1) * 5 + 1e-9);
+  box.querySelectorAll("[data-p]").forEach((g, i) => g.querySelectorAll(".part, .glow").forEach((x) => x.classList.toggle("on", i < n)));
+  box.querySelectorAll("[data-w]").forEach((w) => w.classList.toggle("on", n > 0 && +w.dataset.w <= n));
+  box.querySelector("svg")?.setAttribute("aria-label", `Mạch đang lắp: ${n}/5 linh kiện`);
+}
 
 // ================= điều hướng =================
 const TABS = ["home", "study", "review", "agenda", "inbox"];
-const MAIN = [...TABS, "lab", "stats", "adv"];
-const IMMERSIVE = ["course", "session", "focus", "vn", "battle"];
+const MAIN = [...TABS, "adv"];
+const IMMERSIVE = ["course", "session", "focus", "vn", "battle", "stats", "lab"];
 const START = location.hash.slice(1);
 function show(v) {
   if (v === "course" && !curCourse()) { const id = lsGet("cur"); if (state.courses.some((c) => c.id === id)) state.cur = id; else v = "study"; }
@@ -3787,7 +4218,8 @@ function show(v) {
   IMMERSIVE.forEach((x) => ($("#v-" + x).hidden = x !== v));
   $("#main").hidden = imm; $(".tabbar").hidden = imm;
   document.body.classList.toggle("immersive", imm);
-  const tabV = ["lab", "stats", ...Object.keys(ADV_SEG)].includes(v) ? "home" : v;
+  document.body.classList.toggle("at-home", v === "home");
+  const tabV = Object.keys(ADV_SEG).includes(v) ? "home" : v;
   $$(".tab").forEach((b) => (b.dataset.v === tabV ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
   if (location.hash.slice(1) !== v) history.replaceState(null, "", "#" + v);
   if (v !== "session" && v !== "vn") render(v);
@@ -3815,7 +4247,7 @@ const ACTIONS = {
   "copy-brief": () => copyText(briefingPrompt(), "lệnh briefing"),
   "paste-brief": openPasteBrief,
   "read-mail": () => runMail(+lsGet("mailDays", "7") || 7),
-  "review-all": () => startSession(deckList().map((d) => d.id)),
+  "review-all": () => { closeSheet(); startSession(deckList().map((d) => d.id)); },
   "deck-start": (el) => startSession([el.dataset.deck]),
   "add-course": openAddCourse,
   "open-course": (el) => { state.cur = el.dataset.id; lsSet("cur", state.cur); show("course"); },
@@ -3846,10 +4278,10 @@ const ACTIONS = {
   "copy-check": () => copyText(lastCheck.prompt, "lệnh kiểm chứng"),
   "focus-open": openFocus,
   "settings": openSettings,
-  "buddy": (el) => { lineIdx++; $("#hBubble").textContent = buddyLines()[lineIdx % buddyLines().length]; el.classList.remove("hop"); void el.offsetWidth; el.classList.add("hop"); audioCtx(); sfx("pop"); },
+  "buddy": (el) => { lineIdx++; const L = buddyLines(); $("#hBubble").textContent = L[lineIdx % L.length]; hopEl(el); sfx("pop"); },
   "focus-subj": (el) => { focusPick.subject = el.dataset.id; lsSet("focusSubj", el.dataset.id); openFocus(); },
   "el-info": (el) => openElement(+el.dataset.z),
-  "go-study": () => show("study"),
+  "go-study": () => { closeSheet(); show("study"); },
   "add-found": () => lastCheck.events.length && openEventsSheet(lastCheck.events, "kiểm tra"),
   // phiêu lưu
   "adv-play": (el) => playChapter(el.dataset.id),
@@ -3862,7 +4294,10 @@ const ACTIONS = {
   "char": (el) => openChar(el.dataset.id),
   "party": (el) => toggleParty(el.dataset.id),
   "comp": (el) => setComp(el.dataset.id),
-  "decor": (el) => toggleDecor(el.dataset.id),
+  "decor": openDecor,
+  "quests": openQuests,
+  "earn-info": openEarnInfo,
+  "visitor": (el) => tapVisitor(el),
   "comp-talk": (el) => compTalk(el),
 };
 document.addEventListener("click", (e) => {
@@ -3924,6 +4359,7 @@ $("#ckGo").addEventListener("click", (e) => runCheck(e.currentTarget));
 getLimits().then((l) => { if (!l?.images) { $("#ckDrop").hidden = true; } else $("#ckFiles").accept = l.images.mediaTypes.join(","); });
 
 document.documentElement.lang = "vi";
+$("#spArt").innerHTML = kitten("party");
 show(START || "home");
 loadData();
 })();

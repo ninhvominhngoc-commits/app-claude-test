@@ -117,29 +117,23 @@ function resistor(id) {
 // ================= màn Hôm nay =================
 const VERDICT_IC = { go: "building", stay: "home", partial: "half", unknown: "question" };
 function renderHome() {
-  const g = greeting();
-  $("#hGreet").innerHTML = `${esc(g.pre)} <em>${esc(g.word)}</em>`;
   $("#hDate").textContent = longDate(todayISO());
-  const up7 = upcoming(7), exams = up7.filter((a) => a.type === "exam").length, dues = up7.filter((a) => a.type === "deadline").length;
-  $("#hSub").textContent = exams || dues ? `7 ngày tới: ${[exams && exams + " kỳ thi", dues && dues + " hạn nộp"].filter(Boolean).join(", ")}.` : g.mood === "sleep" ? "Mai học tiếp, giờ đi ngủ thôi." : "Tuần này nhẹ nhàng, tranh thủ ôn bài nhé.";
+  maybeWelcome();
   // campus
   const s = state.status, fresh = s && s.date === todayISO(), vk = fresh && VERDICT[s.verdict] ? s.verdict : "unknown", v = VERDICT[vk];
   const el = $("#hStatus");
   el.className = "tile tinted " + v.cls;
   el.innerHTML = `
     <div class="tile-head"><span class="badge-ic" style="background: color-mix(in srgb, var(--surface) 70%, transparent)">${icon(VERDICT_IC[vk])}</span><div><span class="label" style="color: var(--tk)">Campus Jussieu</span><span class="faint small">${s ? (fresh ? "Cập nhật lúc " + hhmm(s.updatedAt) : "Bản tin gần nhất: " + countdown(s.date)) : "Chưa có bản tin"}</span></div></div>
-    <div class="stack" style="gap:6px"><p class="verdict">${esc(fresh ? v.label : "Hôm nay có cần lên trường không?")}</p>
-    ${fresh && s.headline ? `<p class="verdict-sub">${esc(s.headline)}</p>` : `<p class="verdict-sub">Hỏi Claude (có tìm kiếm web) về blocus, biểu tình, giao thông, rồi dán kết quả vào đây.</p>`}</div>
-    ${fresh && s.points?.length ? `<div class="chips">${s.points.map((p) => `<span>${esc(p)}</span>`).join("")}</div>`
-      : `<ol class="steps"><li><b>Chép lệnh</b> có sẵn lịch của bạn</li><li><b>Dán vào Claude</b>, bật Tìm kiếm web</li><li><b>Dán kết quả</b> vào đây</li></ol>`}
+    <div class="stack" style="gap:4px"><p class="verdict">${esc(fresh ? v.label : "Hôm nay có cần lên trường không?")}</p>
+    ${fresh && s.headline ? `<p class="verdict-sub">${esc(s.headline)}</p>` : `<p class="verdict-sub">Chép lệnh, dán vào Claude (bật Tìm kiếm web), rồi dán kết quả vào đây.</p>`}</div>
+    ${fresh && s.points?.length ? `<div class="chips">${s.points.map((p) => `<span>${esc(p)}</span>`).join("")}</div>` : ""}
     <div class="row">
       <button class="btn glass sm" data-act="copy-brief">${icon("copy")} Chép lệnh</button>
       <a class="btn glass sm" href="https://claude.ai/new" target="_blank" rel="noopener">${icon("external")} Mở Claude</a>
       <button class="btn primary sm" data-act="paste-brief">${icon("paste")} ${fresh ? "Dán bản mới" : "Dán kết quả"}</button>
     </div>`;
   renderHero();
-  renderAdvHome();
-  renderWidgets();
   // mail
   const m = state.mail, imp = m.recent.filter((x) => x.importance === "haute");
   const shown = (imp.length ? imp : m.recent).slice(0, 2);
@@ -150,7 +144,7 @@ function renderHome() {
     <div class="row"><button class="btn primary sm" data-act="read-mail">${icon("mail")} Đọc mail mới</button><button class="btn ghost sm" data-go="inbox">Xem tất cả</button></div>`;
   paintMailMsg();
   // sắp tới
-  const up = upcoming(14).slice(0, 5);
+  const up = upcoming(14).slice(0, 3);
   $("#hUpcoming").innerHTML = up.length ? up.map((a) => evRow(a, true)).join("")
     : `<div class="empty flat"><p>Không có kỳ thi hay hạn nộp nào trong 14 ngày tới. Đọc mail để cập nhật nhé.</p></div>`;
 }
