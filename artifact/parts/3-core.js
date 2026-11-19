@@ -115,8 +115,8 @@ async function copyText(text, label) {
 }
 
 // ================= dữ liệu (riêng tư theo người dùng) =================
-const state = { agenda: [], courses: [], decks: {}, chats: {}, mail: { seen: [], recent: [], lastRun: "" }, status: null, stats: { days: {} }, atoms: {}, focus: {}, facts: {}, prefs: {}, sessions: [], cur: null, view: "home", seg: "mail", mailMsg: null };
-let base = null;
+const state = { agenda: [], courses: [], decks: {}, chats: {}, mail: { seen: [], recent: [], lastRun: "" }, status: null, stats: { days: {} }, atoms: {}, focus: {}, facts: {}, prefs: {}, sessions: [], adv: null, cur: null, view: "home", seg: "mail", mailMsg: null };
+let base = null, dataReady = false;
 const writeQueue = new Map();
 function queue(docId, op) {
   const next = (writeQueue.get(docId) || Promise.resolve()).then(op).catch((e) => {
@@ -178,6 +178,7 @@ async function loadData() {
       else if (d.id === "facts") state.facts = v.list || {};
       else if (d.id === "prefs") state.prefs = v || {};
       else if (d.id === "sessions") state.sessions = Array.isArray(v.list) ? v.list : [];
+      else if (d.id === "adv") state.adv = { ...ADV0(), ...v, own: v.own || {}, decor: v.decor || {}, choice: v.choice || {}, aff: v.aff || {}, day: v.day || {} };
     }
     showNotice("");
   } catch (e) {
@@ -185,6 +186,7 @@ async function loadData() {
     showNotice("Không đọc được dữ liệu đã lưu. Thử tải lại trang sau.");
   } finally {
     clearTimeout(timer);
+    dataReady = true;
     const cur = lsGet("cur");
     if (cur && state.courses.some((c) => c.id === cur)) state.cur = cur;
     if (state.focus?.endAt && state.focus.endAt <= Date.now()) finishFocus(true);

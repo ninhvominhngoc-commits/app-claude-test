@@ -1,6 +1,6 @@
 # Bộ kiểm thử app Sorbonne Copilot
 
-Chạy toàn bộ kịch bản (người dùng mới, gia sư, flashcards, mail, kiểm tra tin, tải PDF, lỗi mạng, bố cục 320–820px sáng/tối, kiểm tra truy cập axe):
+Chạy toàn bộ kịch bản (người dùng mới, gia sư, flashcards, mail, kiểm tra tin, tải PDF, lỗi mạng, trò chơi nguyên tử, phiêu lưu: truyện, trận đấu, cầu nguyện và bảo hiểm 50 lượt, bố cục 320–820px sáng/tối, kiểm tra truy cập axe):
 
 ```bash
 cd artifact/qa

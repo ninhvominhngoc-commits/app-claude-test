@@ -65,6 +65,7 @@
         <button class="side-btn" data-go="lab"><svg class="i"><use href="#i-atom"></use></svg>Phòng lab</button>
       </div>
     </section>
+    <article class="sb-card adv-home" id="hAdv" aria-label="Hành trình Mạch Lớn"></article>
     <div class="widgets" id="hWidgets"></div>
     <article class="tile tinted" id="hStatus"></article>
     <article class="tile" id="hMail"></article>
@@ -153,6 +154,23 @@
     <div class="ptable space"><div class="pt" id="pt"></div><div class="legend" id="ptLegend"></div></div>
     <p class="muted small">Cứ 5 phút tập trung = 1 electron cho môn đó, và nguyên tử “tiến hoá” sang nguyên tố kế tiếp. Ôn 10 flashcards cũng được thưởng 1 electron.</p>
   </section>
+
+  <!-- PHIÊU LƯU -->
+  <section id="v-adv" class="view" hidden>
+    <header class="page-h">
+      <div><h1>Phiêu lưu</h1><p class="muted">Hành trình Mạch Lớn · học để cứu campus Jussieu</p></div>
+      <button class="icon-btn" data-go="home" aria-label="Về Hôm nay"><svg class="i"><use href="#i-back"></use></svg></button>
+    </header>
+    <div class="adv-bar"><span id="advGem"></span><button class="adv-btn green gift-btn" id="advGift" data-act="gift">🎁 Quà hôm nay +50 ✦</button></div>
+    <div class="segmented" id="advSeg" role="tablist" aria-label="Phiêu lưu">
+      <button role="tab" data-seg="story" aria-selected="true">Cốt truyện</button>
+      <button role="tab" data-seg="wish" aria-selected="false">Cầu nguyện</button>
+      <button role="tab" data-seg="team" aria-selected="false">Nhân vật</button>
+    </div>
+    <div id="advStory" class="stack"></div>
+    <div id="advWish" class="stack" hidden></div>
+    <div id="advTeam" class="stack" hidden></div>
+  </section>
 </main>
 
 <!-- HỌC: CHẾ ĐỘ TOÀN MÀN HÌNH -->
@@ -225,6 +243,26 @@
       <p class="f-hint" id="fRunHint"></p>
       <button class="btn quiet block" id="fStop">Dừng sớm</button>
     </div>
+  </div>
+</section>
+
+<!-- TRUYỆN: CHẾ ĐỘ TOÀN MÀN HÌNH -->
+<section id="v-vn" class="immersive vn" hidden>
+  <div class="bar-in">
+    <div class="vn-top"><button class="icon-btn" id="vnExit" aria-label="Thoát truyện (tự lưu chỗ đang đọc)"><svg class="i"><use href="#i-x"></use></svg></button><span class="ttl" id="vnTitle"></span><button class="vn-skip" id="vnSkip">Bỏ qua</button></div>
+    <div class="vn-stage" id="vnStage"><div class="vn-actors" id="vnActors"></div></div>
+    <div class="vn-box" id="vnBox" role="button" tabindex="0" aria-label="Chạm để đọc tiếp"><span class="vn-name" id="vnName" hidden></span><p class="vn-text" id="vnText"></p><span class="vh" id="vnLive" aria-live="polite"></span><i class="vn-next" id="vnNext" aria-hidden="true"></i></div>
+    <div class="vn-choices" id="vnChoices"></div>
+  </div>
+</section>
+
+<!-- TRẬN ĐẤU: CHẾ ĐỘ TOÀN MÀN HÌNH -->
+<section id="v-battle" class="immersive bt" hidden>
+  <div class="bar-in stack" style="gap:12px;padding-bottom:calc(24px + env(safe-area-inset-bottom, 0px))">
+    <div class="bt-top"><button class="icon-btn" id="btExit" aria-label="Rời trận đấu"><svg class="i"><use href="#i-x"></use></svg></button><span class="ttl" id="btTitle"></span><div class="hearts-row" id="btHearts" role="img"></div></div>
+    <div class="bt-stage" id="btStage"></div>
+    <div class="party" id="btParty"></div>
+    <div class="q-card" id="btQ"></div>
   </div>
 </section>
 

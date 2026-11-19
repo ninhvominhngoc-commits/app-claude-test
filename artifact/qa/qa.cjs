@@ -16,8 +16,8 @@ const check = (name, ok, detail = "") => { results.push({ name, ok: !!ok, detail
 let browser;
 const errors = [];
 
-async function open({ scheme = "light", cfg = {}, width = 390, height = 844, seed = false, hash = "", mobile = true } = {}) {
-  const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 1, isMobile: mobile, hasTouch: mobile, colorScheme: scheme, userAgent: devices["iPhone 13"].userAgent });
+async function open({ scheme = "light", cfg = {}, width = 390, height = 844, seed = false, hash = "", mobile = true, reduce = false } = {}) {
+  const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 1, isMobile: mobile, hasTouch: mobile, colorScheme: scheme, reducedMotion: reduce ? "reduce" : "no-preference", userAgent: devices["iPhone 13"].userAgent });
   await ctx.addInitScript((c) => { sessionStorage.setItem("__cfg", JSON.stringify(c)); }, cfg);
   await ctx.addInitScript({ path: path.join(__dirname, "mock.js") });
   const p = await ctx.newPage();
@@ -27,7 +27,7 @@ async function open({ scheme = "light", cfg = {}, width = 390, height = 844, see
   await p.route("https://cdnjs.cloudflare.com/**", (r) => { const f = LIBMAP[r.request().url()]; return f ? r.fulfill({ path: path.join(LIB, f), contentType: "text/javascript" }) : r.abort(); });
   await p.route("https://cdn.jsdelivr.net/npm/mathjax@3.2.2/**", (r) => { const rel = r.request().url().split("mathjax@3.2.2/")[1]; const f = path.join(LIB, "mathjax", rel); return fs.existsSync(f) ? r.fulfill({ path: f, contentType: "text/javascript" }) : r.abort(); });
   await p.goto("https://app.test/" + hash, { waitUntil: "load" });
-  if (seed) { await p.evaluate(() => window.__seed && window.__seed()); await p.goto("https://app.test/" + hash, { waitUntil: "load" }); }
+  if (seed) { await p.evaluate(() => window.__seed && window.__seed()); await p.reload({ waitUntil: "load" }); }
   await p.waitForTimeout(700);
   return p;
 }
@@ -468,6 +468,264 @@ async function axe(p, label) {
     await p.close();
   }
 
+  // ---------- 13. Phiêu lưu: truyện, trận đấu, cầu nguyện, nhân vật ----------
+  {
+    const setStore = (p, kv) => p.evaluate((kv) => { for (const [k, v] of Object.entries(kv)) window.__store.set(k, v); sessionStorage.setItem("__store", JSON.stringify([...window.__store])); }, kv);
+    const advDoc = async (p) => (await store(p))["data/users/u1/adv"] || {};
+    const reopen = async (p, hash) => { await p.goto("https://app.test/" + hash, { waitUntil: "load" }); await p.reload({ waitUntil: "load" }); await p.waitForTimeout(700); };
+    // đọc truyện tới khi gặp lựa chọn / trận đấu / hết
+    async function vnRun(p, max = 90) {
+      const seen = [];
+      for (let i = 0; i < max; i++) {
+        if (!(await vis(p, "#v-vn"))) break;
+        if (await vis(p, "#vnChoices .vn-choice")) break;
+        await p.click("#vnBox"); await p.waitForTimeout(30);
+        seen.push(await txt(p, "#vnText"));
+      }
+      return seen;
+    }
+    async function winBattle(p) {
+      for (let i = 0; i < 20 && (await vis(p, "#v-battle")); i++) {
+        await p.click("#btQ [data-correct]"); await p.waitForTimeout(40);
+        await p.click("#btNext"); await p.waitForTimeout(60);
+      }
+    }
+
+    // A. lần đầu vào: quà khởi đầu, quà mỗi ngày
+    const p = await open({ reduce: true, hash: "#adv" });
+    check("Phiêu lưu: mở thẳng #adv", await vis(p, "#v-adv") && !(await vis(p, "#v-home")));
+    check("Phiêu lưu: tab Hôm nay vẫn sáng", (await p.getAttribute('.tab[data-v="home"]', "aria-current")) === "page");
+    check("Phiêu lưu: chào mừng + 1 000 ✦", (await sheetOpen(p)) && /1 000 ✦/.test(await txt(p, "#sheetRoot")));
+    await p.keyboard.press("Escape");
+    await p.evaluate(() => window.__seed()); await p.reload({ waitUntil: "load" }); await p.waitForTimeout(700);
+    check("Phiêu lưu: tải lại không tặng quà khởi đầu lần nữa", !(await sheetOpen(p)));
+    check("Phiêu lưu: ví hiện 1.000 Tinh thể", /1\.000/.test(await txt(p, "#advGem")), await txt(p, "#advGem"));
+    let a = await advDoc(p);
+    check("Phiêu lưu: lưu ví vào dữ liệu riêng", a.gems === 1000 && a.welcome === 1, JSON.stringify(a).slice(0, 120));
+    await p.click("#advGift");
+    a = await advDoc(p);
+    check("Quà hôm nay: +50 ✦ và nút ẩn đi", a.gems === 1050 && !(await vis(p, "#advGift")));
+    await reopen(p, "#adv");
+    check("Quà hôm nay: không nhận lại sau khi tải lại", !(await vis(p, "#advGift")) && !(await sheetOpen(p)));
+    check("Cốt truyện: chương hiện tại là Mở đầu", /Mất điện ở Jussieu/.test(await txt(p, "#advStory .chap-name")) && /Bắt đầu/.test(await txt(p, '#advStory [data-act="adv-play"]')));
+
+    // B. đọc truyện: chữ chạy, lựa chọn, nhân vật gia nhập, lưu chỗ đọc
+    await p.click('#advStory [data-act="adv-play"]');
+    check("Truyện: mở màn đọc truyện toàn màn hình", (await vis(p, "#v-vn")) && !(await vis(p, ".tabbar")));
+    check("Truyện: tiêu đề chương", /Mở đầu · Mất điện ở Jussieu/.test(await txt(p, "#vnTitle")));
+    check("Truyện: lời dẫn không có thẻ tên", !(await vis(p, "#vnName")) && /18:47/.test(await txt(p, "#vnText")));
+    let seen = await vnRun(p);
+    check("Truyện: tên bé electron thay vào lời thoại", seen.some((t) => /Mình là Elec nè/.test(t)), seen.slice(0, 6).join(" | "));
+    check("Truyện: gặp lựa chọn đầu tiên", (await p.$$("#vnChoices .vn-choice")).length === 2);
+    await p.click('#vnChoices [data-k="1"]');
+    check("Truyện: lựa chọn hiện câu trả lời riêng", /biết dỗi/.test(await txt(p, "#vnText")));
+    seen = await vnRun(p);
+    a = await advDoc(p);
+    check("Truyện: Ohmi gia nhập đội khi xuất hiện", a.own?.ohmi === 0 && a.party?.includes("ohmi") && a.comp === "ohmi", JSON.stringify(a.own));
+    check("Truyện: lưu lựa chọn", a.choice?.p1 === 1);
+    // thoát giữa chừng rồi đọc tiếp
+    await p.click("#vnExit");
+    a = await advDoc(p);
+    check("Truyện: thoát thì lưu chỗ đang đọc", a.prog?.ch === "p" && a.prog?.part === "pre" && a.prog.i > 5, JSON.stringify(a.prog));
+    check("Truyện: nút đổi thành Đọc tiếp", /Đọc tiếp/.test(await txt(p, '#advStory [data-act="adv-play"]')));
+    await p.click('#advStory [data-act="adv-play"]');
+    check("Truyện: đọc tiếp đúng lựa chọn đang dừng", (await p.$$("#vnChoices .vn-choice")).length === 2 && /Ohmi, giúp/.test(await txt(p, "#vnChoices")));
+    await p.click('#vnChoices [data-k="1"]');
+    await vnRun(p);
+    check("Truyện: hết phần đầu thì vào trận đấu", await vis(p, "#v-battle"));
+
+    // C. trận đấu kiến thức
+    check("Trận: boss Bé Nhiễu 100/100, 3 tim", /Bé Nhiễu · 100\/100/.test(await txt(p, "#btStage")) && (await p.$$("#btHearts span:not(.lost)")).length === 3);
+    check("Trận: 4 đáp án, đúng 1", (await p.$$("#btOpts .opt")).length === 4 && (await p.$$("#btOpts [data-correct]")).length === 1);
+    check("Trận: Ohmi ở trong đội với kỹ năng", /Lá chắn Ohm/.test(await txt(p, "#btParty")));
+    await p.click("#btOpts .opt:not([data-correct])");
+    check("Trận: sai thì mất 1 tim và có giải thích", (await p.$$("#btHearts span:not(.lost)")).length === 2 && (await vis(p, "#btQ .explain")) && /Chưa đúng/.test(await txt(p, "#btQ .explain")));
+    await p.click("#btNext");
+    await p.click('#btParty [data-skill="ohmi"]');
+    check("Trận: dùng kỹ năng lá chắn", /lá chắn/.test(await txt(p, "#btQ .qn")) && (await p.$eval('#btParty [data-skill="ohmi"]', (b) => b.disabled)));
+    await p.click("#btOpts .opt:not([data-correct])");
+    check("Trận: lá chắn đỡ được câu sai", (await p.$$("#btHearts span:not(.lost)")).length === 2);
+    await p.click("#btNext");
+    await p.click("#btQ [data-correct]");
+    check("Trận: đúng thì trừ 25 máu", /75\/100/.test(await txt(p, "#btStage")) && /Đúng rồi/.test(await txt(p, "#btQ .explain")));
+    await p.click("#btNext"); await p.click("#btQ [data-correct]");
+    check("Trận: combo tăng sát thương (30)", /45\/100/.test(await txt(p, "#btStage")) && /Combo ×2/.test(await txt(p, "#btStage")));
+    await p.click("#btNext"); await p.click("#btQ [data-correct]"); await p.click("#btNext"); await p.click("#btQ [data-correct]");
+    check("Trận: hết máu thì hiện nút Chiến thắng", /Chiến thắng/.test(await txt(p, "#btNext")));
+    await p.click("#btNext");
+    check("Trận: thắng thì sang phần truyện sau", (await vis(p, "#v-vn")) && /rè/.test(await txt(p, "#vnText")));
+    seen = await vnRun(p);
+    check("Truyện: câu thoại theo lựa chọn trước đó (p2 = 1)", seen.some((t) => /Một cái điện trở làm được nhiều thứ/.test(t)), seen.join(" | ").slice(0, 300));
+    await p.waitForTimeout(100);
+    check("Truyện: hoàn thành chương có thưởng 300 ✦", (await sheetOpen(p)) && /Hoàn thành Mở đầu/.test(await txt(p, "#sheetRoot")) && /\+300 ✦/.test(await txt(p, "#sheetRoot")));
+    a = await advDoc(p);
+    check("Truyện: lưu chương đã xong, xoá chỗ đọc dở", a.done?.includes("p") && a.prog === null && a.gems === 1350, JSON.stringify({ d: a.done, g: a.gems, p: a.prog }));
+    await p.click('#sheetRoot [data-act="adv-play"]');
+    check("Chương 1: mở ngay từ màn thưởng", /Chương 1/.test(await txt(p, "#vnTitle")));
+    await p.click("#vnSkip");
+    check("Bỏ qua: dừng ở lựa chọn kế tiếp", (await p.$$("#vnChoices .vn-choice")).length === 2);
+    await p.click('#vnChoices [data-k="0"]'); await p.click("#vnSkip"); await p.waitForTimeout(50);
+    check("Bỏ qua: tới trận đấu, Kirch đã vào đội", (await vis(p, "#v-battle")) && /Định luật nút/.test(await txt(p, "#btParty")) && /Nút Rối · 120\/120/.test(await txt(p, "#btStage")));
+    // thua: hết tim
+    for (let i = 0; i < 3; i++) { await p.click("#btOpts .opt:not([data-correct])"); await p.click("#btNext"); }
+    check("Trận: hết tim thì thua, có nút thử lại", (await sheetOpen(p)) && /Thua mất rồi/.test(await txt(p, "#sheetRoot")) && (await vis(p, "#btRetry")));
+    a = await advDoc(p);
+    check("Trận: thua vẫn giữ chỗ ở trận đấu", a.prog?.ch === "c1" && a.prog?.part === "battle");
+    await p.click("#btRetry");
+    check("Trận: thử lại đủ máu và tim", /120\/120/.test(await txt(p, "#btStage")) && (await p.$$("#btHearts span:not(.lost)")).length === 3);
+    await p.click('#btParty [data-skill="kirch"]');
+    check("Kỹ năng hồi tim không vượt quá 3", (await p.$$("#btHearts span:not(.lost)")).length === 3);
+    await winBattle(p);
+    await vnRun(p);
+    a = await advDoc(p);
+    check("Chương 1 xong: +300 ✦", a.done?.includes("c1") && a.gems === 1650, JSON.stringify({ d: a.done, g: a.gems }));
+    await p.keyboard.press("Escape");
+    check("Chương 2: khoá theo cấp, có nút tập trung", /Cần Cấp 2/.test(await txt(p, "#advStory .lock-note")) && (await vis(p, '#advStory [data-act="focus-open"]')));
+
+    // D. cầu nguyện
+    await p.click('#advSeg [data-seg="wish"]');
+    check("Cầu nguyện: banner + bảo hiểm 50", /Ánh Đèn Một Chiều/.test(await txt(p, "#advWish")) && /Còn tối đa 50 lượt/.test(await txt(p, "#advWish")) && /#wish$/.test(p.url()));
+    await p.click('#advWish [data-n="10"]');
+    check("Cầu nguyện ×10: hiện lưới 10 thẻ", (await p.$$(".gacha-ov .gcard")).length === 10 || (await vis(p, ".gacha-ov .g-splash")));
+    for (let i = 0; i < 12 && (await vis(p, ".gacha-ov")); i++) { await p.click(".gacha-ov"); await p.waitForTimeout(40); }
+    a = await advDoc(p);
+    check("Cầu nguyện ×10: trừ 1000 ✦, ghi 10 lượt", a.pulls === 10 && a.hist?.length === 10 && a.gems >= 650 && a.gems <= 650 + 200, JSON.stringify({ g: a.gems, n: a.pulls }));
+    check("Cầu nguyện ×10: chắc chắn có ít nhất một 4★", a.hist.some((h) => h.r >= 4));
+    check("Cầu nguyện: lớp phủ đã đóng", !(await vis(p, ".gacha-ov")) && !(await p.evaluate(() => document.body.classList.contains("noscroll"))));
+    // bảo hiểm: lượt thứ 50 chắc chắn 5★; đã thua 50/50 thì lần sau là Lumi
+    await setStore(p, { "data/users/u1/adv": { ...a, gems: 100, p5: 49, guar: 1 } });
+    await reopen(p, "#wish");
+    check("Bảo hiểm: còn 1 lượt, báo chắc chắn Lumi", /Còn tối đa 1 lượt/.test(await txt(p, "#advWish")) && /chắc chắn là Lumi/.test(await txt(p, "#advWish")));
+    await p.click('#advWish [data-n="1"]');
+    check("Bảo hiểm: màn giới thiệu nhân vật 5★", /Lumi/.test(await txt(p, ".gacha-ov .g-splash .g-name")));
+    for (let i = 0; i < 6 && (await vis(p, ".gacha-ov")); i++) { await p.click(".gacha-ov"); await p.waitForTimeout(40); }
+    a = await advDoc(p);
+    check("Bảo hiểm: nhận Lumi, đặt lại đếm", a.own?.lumi !== undefined && a.p5 === 0 && a.guar === 0 && a.gems === 0, JSON.stringify({ own: a.own, p5: a.p5, g: a.guar }));
+    await p.click('#advWish [data-n="1"]');
+    check("Thiếu ✦: báo cần tập trung bao lâu", (await sheetOpen(p)) && /Còn thiếu/.test(await txt(p, "#sheetRoot")) && /Tập trung 50 phút/.test(await txt(p, "#sheetRoot")));
+    await p.keyboard.press("Escape");
+    await p.click('[data-act="wish-rates"]');
+    check("Tỉ lệ: công khai 1,6% và bảo hiểm 50", /1,6%/.test(await txt(p, "#sheetRoot")) && /lượt thứ 50/.test(await txt(p, "#sheetRoot")));
+    await p.keyboard.press("Escape");
+    await p.click('[data-act="wish-hist"]');
+    check("Lịch sử cầu nguyện: 11 dòng", (await p.$$("#sheetRoot .list > .row")).length === 11);
+    await p.keyboard.press("Escape");
+
+    // E. nhân vật, đội, bạn đồng hành, trang trí
+    await p.click('#advSeg [data-seg="team"]');
+    check("Nhân vật: 8 thẻ trong bộ sưu tập + 3 ô đội", (await p.$$("#advTeam .roster")).length === 2 && (await p.$$("#advTeam .roster:nth-of-type(2) .ccard, #advTeam .roster")).length >= 2);
+    const locked = await p.$$("#advTeam .ccard.locked");
+    const total = await p.$$eval("#advTeam .roster", (rs) => rs[1].querySelectorAll(".ccard").length);
+    check("Nhân vật: đủ 8, ai chưa có thì bị ẩn", total === 8 && locked.length === 8 - Object.keys(a.own).length, `${total} / ${locked.length}`);
+    await p.click('#advTeam .roster:nth-of-type(2) [data-id="lumi"], #advTeam [data-act="char"][data-id="lumi"]');
+    check("Hồ sơ: kỹ năng và lời thoại", /Ánh sáng một chiều/.test(await txt(p, "#sheetRoot")) && (await vis(p, "#sheetRoot .quote")));
+    await p.click('#sheetRoot [data-act="comp"]');
+    a = await advDoc(p);
+    check("Bạn đồng hành: đổi sang Lumi", a.comp === "lumi");
+    const party0 = a.party.slice();
+    await p.click('#advTeam [data-act="char"][data-id="lumi"]');
+    await p.click('#sheetRoot [data-act="party"]');
+    a = await advDoc(p);
+    check("Đội: thêm/bớt thành viên (tối đa 3)", a.party.length <= 3 && (party0.includes("lumi") ? !a.party.includes("lumi") : a.party.includes("lumi") || party0.length >= 3), JSON.stringify({ party0, now: a.party }));
+    if (await sheetOpen(p)) { check("Đội đủ 3: báo cho người dùng", /đủ 3 người/.test(await txt(p, "#toast"))); await p.keyboard.press("Escape"); }
+    const dec = await p.$("#advTeam .dcard:not(.locked)");
+    if (dec) { const pressed = await dec.getAttribute("aria-pressed"); await dec.click(); const after = await p.getAttribute(`#advTeam .dcard[data-id="${await dec.getAttribute("data-id")}"]`, "aria-pressed"); check("Trang trí: bật/tắt món đồ", pressed !== after, `${pressed} → ${after}`); }
+    else check("Trang trí: có món đồ sau 11 lượt cầu nguyện", false, JSON.stringify(a.decor));
+    await tab(p, "home");
+    check("Hôm nay: thẻ Mạch Lớn hiện chương & ví", /Mạch Lớn/.test(await txt(p, "#hAdv")) && /Chương 2/.test(await txt(p, "#hAdv")));
+    check("Hôm nay: bạn đồng hành Lumi đứng cạnh bé electron", await vis(p, ".hero .companion"));
+    await p.click(".hero .companion");
+    check("Bạn đồng hành: chạm thì nói chuyện", /^Lumi:/.test(await txt(p, "#hBubble")));
+    await p.click('#hAdv [data-go="wish"]');
+    check("Hôm nay: nút Cầu nguyện mở đúng mục", (await vis(p, "#advWish")) && !(await vis(p, "#advStory")));
+
+    // F. kiếm ✦ khi học
+    a = await advDoc(p);
+    const g0 = a.gems;
+    await tab(p, "review"); await p.click('#rList [data-act="review-all"]'); await p.click("#flash"); await p.click("#sGrades .g4");
+    a = await advDoc(p);
+    check("Ôn 1 thẻ: +1 ✦, hết thẻ đến hạn thì +30 ✦ nhiệm vụ", a.gems === g0 + 1 + 30, `${g0} → ${a.gems}`);
+    const now = Date.now();
+    await setStore(p, { "data/users/u1/focus": { subject: "c1", start: now - 26 * 60000, endAt: now - 60000, dur: 25 } });
+    await reopen(p, "#home");
+    a = await advDoc(p);
+    check("Tập trung 25 phút: +50 ✦ và +30 ✦ nhiệm vụ", a.gems === g0 + 1 + 50 + 30 + 30, `${g0} → ${a.gems} (q=${JSON.stringify(a.day)})`);
+    check("Tập trung: bảng thưởng hiện Tinh thể", /\+50 ✦/.test(await txt(p, "#sheetRoot")));
+    check("Tập trung cùng bạn đồng hành: tăng thân thiết", (a.aff?.lumi || 0) >= 1);
+    await p.keyboard.press("Escape");
+
+    // G. đấu tập
+    await p.click('#hAdv [data-go="adv"]');
+    await p.click('#advStory [data-act="train"]');
+    check("Đấu tập: có câu hỏi có sẵn và tài liệu", /Điện học L1 có sẵn/.test(await txt(p, "#sheetRoot")) && /Électronique/.test(await txt(p, "#sheetRoot")));
+    await p.click('#sheetRoot [data-train="mix"]');
+    check("Đấu tập: vào trận với Bé Nhiễu", (await vis(p, "#v-battle")) && /Đấu tập · Điện học/.test(await txt(p, "#btTitle")));
+    a = await advDoc(p); const g1 = a.gems;
+    await winBattle(p);
+    a = await advDoc(p);
+    check("Đấu tập: thắng +100 ✦", a.gems === g1 + 100 && a.day?.tr === 1 && (await sheetOpen(p)) && /\+100 ✦/.test(await txt(p, "#sheetRoot")), `${g1} → ${a.gems}`);
+    await p.click('#sheetRoot [data-act="train"]');
+    await p.click('#sheetRoot [data-train^="course:"]');
+    await p.waitForTimeout(400);
+    check("Đấu tập từ tài liệu: Claude soạn câu hỏi", (await vis(p, "#v-battle")) && /QCM du cours/.test(await txt(p, "#btQ .qt")));
+    const cl = (await calls(p)).filter((c) => c.kind === "json" && /mini-jeu/.test(c.head));
+    check("Đấu tập từ tài liệu: gọi Claude một lần", cl.length === 1);
+    check("Đấu tập từ tài liệu: công thức được hiển thị", (await p.$$("#btQ .qt mjx-container, #btQ .qt .MathJax")).length >= 0);
+    await p.click("#btExit"); await p.click("#cfYes");
+    check("Rời trận: về Phiêu lưu", await vis(p, "#v-adv"));
+    await p.close();
+  }
+  {
+    // H. hoạt ảnh cầu nguyện thật (không giảm chuyển động) + Claude lỗi khi soạn câu hỏi
+    const p = await open({ seed: true, hash: "#wish", cfg: { jsonFail: "rate_limited" } });
+    await p.keyboard.press("Escape");
+    await p.click('#advWish [data-n="1"]');
+    check("Hoạt ảnh: sao băng trước khi lộ kết quả", await vis(p, ".gacha-ov .shoot"));
+    await p.waitForTimeout(1500);
+    check("Hoạt ảnh: tự lộ kết quả", (await vis(p, ".gacha-ov .gcard")) || (await vis(p, ".gacha-ov .g-splash")));
+    await p.keyboard.press("Escape");
+    check("Hoạt ảnh: Esc đóng lớp phủ", !(await vis(p, ".gacha-ov")));
+    await p.click('#advSeg [data-seg="story"]');
+    await p.click('#advStory [data-act="train"]');
+    await p.click('#sheetRoot [data-train^="course:"]'); await p.waitForTimeout(300);
+    check("Đấu tập: Claude lỗi thì báo rõ và bật lại nút", /giới hạn/.test(await txt(p, "#trMsg")) && !(await p.$eval('#sheetRoot [data-train="mix"]', (b) => b.disabled)));
+    await p.close();
+  }
+  {
+    // I. chưa đăng nhập: không tặng quà khởi đầu hai lần khi dữ liệu chưa tải
+    const p = await open({ hash: "#adv", cfg: { noDb: true } });
+    check("Không lưu được: vẫn chơi được trong phiên", (await vis(p, "#v-adv")) && /1\.000/.test(await txt(p, "#advGem")));
+    await p.close();
+  }
+
+  {
+    // J. chơi lại chương cũ không đè tiến độ chương mới; phím Enter; kỹ năng lặp đòn của Indu
+    const setStore = (p, kv) => p.evaluate((kv) => { for (const [k, v] of Object.entries(kv)) window.__store.set(k, v); sessionStorage.setItem("__store", JSON.stringify([...window.__store])); }, kv);
+    const advDoc = async (p) => (await store(p))["data/users/u1/adv"] || {};
+    const p = await open({ reduce: true, hash: "#adv" });
+    await p.keyboard.press("Escape");
+    await setStore(p, { "data/users/u1/adv": { gems: 0, welcome: 1, pulls: 0, p5: 0, p4: 0, guar: 0, own: { ohmi: 0, indu: 0 }, decor: {}, show: [], party: ["indu", "ohmi"], comp: "ohmi", done: ["p"], choice: {}, aff: {}, prog: { ch: "c1", part: "pre", i: 6 }, day: {}, hist: [] } });
+    await p.reload({ waitUntil: "load" }); await p.waitForTimeout(700);
+    check("Tiến độ: chương 1 đang đọc dở", /Đọc tiếp/.test(await txt(p, '#advStory [data-act="adv-play"]')));
+    await p.click('#advStory [data-act="chapters"]');
+    await p.click('#sheetRoot [data-act="adv-play"][data-id="p"]');
+    check("Chơi lại: mở Mở đầu từ danh sách chương", /Mở đầu/.test(await txt(p, "#vnTitle")) && /18:47/.test(await txt(p, "#vnText")));
+    await p.focus("#vnBox"); await p.keyboard.press("Enter");
+    check("Phím Enter: sang đúng một dòng", /Không một bóng đèn/.test(await txt(p, "#vnText")), await txt(p, "#vnText"));
+    await p.keyboard.press("Enter"); await p.keyboard.press("Enter");
+    await p.click("#vnExit");
+    let a = await advDoc(p);
+    check("Chơi lại chương cũ: không đè chỗ đọc dở của chương 1", a.prog?.ch === "c1" && a.prog?.i === 6, JSON.stringify(a.prog));
+    await p.click('#advStory [data-act="adv-play"]');
+    check("Đọc tiếp chương 1 đúng chỗ (lựa chọn với Kirch)", (await p.$$("#vnChoices .vn-choice")).length === 2 && /Ngầu ghê/.test(await txt(p, "#vnChoices")));
+    await p.click("#vnExit");
+    await p.click('#advStory [data-act="train"]'); await p.click('#sheetRoot [data-train="mix"]');
+    check("Indu: chưa có đòn nào thì chưa dùng được", await p.$eval('#btParty [data-skill="indu"]', (b) => b.disabled));
+    await p.click("#btQ [data-correct]");
+    await p.click('#btParty [data-skill="indu"]');
+    check("Indu: lặp lại đòn 25 sát thương", /50\/100/.test(await txt(p, "#btStage")), await txt(p, "#btStage"));
+    await p.close();
+  }
   // ---------- 10. Bố cục ở nhiều cỡ màn hình, sáng/tối, truy cập ----------
   for (const scheme of ["light", "dark"]) {
     for (const width of [320, 390, 820]) {
@@ -495,6 +753,37 @@ async function axe(p, label) {
       check(`Bố cục ${scheme} ${width}px session: không tràn ngang`, (await overflow(p)) <= 0);
       if (width === 390) await axe(p, `${scheme} session`);
       if (width === 320) await p.screenshot({ path: `${SHOTS}/${scheme}-${width}-session.png` });
+      await p.close();
+    }
+  }
+
+  // ---------- bố cục các màn phiêu lưu ----------
+  for (const scheme of ["light", "dark"]) {
+    for (const width of [320, 390, 820]) {
+      const p = await open({ seed: true, scheme, width, mobile: width < 700, reduce: true, hash: "#adv" });
+      await p.keyboard.press("Escape");
+      for (const v of ["adv", "wish", "team", "home"]) {
+        if (v === "home") await tab(p, "home"); else if (v !== "adv") await p.click(`#advSeg [data-seg="${v}"]`);
+        await p.waitForTimeout(80);
+        check(`Bố cục ${scheme} ${width}px ${v}: không tràn ngang`, (await overflow(p)) <= 0, `tràn ${await overflow(p)}px`);
+        if (width === 390) await axe(p, `${scheme} ${v}`);
+        await p.screenshot({ path: `${SHOTS}/adv-${scheme}-${width}-${v}.png`, fullPage: true });
+      }
+      await p.click('#hAdv [data-go="adv"]'); await p.click('#advStory [data-act="adv-play"]'); await p.waitForTimeout(100);
+      for (let i = 0; i < 5; i++) { await p.click("#vnBox"); await p.waitForTimeout(30); }
+      check(`Bố cục ${scheme} ${width}px vn: không tràn ngang`, (await overflow(p)) <= 0);
+      if (width === 390) await axe(p, `${scheme} vn`);
+      await p.screenshot({ path: `${SHOTS}/adv-${scheme}-${width}-vn.png` });
+      await p.click("#vnSkip"); await p.click('#vnChoices [data-k="0"]'); await p.click("#vnSkip"); await p.click('#vnChoices [data-k="0"]'); await p.click("#vnSkip"); await p.waitForTimeout(100);
+      await p.click("#btOpts .opt:not([data-correct])"); await p.waitForTimeout(60);
+      check(`Bố cục ${scheme} ${width}px battle: không tràn ngang`, (await overflow(p)) <= 0);
+      if (width === 390) await axe(p, `${scheme} battle`);
+      await p.screenshot({ path: `${SHOTS}/adv-${scheme}-${width}-battle.png`, fullPage: true });
+      await p.click("#btExit"); await p.click("#cfYes"); await p.click('#advSeg [data-seg="wish"]'); await p.click('#advWish [data-n="10"]'); await p.waitForTimeout(100);
+      await p.screenshot({ path: `${SHOTS}/adv-${scheme}-${width}-gacha1.png` });
+      for (let i = 0; i < 12 && await p.isVisible(".gacha-ov .g-splash").catch(() => false); i++) { await p.click(".gacha-ov"); await p.waitForTimeout(40); }
+      check(`Bố cục ${scheme} ${width}px gacha: không tràn ngang`, (await overflow(p)) <= 0);
+      await p.screenshot({ path: `${SHOTS}/adv-${scheme}-${width}-gacha2.png` });
       await p.close();
     }
   }

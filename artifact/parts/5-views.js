@@ -88,7 +88,7 @@ function flipCard() {
 function gradeCur(g) {
   if (!sess.cur || !sess.flipped) return;
   const { deck, card } = sess.cur;
-  grade(card, g); saveDeck(deck); bump("r"); sfx("pop"); rewardReview(deck); checkGold();
+  grade(card, g); saveDeck(deck); bump("r"); sfx("pop"); rewardReview(deck); advCard(); checkGold();
   if (g < 3) sess.queue.push(sess.cur); else sess.done++;
   nextCard();
 }
@@ -138,6 +138,7 @@ function renderHome() {
       <button class="btn primary sm" data-act="paste-brief">${icon("paste")} ${fresh ? "Dán bản mới" : "Dán kết quả"}</button>
     </div>`;
   renderHero();
+  renderAdvHome();
   renderWidgets();
   // mail
   const m = state.mail, imp = m.recent.filter((x) => x.importance === "haute");

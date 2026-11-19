@@ -1,5 +1,6 @@
 // Giả lập window.claude (db, user, sample, mcp). Cấu hình qua sessionStorage "__cfg"; dữ liệu giữ qua reload trong "__store".
 (() => {
+  window.__QA = true; // trang đánh dấu đáp án đúng để bài thử chọn được
   const cfg = JSON.parse(sessionStorage.getItem("__cfg") || "{}");
   if (cfg.noClaude) return;
   const load = () => new Map(JSON.parse(sessionStorage.getItem("__store") || "[]"));
@@ -36,6 +37,9 @@
     if (s.includes("mails universitaires")) return { mails: [{ ref: 0, resume_vi: "AG Jussieu kêu gọi biểu tình chiều nay.", importance: "haute", action_vi: "Tránh khu Panthéon từ 13h" }, { ref: "1", resume_vi: "Phòng TP đổi lịch.", importance: "moyenne", action_vi: "" }],
       events: [{ type: "event", title: "Manifestation 10 améliorable", date: today, time: "13:00" }, { type: "exam", title: "Partiel de Maths", date: plus(9), time: "14:00", exam_content: "Suites" }, { type: "deadline", title: "Ngày sai", date: "2026-13-45" }, { title: "" }] };
     if (s.includes("flashcards")) return [{ front: "Que fait une diode ?", back: "Elle laisse passer le courant dans **un seul sens**.", mnemonic: "Porte de métro" }, { front: "Seuil d'une diode Si ?", back: "$\\approx 0{,}6\\,V$", mnemonic: "" }, { bad: 1 }];
+    if (s.includes("mini-jeu de révision")) return { questions: [
+      ...Array.from({ length: 6 }, (_, i) => ({ q: `QCM du cours n°${i + 1} : que vaut \\(U\\) ?`, options: ["Faux A", "Faux B", `Juste ${i + 1}`, "Faux C"], answer: 2, explain_vi: "Vì U = R·I." })),
+      { q: "Sans options" }, { q: "Trop d'options", options: ["a", "b", "c", "d", "e"], answer: 0 } ] };
     if (s.includes("briefing")) return { verdict: cfg.verdict || "stay", headline_vi: "Campus bị chặn cả ngày, cours chuyển online.", points_vi: ["Blocus toàn bộ Jussieu", "Biểu tình 13h"], events: [{ type: "closure", title: "Blocus Jussieu", date: today }] };
     if (s.includes("pages de cours")) { const n = (opts.images?.length) || 1; return Array.from({ length: n }, (_, i) => `Page scannée ${i + 1} : loi d'Ohm $U = RI$`); }
     if (s.includes("Analyse le contenu")) return { resume_vi: "Thông báo hoãn TD thứ Năm.", date_publication: "18/11", fiabilite: "rumeur", points_a_verifier: ["TD L1EE001 bị hoãn"], impact_vi: "Có thể không cần lên trường thứ Năm.", events: [{ type: "event", title: "TD reporté", date: plus(2) }] };

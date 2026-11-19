@@ -88,9 +88,8 @@ function quests() {
 }
 function checkGold() {
   const d = state.stats.days[todayISO()];
-  if (!d || d.gold || !quests().every((q) => q.p >= 1)) return;
-  d.gold = 1; saveStats();
-  confetti(); sfx("unlock"); toast("Ngày hoàn hảo! Cả 3 nhiệm vụ đã xong", 4000);
+  if (d && !d.gold && quests().every((q) => q.p >= 1)) { d.gold = 1; saveStats(); confetti(); sfx("unlock"); toast("Ngày hoàn hảo! Cả 3 nhiệm vụ đã xong", 4000); }
+  advQuests(); // thưởng Tinh thể cho nhiệm vụ & ngày hoàn hảo
 }
 
 // --- vẽ nguyên tử kiểu vẽ tay (canvas, chuyển động nhẹ) ---
@@ -309,6 +308,7 @@ function finishFocus(complete) {
   }
   const res = addElectrons(f.subject, Math.floor(minutes / 5));
   saveAtoms();
+  const gems = advFocus(minutes);
   if (res.news.length) sfx("unlock"); else if (complete) sfx("chime");
   const subj = subjOf(f.subject), gain = Math.floor(minutes / 5);
   if (state.view === "focus") renderFocus(); else render();
@@ -317,12 +317,12 @@ function finishFocus(complete) {
     const z = res.news[res.news.length - 1];
     openSheet({ title: complete ? "Hoàn thành phiên tập trung!" : "Đã dừng phiên tập trung", html: `<div class="reward">
       ${z ? elemTile(z) : ""}
-      <p class="gain">+${gain} e⁻</p>
+      <p class="gain">+${gain} e⁻</p>${gems ? `<p class="gain gems" style="font-size:22px">+${gems} ✦</p>` : ""}
       <p>${esc(subj.name)}: ${minutes} phút${z ? ` · nguyên tử đã thành <b>${esc(EL_FR[z - 1])}</b>` : ""}${res.news.length > 1 ? ` (mở khoá ${res.news.length} nguyên tố mới)` : ""}.</p>
       ${res.levelUp ? `<p class="tag c-holiday">Lên cấp ${res.levelUp}: ${esc(LEVELS[res.levelUp - 1][1])}!</p>` : ""}
       <p class="muted small">Nghỉ 5 phút, uống nước rồi quay lại nhé.</p>
       <div class="two" style="width:100%"><button class="btn" data-close>Nghỉ đã</button><button class="btn primary" data-act="focus-open">Phiên mới</button></div></div>` });
-  } else toast(minutes ? `Đã ghi ${minutes} phút. Cần đủ 5 phút để có 1 electron.` : "Đã dừng phiên tập trung");
+  } else toast(minutes ? `Đã ghi ${minutes} phút (+${gems} ✦). Cần đủ 5 phút để có 1 electron.` : "Đã dừng phiên tập trung");
   checkGold();
 }
 function openFocus() { closeSheet(); show("focus"); }

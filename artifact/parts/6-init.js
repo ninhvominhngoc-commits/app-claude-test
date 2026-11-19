@@ -1,24 +1,30 @@
 
 // ================= điều hướng =================
 const TABS = ["home", "study", "review", "agenda", "inbox"];
-const MAIN = [...TABS, "lab", "stats"];
-const IMMERSIVE = ["course", "session", "focus"];
+const MAIN = [...TABS, "lab", "stats", "adv"];
+const IMMERSIVE = ["course", "session", "focus", "vn", "battle"];
 const START = location.hash.slice(1);
 function show(v) {
   if (v === "course" && !curCourse()) { const id = lsGet("cur"); if (state.courses.some((c) => c.id === id)) state.cur = id; else v = "study"; }
   if (v === "session" && !sess.queue) v = "review";
-  if (![...MAIN, ...IMMERSIVE].includes(v)) v = "home";
+  if (v === "vn" && !vn.ch) v = "adv";
+  if (v === "battle" && !bt.on) v = "adv";
+  if (![...MAIN, ...IMMERSIVE, ...Object.keys(ADV_SEG)].includes(v)) v = "home";
   if (state.view === "course" && v !== "course" && chatAbort) chatAbort.abort();
+  if (state.view === "vn" && v !== "vn" && v !== "battle" && vn.ch) { vnSaveProg(); clearInterval(vn.typing); vn.typing = 0; vn.ch = null; }
+  if (state.view === "battle" && v !== "battle" && v !== "vn") bt.on = false;
+  if (ADV_SEG[v]) advSeg = ADV_SEG[v];
+  const sec = ADV_SEG[v] ? "adv" : v;
   state.view = v;
   const imm = IMMERSIVE.includes(v);
-  MAIN.forEach((x) => ($("#v-" + x).hidden = x !== v));
+  MAIN.forEach((x) => ($("#v-" + x).hidden = x !== sec));
   IMMERSIVE.forEach((x) => ($("#v-" + x).hidden = x !== v));
   $("#main").hidden = imm; $(".tabbar").hidden = imm;
   document.body.classList.toggle("immersive", imm);
-  const tabV = v === "lab" || v === "stats" ? "home" : v;
+  const tabV = ["lab", "stats", ...Object.keys(ADV_SEG)].includes(v) ? "home" : v;
   $$(".tab").forEach((b) => (b.dataset.v === tabV ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current")));
   if (location.hash.slice(1) !== v) history.replaceState(null, "", "#" + v);
-  if (v !== "session") render(v);
+  if (v !== "session" && v !== "vn") render(v);
   if (v === "course") requestAnimationFrame(() => scrollToEnd(false)); else window.scrollTo(0, 0);
   kickAtoms();
 }
@@ -32,6 +38,8 @@ function render(v = state.view) {
   else if (v === "lab") renderLab();
   else if (v === "stats") renderStats();
   else if (v === "focus") renderFocus();
+  else if (ADV_SEG[v]) renderAdv();
+  else if (v === "battle") renderBattle();
   else if (v === "course" && !chatAbort) renderCourse();
 }
 window.addEventListener("hashchange", () => { const v = location.hash.slice(1); if (v && v !== state.view) show(v); });
@@ -77,6 +85,19 @@ const ACTIONS = {
   "el-info": (el) => openElement(+el.dataset.z),
   "go-study": () => show("study"),
   "add-found": () => lastCheck.events.length && openEventsSheet(lastCheck.events, "kiểm tra"),
+  // phiêu lưu
+  "adv-play": (el) => playChapter(el.dataset.id),
+  "chapters": openChapters,
+  "train": () => openTrain(),
+  "gift": claimGift,
+  "wish": (el) => wish(+el.dataset.n),
+  "wish-rates": openRates,
+  "wish-hist": openHist,
+  "char": (el) => openChar(el.dataset.id),
+  "party": (el) => toggleParty(el.dataset.id),
+  "comp": (el) => setComp(el.dataset.id),
+  "decor": (el) => toggleDecor(el.dataset.id),
+  "comp-talk": (el) => compTalk(el),
 };
 document.addEventListener("click", (e) => {
   const go = e.target.closest("[data-go]");
