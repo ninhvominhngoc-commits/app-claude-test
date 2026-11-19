@@ -240,14 +240,20 @@ const TYPE = {
 };
 const typeOf = (t) => TYPE[t] || TYPE.other;
 const norm = (s) => (s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+function validDate(d) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d || "")) return "";
+  const t = new Date(d + "T12:00:00Z");
+  return !isNaN(t) && t.toISOString().slice(0, 10) === d ? d : "";
+}
 function cleanEvents(list) {
-  return (Array.isArray(list) ? list : []).filter((e) => e && typeof e.title === "string" && e.title.trim()).map((e) => ({ ...e, type: TYPE[e.type] ? e.type : "other" }));
+  return (Array.isArray(list) ? list : []).filter((e) => e && typeof e.title === "string" && e.title.trim())
+    .map((e) => ({ ...e, title: e.title.trim(), date: validDate(e.date), time: typeof e.time === "string" ? e.time : "", type: TYPE[e.type] ? e.type : "other" }));
 }
 function mergeEvents(events, source) {
   let added = 0;
   for (const e of events || []) {
     if (!e?.title) continue;
-    const date = /^\d{4}-\d{2}-\d{2}$/.test(e.date || "") ? e.date : "";
+    const date = validDate(e.date);
     const dup = state.agenda.find((a) => a.date === date && norm(a.title) === norm(e.title));
     if (dup) { for (const k of ["time", "course", "location", "to_submit", "exam_content", "details"]) if (!dup[k] && e[k]) dup[k] = e[k]; continue; }
     state.agenda.push({ id: uid8(), type: TYPE[e.type] ? e.type : "other", title: String(e.title).trim(), date, time: e.time || "", course: e.course || "", location: e.location || "",

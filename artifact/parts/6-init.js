@@ -4,7 +4,7 @@ const TABS = ["home", "study", "review", "agenda", "inbox"];
 const IMMERSIVE = ["course", "session"];
 const START = location.hash.slice(1);
 function show(v) {
-  if (v === "course" && !curCourse()) v = "study";
+  if (v === "course" && !curCourse()) { const id = lsGet("cur"); if (state.courses.some((c) => c.id === id)) state.cur = id; else v = "study"; }
   if (v === "session" && !sess.queue) v = "review";
   if (![...TABS, ...IMMERSIVE].includes(v)) v = "home";
   if (state.view === "course" && v !== "course" && chatAbort) chatAbort.abort();
@@ -56,12 +56,12 @@ const ACTIONS = {
   "c-range": openRangeSheet,
   "c-exam": openExamSheet,
   "c-reset": () => openConfirm({ title: "Bắt đầu buổi học mới?", text: "Cuộc trò chuyện hiện tại sẽ bị xoá. Flashcards vẫn giữ nguyên.", yes: "Buổi mới",
-    onYes: () => { const c = curCourse(); if (!c) return; state.chats[c.id] = { turns: [] }; saveChat(c.id); renderCourse(); } }),
+    onYes: () => { const c = curCourse(); if (!c) return; chatAbort?.abort(); state.chats[c.id] = { turns: [] }; saveChat(c.id); setTimeout(renderCourse, 0); } }),
   "c-delete": () => {
     const c = curCourse(); if (!c) return;
     const n = (state.decks[c.id] || []).length;
     openConfirm({ title: "Xoá tài liệu này?", text: `“${c.title}”, cuộc trò chuyện${n ? ` và ${n} flashcards` : ""} của nó sẽ bị xoá vĩnh viễn.`, yes: "Xoá", danger: true,
-      onYes: () => { deleteCourse(c); show("study"); toast("Đã xoá tài liệu"); } });
+      onYes: () => { chatAbort?.abort(); deleteCourse(c); show("study"); toast("Đã xoá tài liệu"); } });
   },
   "copy-check": () => copyText(lastCheck.prompt, "lệnh kiểm chứng"),
   "add-found": () => lastCheck.events.length && openEventsSheet(lastCheck.events, "kiểm tra"),
@@ -96,7 +96,8 @@ $$("#sGrades .grade").forEach((b) => b.addEventListener("click", () => gradeCur(
 document.addEventListener("keydown", (e) => {
   if (state.view !== "session" || !sheetRoot.hidden || e.target.closest("input, textarea")) return;
   const map = { 1: 0, 2: 3, 3: 4, 4: 5 };
-  if (sess.flipped && map[e.key] !== undefined) gradeCur(map[e.key]);
+  if (!sess.flipped && (e.key === " " || e.key === "Enter")) { e.preventDefault(); flipCard(); }
+  else if (sess.flipped && map[e.key] !== undefined) gradeCur(map[e.key]);
 });
 $("#sExit").addEventListener("click", () => { sess.queue = null; sess.cur = null; show("review"); });
 // hộp thư
@@ -106,6 +107,7 @@ $("#ckFiles").addEventListener("change", (e) => { ckFiles = [...e.target.files];
 $("#ckGo").addEventListener("click", (e) => runCheck(e.currentTarget));
 getLimits().then((l) => { if (!l?.images) { $("#ckDrop").hidden = true; } else $("#ckFiles").accept = l.images.mediaTypes.join(","); });
 
+document.documentElement.lang = "vi";
 show(START || "home");
 loadData();
 })();

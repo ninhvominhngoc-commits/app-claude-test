@@ -11,11 +11,11 @@
   --surface: #ffffff;
   --surface-2: #f2f0f8;
   --ink: #221f2e;
-  --ink-2: #615d74;
-  --ink-3: #948fa8;
+  --ink-2: #4f4b62;
+  --ink-3: #6c6781;
   --line: #e9e6f2;
-  --accent: #6a5ae6;
-  --accent-2: #9283f2;
+  --accent: #5f4fe0;
+  --accent-2: #7262ea;
   --accent-ink: #ffffff;
   --accent-soft: #efecfd;
   --hl: rgba(255, 204, 77, .48);
@@ -23,11 +23,11 @@
   --res-body: #ecdfc6;
   --danger: #d4473b; --danger-ink: #ffffff;
   --t-lav: #efeafd; --k-lav: #5a49d6;
-  --t-peach: #ffeee5; --k-peach: #b5541c;
+  --t-peach: #ffeee5; --k-peach: #a04716;
   --t-mint: #e3f6ec; --k-mint: #1d7a50;
   --t-sky: #e7f0ff; --k-sky: #2b5cc0;
-  --t-butter: #fff4d1; --k-butter: #876000;
-  --t-rose: #ffe9ef; --k-rose: #b8325a;
+  --t-butter: #fff4d1; --k-butter: #7a5700;
+  --t-rose: #ffe9ef; --k-rose: #a82c51;
   --shadow-card: 0 1px 2px rgba(34, 31, 46, .04), 0 8px 22px -10px rgba(60, 40, 140, .16);
   --shadow-float: 0 2px 6px rgba(34, 31, 46, .06), 0 20px 44px -14px rgba(60, 40, 140, .30);
   --font: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -37,7 +37,7 @@
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #121119; --grid: rgba(169, 156, 255, .075); --surface: #1b1a24; --surface-2: #25232f; --ink: #eeedf5; --ink-2: #b0adc2; --ink-3: #7f7b94; --line: #2d2b3a;
+  --bg: #121119; --grid: rgba(169, 156, 255, .075); --surface: #1b1a24; --surface-2: #25232f; --ink: #eeedf5; --ink-2: #c6c3d6; --ink-3: #9a95b0; --line: #2d2b3a;
   --accent: #a99cff; --accent-2: #c6bcff; --accent-ink: #15131d; --accent-soft: #2a2645; --hl: rgba(255, 204, 77, .24); --blush: #ff8aa0; --res-body: #5c5343;
   --danger: #ff8f86; --danger-ink: #1b1219;
   --t-lav: #26213f; --k-lav: #b8adff; --t-peach: #33241c; --k-peach: #ffb38a; --t-mint: #142c22; --k-mint: #7fd9ab;
@@ -45,7 +45,7 @@
   --shadow-card: 0 1px 2px rgba(0, 0, 0, .35); --shadow-float: 0 20px 44px -12px rgba(0, 0, 0, .65);
   color-scheme: dark; } }
 :root[data-theme="dark"] {
-  --bg: #121119; --grid: rgba(169, 156, 255, .075); --surface: #1b1a24; --surface-2: #25232f; --ink: #eeedf5; --ink-2: #b0adc2; --ink-3: #7f7b94; --line: #2d2b3a;
+  --bg: #121119; --grid: rgba(169, 156, 255, .075); --surface: #1b1a24; --surface-2: #25232f; --ink: #eeedf5; --ink-2: #c6c3d6; --ink-3: #9a95b0; --line: #2d2b3a;
   --accent: #a99cff; --accent-2: #c6bcff; --accent-ink: #15131d; --accent-soft: #2a2645; --hl: rgba(255, 204, 77, .24); --blush: #ff8aa0; --res-body: #5c5343;
   --danger: #ff8f86; --danger-ink: #1b1219;
   --t-lav: #26213f; --k-lav: #b8adff; --t-peach: #33241c; --k-peach: #ffb38a; --t-mint: #142c22; --k-mint: #7fd9ab;
@@ -200,7 +200,7 @@ p { margin: 0; }
 .ev.done { opacity: .5; } .ev.done h4 { text-decoration: line-through; }
 .ev-date { display: grid; justify-items: center; background: var(--ev-bg); color: var(--ev-fg); border-radius: 14px; padding: 8px 0 7px; }
 .ev-date .dn { font: 650 22px/1 var(--display); font-variant-numeric: tabular-nums; }
-.ev-date .wd { font: 800 10px/1.3 var(--font); margin-top: 3px; opacity: .85; white-space: nowrap; }
+.ev-date .wd { font: 800 10px/1.3 var(--font); margin-top: 3px; white-space: nowrap; }
 .ev-body { min-width: 0; display: grid; gap: 3px; }
 .ev-top { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .ev h4 { font: 800 15px/1.3 var(--font); overflow-wrap: anywhere; }
@@ -320,7 +320,7 @@ p { margin: 0; }
 .grade { border: 0; background: var(--tint); border-radius: 18px; padding: 12px 4px; display: grid; justify-items: center; gap: 3px; cursor: pointer; color: var(--tk); transition: transform .1s; }
 .grade:active { transform: scale(.94); }
 .grade strong { font: 800 14.5px var(--font); }
-.grade span { font: 700 11.5px var(--font); font-variant-numeric: tabular-nums; opacity: .8; }
+.grade span { font: 700 11.5px var(--font); font-variant-numeric: tabular-nums; }
 .grade.g0 { --tint: var(--t-rose); --tk: var(--k-rose); } .grade.g3 { --tint: var(--t-butter); --tk: var(--k-butter); }
 .grade.g4 { --tint: var(--t-sky); --tk: var(--k-sky); } .grade.g5 { --tint: var(--t-mint); --tk: var(--k-mint); }
 
@@ -832,14 +832,20 @@ const TYPE = {
 };
 const typeOf = (t) => TYPE[t] || TYPE.other;
 const norm = (s) => (s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+function validDate(d) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d || "")) return "";
+  const t = new Date(d + "T12:00:00Z");
+  return !isNaN(t) && t.toISOString().slice(0, 10) === d ? d : "";
+}
 function cleanEvents(list) {
-  return (Array.isArray(list) ? list : []).filter((e) => e && typeof e.title === "string" && e.title.trim()).map((e) => ({ ...e, type: TYPE[e.type] ? e.type : "other" }));
+  return (Array.isArray(list) ? list : []).filter((e) => e && typeof e.title === "string" && e.title.trim())
+    .map((e) => ({ ...e, title: e.title.trim(), date: validDate(e.date), time: typeof e.time === "string" ? e.time : "", type: TYPE[e.type] ? e.type : "other" }));
 }
 function mergeEvents(events, source) {
   let added = 0;
   for (const e of events || []) {
     if (!e?.title) continue;
-    const date = /^\d{4}-\d{2}-\d{2}$/.test(e.date || "") ? e.date : "";
+    const date = validDate(e.date);
     const dup = state.agenda.find((a) => a.date === date && norm(a.title) === norm(e.title));
     if (dup) { for (const k of ["time", "course", "location", "to_submit", "exam_content", "details"]) if (!dup[k] && e[k]) dup[k] = e[k]; continue; }
     state.agenda.push({ id: uid8(), type: TYPE[e.type] ? e.type : "other", title: String(e.title).trim(), date, time: e.time || "", course: e.course || "", location: e.location || "",
@@ -1047,19 +1053,34 @@ async function pdfToPages(file, onProg) {
   }
   return { pages, skipped };
 }
+// văn bản dài (file .txt) được chia thành các "trang" khoảng 6000 ký tự, cắt ở chỗ xuống dòng
+function splitText(text, max = 6000) {
+  const out = [];
+  let rest = String(text || "").replace(/\r\n?/g, "\n");
+  while (rest.length > max) {
+    let cut = rest.lastIndexOf("\n", max);
+    if (cut < max * 0.5) cut = max;
+    out.push(rest.slice(0, cut)); rest = rest.slice(cut).replace(/^\n+/, "");
+  }
+  if (rest.trim()) out.push(rest);
+  return out;
+}
 async function createCourse({ files, title, exam }, onProg) {
   const pages = [], notes = [], images = [];
   for (const f of files) {
     if (f.type === "application/pdf") { const r = await pdfToPages(f, onProg); pages.push(...r.pages); if (r.skipped) notes.push(`${r.skipped} trang ảnh chưa đọc được`); }
     else if (f.type.startsWith("image/")) images.push(f);
-    else pages.push(await f.text());
+    else pages.push(...splitText(await f.text()));
   }
   if (images.length) { try { pages.push(...(await ocrImages(images, onProg))); } catch { notes.push("không đọc được ảnh trên thiết bị này"); } }
   if (!pages.some((p) => p.trim())) throw new Error("Không lấy được chữ nào từ tài liệu này.");
   const c = { id: uid8(), title, examContent: exam, pageCount: pages.length, chunks: 0, createdAt: new Date().toISOString() };
   let chunk = [], size = 0;
   const flush = async () => { if (!chunk.length) return; await save(`text-${c.id}-${c.chunks}`, { pages: chunk }); c.chunks++; chunk = []; size = 0; };
-  for (const p of pages) { const b = new Blob([p]).size + 8; if (size + b > 200000) await flush(); chunk.push(p); size += b; }
+  for (let p of pages) {
+    if (p.length > 60000) p = p.slice(0, 60000) + "\n[… trang quá dài, đã cắt bớt …]";
+    const b = new Blob([p]).size + 8; if (size + b > 200000) await flush(); chunk.push(p); size += b;
+  }
   await flush();
   c._pages = pages;
   state.courses.push(c);
@@ -1177,7 +1198,7 @@ function renderCourse() {
   $("#cRange").innerHTML = `Trang ${f}–${t} / ${c.pageCount} ${icon("down")}`;
   const lang = langOf(c);
   $$("#cLang button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
-  renderThread();
+  if (!chatAbort) renderThread();
   updateComposer();
 }
 let chatAbort = null, feynOn = false;
@@ -1229,6 +1250,9 @@ async function send(text, { canned = false } = {}) {
   $("#chatIn").value = ""; autoGrow(); setFeyn(false);
   chatAbort = new AbortController(); updateComposer();
 
+  const fixP = canned ? Promise.resolve(null) : grammarCheck(sample, text);
+  let answer = "", raf = 0;
+  try {
   // đầu vào: chỉ dẫn + tài liệu nằm trong lượt đầu tiên còn giữ, rồi lịch sử gần nhất
   const pages = await loadCourseText(c);
   const [from, to] = rangeOf(c, pages.length || c.pageCount);
@@ -1246,9 +1270,6 @@ async function send(text, { canned = false } = {}) {
   const input = history.map((t, i) => (i === 0 ? { role: "user", content: TUTOR(c, docText, `${from}-${to}`, vi) + "\n\nMon message : " + t.content } : t));
   if (vi) input[input.length - 1] = { role: "user", content: input[input.length - 1].content + "\n\n(Réponds en vietnamien, termes techniques en français entre parenthèses.)" };
 
-  const fixP = canned ? Promise.resolve(null) : grammarCheck(sample, text);
-  let answer = "", raf = 0;
-  try {
     const r = await sample(input, {
       onText: ({ text: t }) => { answer = t; if (!raf) raf = requestAnimationFrame(() => { raf = 0; const stick = nearBottom(); aMd.innerHTML = md(answer); if (stick) scrollToEnd(); }); },
       signal: chatAbort.signal, cache: false });
@@ -1262,13 +1283,14 @@ async function send(text, { canned = false } = {}) {
     typeset(aMd);
   } finally { chatAbort = null; updateComposer(); }
   const fix = await fixP;
-  if (answer) {
+  if (answer && state.courses.includes(c) && state.chats[c.id] === chat) {
     chat.turns.push({ role: "user", content, ...(fix ? { fix } : {}) }, { role: "assistant", content: answer });
     saveChat(c.id);
     c.lastStudied = new Date().toISOString(); saveCourses();
     bump("m");
   }
   if (fix && uEl.isConnected) uEl.insertAdjacentHTML("beforeend", fixHtml(fix, true));
+  updateComposer();
   renderBadges();
 }
 function openCourseMenu() {
@@ -1626,7 +1648,7 @@ function mailHtml(m) {
     <p class="faint small">${esc(m.from)}</p>
     ${m.resume ? `<p>${esc(m.resume)}</p>` : ""}
     ${m.action ? `<p class="todo">${icon("arrow")}<span>${esc(m.action)}</span></p>` : ""}
-    ${m.url ? `<a class="small" href="${esc(m.url)}" target="_blank" rel="noopener">Mở trong Gmail ${icon("external", "xs")}</a>` : ""}</article>`;
+    ${/^https:\/\/mail\.google\.com\//.test(m.url || "") ? `<a class="small" href="${esc(m.url)}" target="_blank" rel="noopener">Mở trong Gmail ${icon("external", "xs")}</a>` : ""}</article>`;
 }
 function renderInbox() {
   $$("#iSeg button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.seg === state.seg)));
@@ -1689,7 +1711,7 @@ const TABS = ["home", "study", "review", "agenda", "inbox"];
 const IMMERSIVE = ["course", "session"];
 const START = location.hash.slice(1);
 function show(v) {
-  if (v === "course" && !curCourse()) v = "study";
+  if (v === "course" && !curCourse()) { const id = lsGet("cur"); if (state.courses.some((c) => c.id === id)) state.cur = id; else v = "study"; }
   if (v === "session" && !sess.queue) v = "review";
   if (![...TABS, ...IMMERSIVE].includes(v)) v = "home";
   if (state.view === "course" && v !== "course" && chatAbort) chatAbort.abort();
@@ -1741,12 +1763,12 @@ const ACTIONS = {
   "c-range": openRangeSheet,
   "c-exam": openExamSheet,
   "c-reset": () => openConfirm({ title: "Bắt đầu buổi học mới?", text: "Cuộc trò chuyện hiện tại sẽ bị xoá. Flashcards vẫn giữ nguyên.", yes: "Buổi mới",
-    onYes: () => { const c = curCourse(); if (!c) return; state.chats[c.id] = { turns: [] }; saveChat(c.id); renderCourse(); } }),
+    onYes: () => { const c = curCourse(); if (!c) return; chatAbort?.abort(); state.chats[c.id] = { turns: [] }; saveChat(c.id); setTimeout(renderCourse, 0); } }),
   "c-delete": () => {
     const c = curCourse(); if (!c) return;
     const n = (state.decks[c.id] || []).length;
     openConfirm({ title: "Xoá tài liệu này?", text: `“${c.title}”, cuộc trò chuyện${n ? ` và ${n} flashcards` : ""} của nó sẽ bị xoá vĩnh viễn.`, yes: "Xoá", danger: true,
-      onYes: () => { deleteCourse(c); show("study"); toast("Đã xoá tài liệu"); } });
+      onYes: () => { chatAbort?.abort(); deleteCourse(c); show("study"); toast("Đã xoá tài liệu"); } });
   },
   "copy-check": () => copyText(lastCheck.prompt, "lệnh kiểm chứng"),
   "add-found": () => lastCheck.events.length && openEventsSheet(lastCheck.events, "kiểm tra"),
@@ -1781,7 +1803,8 @@ $$("#sGrades .grade").forEach((b) => b.addEventListener("click", () => gradeCur(
 document.addEventListener("keydown", (e) => {
   if (state.view !== "session" || !sheetRoot.hidden || e.target.closest("input, textarea")) return;
   const map = { 1: 0, 2: 3, 3: 4, 4: 5 };
-  if (sess.flipped && map[e.key] !== undefined) gradeCur(map[e.key]);
+  if (!sess.flipped && (e.key === " " || e.key === "Enter")) { e.preventDefault(); flipCard(); }
+  else if (sess.flipped && map[e.key] !== undefined) gradeCur(map[e.key]);
 });
 $("#sExit").addEventListener("click", () => { sess.queue = null; sess.cur = null; show("review"); });
 // hộp thư
@@ -1791,6 +1814,7 @@ $("#ckFiles").addEventListener("change", (e) => { ckFiles = [...e.target.files];
 $("#ckGo").addEventListener("click", (e) => runCheck(e.currentTarget));
 getLimits().then((l) => { if (!l?.images) { $("#ckDrop").hidden = true; } else $("#ckFiles").accept = l.images.mediaTypes.join(","); });
 
+document.documentElement.lang = "vi";
 show(START || "home");
 loadData();
 })();

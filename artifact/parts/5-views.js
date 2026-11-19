@@ -275,7 +275,7 @@ function mailHtml(m) {
     <p class="faint small">${esc(m.from)}</p>
     ${m.resume ? `<p>${esc(m.resume)}</p>` : ""}
     ${m.action ? `<p class="todo">${icon("arrow")}<span>${esc(m.action)}</span></p>` : ""}
-    ${m.url ? `<a class="small" href="${esc(m.url)}" target="_blank" rel="noopener">Mở trong Gmail ${icon("external", "xs")}</a>` : ""}</article>`;
+    ${/^https:\/\/mail\.google\.com\//.test(m.url || "") ? `<a class="small" href="${esc(m.url)}" target="_blank" rel="noopener">Mở trong Gmail ${icon("external", "xs")}</a>` : ""}</article>`;
 }
 function renderInbox() {
   $$("#iSeg button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.seg === state.seg)));

@@ -54,19 +54,34 @@ async function pdfToPages(file, onProg) {
   }
   return { pages, skipped };
 }
+// văn bản dài (file .txt) được chia thành các "trang" khoảng 6000 ký tự, cắt ở chỗ xuống dòng
+function splitText(text, max = 6000) {
+  const out = [];
+  let rest = String(text || "").replace(/\r\n?/g, "\n");
+  while (rest.length > max) {
+    let cut = rest.lastIndexOf("\n", max);
+    if (cut < max * 0.5) cut = max;
+    out.push(rest.slice(0, cut)); rest = rest.slice(cut).replace(/^\n+/, "");
+  }
+  if (rest.trim()) out.push(rest);
+  return out;
+}
 async function createCourse({ files, title, exam }, onProg) {
   const pages = [], notes = [], images = [];
   for (const f of files) {
     if (f.type === "application/pdf") { const r = await pdfToPages(f, onProg); pages.push(...r.pages); if (r.skipped) notes.push(`${r.skipped} trang ảnh chưa đọc được`); }
     else if (f.type.startsWith("image/")) images.push(f);
-    else pages.push(await f.text());
+    else pages.push(...splitText(await f.text()));
   }
   if (images.length) { try { pages.push(...(await ocrImages(images, onProg))); } catch { notes.push("không đọc được ảnh trên thiết bị này"); } }
   if (!pages.some((p) => p.trim())) throw new Error("Không lấy được chữ nào từ tài liệu này.");
   const c = { id: uid8(), title, examContent: exam, pageCount: pages.length, chunks: 0, createdAt: new Date().toISOString() };
   let chunk = [], size = 0;
   const flush = async () => { if (!chunk.length) return; await save(`text-${c.id}-${c.chunks}`, { pages: chunk }); c.chunks++; chunk = []; size = 0; };
-  for (const p of pages) { const b = new Blob([p]).size + 8; if (size + b > 200000) await flush(); chunk.push(p); size += b; }
+  for (let p of pages) {
+    if (p.length > 60000) p = p.slice(0, 60000) + "\n[… trang quá dài, đã cắt bớt …]";
+    const b = new Blob([p]).size + 8; if (size + b > 200000) await flush(); chunk.push(p); size += b;
+  }
   await flush();
   c._pages = pages;
   state.courses.push(c);
@@ -184,7 +199,7 @@ function renderCourse() {
   $("#cRange").innerHTML = `Trang ${f}–${t} / ${c.pageCount} ${icon("down")}`;
   const lang = langOf(c);
   $$("#cLang button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
-  renderThread();
+  if (!chatAbort) renderThread();
   updateComposer();
 }
 let chatAbort = null, feynOn = false;
@@ -236,6 +251,9 @@ async function send(text, { canned = false } = {}) {
   $("#chatIn").value = ""; autoGrow(); setFeyn(false);
   chatAbort = new AbortController(); updateComposer();
 
+  const fixP = canned ? Promise.resolve(null) : grammarCheck(sample, text);
+  let answer = "", raf = 0;
+  try {
   // đầu vào: chỉ dẫn + tài liệu nằm trong lượt đầu tiên còn giữ, rồi lịch sử gần nhất
   const pages = await loadCourseText(c);
   const [from, to] = rangeOf(c, pages.length || c.pageCount);
@@ -253,9 +271,6 @@ async function send(text, { canned = false } = {}) {
   const input = history.map((t, i) => (i === 0 ? { role: "user", content: TUTOR(c, docText, `${from}-${to}`, vi) + "\n\nMon message : " + t.content } : t));
   if (vi) input[input.length - 1] = { role: "user", content: input[input.length - 1].content + "\n\n(Réponds en vietnamien, termes techniques en français entre parenthèses.)" };
 
-  const fixP = canned ? Promise.resolve(null) : grammarCheck(sample, text);
-  let answer = "", raf = 0;
-  try {
     const r = await sample(input, {
       onText: ({ text: t }) => { answer = t; if (!raf) raf = requestAnimationFrame(() => { raf = 0; const stick = nearBottom(); aMd.innerHTML = md(answer); if (stick) scrollToEnd(); }); },
       signal: chatAbort.signal, cache: false });
@@ -269,13 +284,14 @@ async function send(text, { canned = false } = {}) {
     typeset(aMd);
   } finally { chatAbort = null; updateComposer(); }
   const fix = await fixP;
-  if (answer) {
+  if (answer && state.courses.includes(c) && state.chats[c.id] === chat) {
     chat.turns.push({ role: "user", content, ...(fix ? { fix } : {}) }, { role: "assistant", content: answer });
     saveChat(c.id);
     c.lastStudied = new Date().toISOString(); saveCourses();
     bump("m");
   }
   if (fix && uEl.isConnected) uEl.insertAdjacentHTML("beforeend", fixHtml(fix, true));
+  updateComposer();
   renderBadges();
 }
 function openCourseMenu() {
