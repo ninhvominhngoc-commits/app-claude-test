@@ -139,11 +139,12 @@ Pédagogie (Feynman + répétition espacée) :
 === DOCUMENT DE COURS ===
 ${pagesText}
 === FIN DU DOCUMENT ===`;
+const tint = (n) => `--tint: var(--t-${n}); --tk: var(--k-${n})`;
 const STARTERS = [
-  { t: "Bức tranh toàn cảnh", d: "Các ý chính, theo thứ tự", q: "Donne-moi une vue d'ensemble de ces pages : les grandes idées dans l'ordre, une phrase chacune, puis propose par où commencer." },
-  { t: "Giảng ý đầu tiên", d: "Kèm ví dụ đời thường", q: "Explique-moi la première notion importante de ces pages, avec une analogie drôle de la vie quotidienne." },
-  { t: "Quiz 5 câu", d: "Hỏi từng câu một", q: "Fais-moi un quiz de 5 questions sur ces pages, une question à la fois : attends ma réponse avant la suivante." },
-  { t: "Bài tập kiểu thi", d: "Chưa kèm lời giải", q: "Donne-moi un exercice type examen sur ces pages, sans la correction. Je te donnerai ma réponse." },
+  { t: "Bức tranh toàn cảnh", d: "Các ý chính, theo thứ tự", ic: "map", tn: "sky", q: "Donne-moi une vue d'ensemble de ces pages : les grandes idées dans l'ordre, une phrase chacune, puis propose par où commencer." },
+  { t: "Giảng ý đầu tiên", d: "Kèm ví dụ đời thường", ic: "bulb", tn: "butter", q: "Explique-moi la première notion importante de ces pages, avec une analogie drôle de la vie quotidienne." },
+  { t: "Quiz 5 câu", d: "Hỏi từng câu một", ic: "question", tn: "rose", q: "Fais-moi un quiz de 5 questions sur ces pages, une question à la fois : attends ma réponse avant la suivante." },
+  { t: "Bài tập kiểu thi", d: "Chưa kèm lời giải", ic: "pencil", tn: "mint", q: "Donne-moi un exercice type examen sur ces pages, sans la correction. Je te donnerai ma réponse." },
 ];
 const SUGGEST = [
   ["Chưa hiểu", "Je n'ai pas compris. Réexplique avec une autre analogie, plus simple."],
@@ -162,14 +163,14 @@ function userHtml(content, fix) {
   const feyn = content.startsWith(FEYN);
   return `<div class="msg u">${feyn ? `<span class="mode">${icon("speak")} Tự giảng lại</span>` : ""}<div class="bubble">${esc(feyn ? content.slice(FEYN.length) : content)}</div>${fix ? fixHtml(fix) : ""}</div>`;
 }
-const tutorHtml = (inner) => `<div class="msg a"><div class="who">${mascot("xs")} Gia sư</div><div class="md">${inner}</div></div>`;
+const tutorHtml = (inner, mood = "happy") => `<div class="msg a"><div class="who">${mascot("xs", mood)} Gia sư</div><div class="md">${inner}</div></div>`;
 function renderThread() {
   const c = curCourse(), box = $("#thread");
   const turns = chatOf(c.id).turns;
   if (!turns.length) {
     const [f, t] = rangeOf(c);
-    box.innerHTML = `<div class="starter">${mascot("lg")}<h2>Học “${esc(c.title)}”</h2><p class="muted small">Đang chọn trang ${f}–${t}. Bắt đầu từ một gợi ý, hoặc tự hỏi. Viết bằng tiếng Pháp thì gia sư sửa ngữ pháp giúp bạn.</p>
-      <div class="starter-grid">${STARTERS.map((s, i) => `<button data-act="starter" data-i="${i}"><strong>${s.t}</strong><span>${s.d}</span></button>`).join("")}</div></div>`;
+    box.innerHTML = `<div class="starter">${mascot("lg", "happy")}<h2>Học “${esc(c.title)}”</h2><p class="muted small">Đang chọn trang ${f}–${t}. Bắt đầu từ một gợi ý, hoặc tự hỏi. Viết bằng tiếng Pháp thì gia sư sửa ngữ pháp giúp bạn.</p>
+      <div class="starter-grid">${STARTERS.map((s, i) => `<button data-act="starter" data-i="${i}"><span class="badge-ic" style="${tint(s.tn)}">${icon(s.ic)}</span><strong>${s.t}</strong><span>${s.d}</span></button>`).join("")}</div></div>`;
   } else {
     // bản cũ lưu phần sửa ngữ pháp ở lượt gia sư: vẫn hiện dưới tin nhắn của bạn
     box.innerHTML = turns.map((t, i) => t.role === "user" ? userHtml(t.content, t.fix || turns[i + 1]?.fix) : tutorHtml(md(t.content))).join("");
@@ -229,7 +230,7 @@ async function send(text, { canned = false } = {}) {
   if (!chat.turns.length) box.innerHTML = "";
   box.insertAdjacentHTML("beforeend", userHtml(content));
   const uEl = box.lastElementChild;
-  box.insertAdjacentHTML("beforeend", tutorHtml(thinking("đang nghĩ…")));
+  box.insertAdjacentHTML("beforeend", tutorHtml(thinking("đang nghĩ…"), "think"));
   const aMd = box.lastElementChild.querySelector(".md");
   scrollToEnd(true);
   $("#chatIn").value = ""; autoGrow(); setFeyn(false);
@@ -238,6 +239,7 @@ async function send(text, { canned = false } = {}) {
   // đầu vào: chỉ dẫn + tài liệu nằm trong lượt đầu tiên còn giữ, rồi lịch sử gần nhất
   const pages = await loadCourseText(c);
   const [from, to] = rangeOf(c, pages.length || c.pageCount);
+  c.maxPage = Math.max(c.maxPage || 0, to);
   const lim = ((await getLimits())?.maxPromptBytes || 262144) - 40000;
   const history = [...chat.turns.map((t) => ({ role: t.role, content: t.content })), { role: "user", content }].slice(-16);
   while (history.length && history[0].role !== "user") history.shift();
@@ -271,6 +273,7 @@ async function send(text, { canned = false } = {}) {
     chat.turns.push({ role: "user", content, ...(fix ? { fix } : {}) }, { role: "assistant", content: answer });
     saveChat(c.id);
     c.lastStudied = new Date().toISOString(); saveCourses();
+    bump("m");
   }
   if (fix && uEl.isConnected) uEl.insertAdjacentHTML("beforeend", fixHtml(fix, true));
   renderBadges();
@@ -279,11 +282,11 @@ function openCourseMenu() {
   const c = curCourse(); if (!c) return;
   const [f, t] = rangeOf(c);
   openSheet({ title: c.title, html: `<div class="menu">
-    <button class="menu-i" data-act="c-cards">${icon("cards")}<span><strong>Tạo flashcards</strong><span class="faint small">Từ trang ${f}–${t} đang học</span></span></button>
-    <button class="menu-i" data-act="c-range">${icon("pages")}<span><strong>Chọn trang học</strong><span class="faint small">Đang chọn trang ${f}–${t} / ${c.pageCount}</span></span></button>
-    <button class="menu-i" data-act="c-exam">${icon("target")}<span><strong>Nội dung thi</strong><span class="faint small">${esc(c.examContent || "Chưa nhập")}</span></span></button>
-    <button class="menu-i" data-act="c-reset">${icon("refresh")}<span><strong>Buổi học mới</strong><span class="faint small">Xoá cuộc trò chuyện, giữ flashcards</span></span></button>
-    <button class="menu-i danger" data-act="c-delete">${icon("trash")}<span><strong>Xoá tài liệu</strong><span class="faint small">Xoá tài liệu, trò chuyện và thẻ của nó</span></span></button>
+    <button class="menu-i" data-act="c-cards"><span class="badge-ic" style="${tint("lav")}">${icon("cards")}</span><span><strong>Tạo flashcards</strong><span class="faint small">Từ trang ${f}–${t} đang học</span></span></button>
+    <button class="menu-i" data-act="c-range"><span class="badge-ic" style="${tint("sky")}">${icon("pages")}</span><span><strong>Chọn trang học</strong><span class="faint small">Đang chọn trang ${f}–${t} / ${c.pageCount}</span></span></button>
+    <button class="menu-i" data-act="c-exam"><span class="badge-ic" style="${tint("rose")}">${icon("target")}</span><span><strong>Nội dung thi</strong><span class="faint small">${esc(c.examContent || "Chưa nhập")}</span></span></button>
+    <button class="menu-i" data-act="c-reset"><span class="badge-ic" style="${tint("mint")}">${icon("refresh")}</span><span><strong>Buổi học mới</strong><span class="faint small">Xoá cuộc trò chuyện, giữ flashcards</span></span></button>
+    <button class="menu-i danger" data-act="c-delete"><span class="badge-ic">${icon("trash")}</span><span><strong>Xoá tài liệu</strong><span class="faint small">Xoá tài liệu, trò chuyện và thẻ của nó</span></span></button>
   </div>` });
 }
 function openRangeSheet() {

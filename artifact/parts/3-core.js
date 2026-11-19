@@ -14,9 +14,15 @@ const icon = (n, cls = "") => `<svg class="i ${cls}" aria-hidden="true"><use hre
 const thinking = (label = "") => `<span class="typing" role="status"><i></i><i></i><i></i>${label ? `<span>${esc(label)}</span>` : ""}</span>`;
 function lsGet(k, d = "") { try { const v = localStorage.getItem(k); return v === null ? d : v; } catch { return d; } }
 function lsSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
-function mascot(cls = "") {
+function mascot(cls = "", mood = "happy") {
   const motion = reduceMotion ? "" : `<animateMotion dur="6s" repeatCount="indefinite" path="M3,0 a29,11 0 1,0 58,0 a29,11 0 1,0 -58,0"/>`;
-  return `<svg class="mascot ${cls}" viewBox="0 0 64 64" aria-hidden="true"><g transform="rotate(-18 32 32)"><ellipse class="m-orbit" cx="32" cy="32" rx="29" ry="11"/><circle class="m-e" cx="0" cy="32" r="3">${motion}</circle></g><circle class="m-body" cx="32" cy="33" r="16.5"/><circle class="m-eye" cx="26.5" cy="31" r="2.1"/><circle class="m-eye" cx="37.5" cy="31" r="2.1"/><path class="m-smile" d="M28.5 36.5 q3.5 3 7 0"/><circle class="m-blush" cx="22.5" cy="35.5" r="2.4"/><circle class="m-blush" cx="41.5" cy="35.5" r="2.4"/></svg>`;
+  const face = {
+    happy: `<circle class="m-eye" cx="26.5" cy="31" r="2.1"/><circle class="m-eye" cx="37.5" cy="31" r="2.1"/><path class="m-line" d="M28.5 36.5 q3.5 3 7 0"/>`,
+    think: `<circle class="m-eye" cx="27.5" cy="29.6" r="2.1"/><circle class="m-eye" cx="38.5" cy="29.6" r="2.1"/><circle class="m-mouth" cx="33" cy="37.6" r="1.7"/>`,
+    party: `<path class="m-line" d="M24.5 31.5 l2-2.2 2 2.2M35.5 31.5 l2-2.2 2 2.2"/><path class="m-mouth" d="M27.5 35.5 h9 q0 5 -4.5 5 q-4.5 0 -4.5 -5z"/><path class="m-spark" d="M10 14l1.3 3 3 1.3-3 1.3L10 22.6l-1.3-3-3-1.3 3-1.3zM54 8l1 2.3 2.3 1-2.3 1L54 14.6l-1-2.3-2.3-1 2.3-1zM55 44l.9 2 2 .9-2 .9-.9 2-.9-2-2-.9 2-.9z"/>`,
+    sleep: `<path class="m-line" d="M24.5 31 q2 2 4 0M35.5 31 q2 2 4 0"/><path class="m-line" d="M30 37 q2 1.2 4 0"/><text class="m-z" x="46" y="18">z</text><text class="m-z" x="51" y="11" style="font-size:7px">z</text>`,
+  }[mood] || "";
+  return `<svg class="mascot ${cls}" viewBox="0 0 64 64" aria-hidden="true"><g transform="rotate(-18 32 32)"><ellipse class="m-orbit" cx="32" cy="32" rx="29" ry="11"/><circle class="m-e" cx="0" cy="32" r="3">${motion}</circle></g><circle class="m-body" cx="32" cy="33" r="16.5"/>${face}<circle class="m-blush" cx="22.5" cy="35.5" r="2.4"/><circle class="m-blush" cx="41.5" cy="35.5" r="2.4"/></svg>`;
 }
 
 // ================= ngày giờ (giờ Paris) =================
@@ -47,9 +53,11 @@ function timeAgo(ts) {
 }
 const hhmm = (ts) => new Date(ts).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", timeZone: TZ });
 function shortDT(ts) { const d = new Date(ts); return isNaN(d) ? "" : d.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", timeZone: TZ }) + " · " + hhmm(ts); }
+const parisHour = () => Number(new Intl.DateTimeFormat("en-GB", { hour: "numeric", hourCycle: "h23", timeZone: TZ }).format(new Date()));
 function greeting() {
-  const h = Number(new Intl.DateTimeFormat("en-GB", { hour: "numeric", hourCycle: "h23", timeZone: TZ }).format(new Date()));
-  return h < 11 ? "Chào buổi sáng" : h < 14 ? "Chào buổi trưa" : h < 18 ? "Chào buổi chiều" : "Chào buổi tối";
+  const h = parisHour();
+  if (h >= 23 || h < 5) return { pre: "Khuya rồi,", word: "ngủ sớm nha", mood: "sleep" };
+  return { pre: "Chào buổi", word: h < 11 ? "sáng" : h < 14 ? "trưa" : h < 18 ? "chiều" : "tối", mood: "happy" };
 }
 
 // ================= Markdown + công thức =================
@@ -107,7 +115,7 @@ async function copyText(text, label) {
 }
 
 // ================= dữ liệu (riêng tư theo người dùng) =================
-const state = { agenda: [], courses: [], decks: {}, chats: {}, mail: { seen: [], recent: [], lastRun: "" }, status: null, cur: null, view: "home", seg: "mail", mailMsg: null };
+const state = { agenda: [], courses: [], decks: {}, chats: {}, mail: { seen: [], recent: [], lastRun: "" }, status: null, stats: { days: {} }, cur: null, view: "home", seg: "mail", mailMsg: null };
 let base = null;
 const writeQueue = new Map();
 function queue(docId, op) {
@@ -126,6 +134,22 @@ const saveCourses = () => save("courses", { list: state.courses.map(({ _pages, .
 const saveDeck = (id) => save("deck-" + id, { cards: state.decks[id] || [] });
 const saveMail = () => save("mail", state.mail);
 const saveStatus = () => save("status", state.status || {});
+const saveStats = () => save("stats", state.stats);
+// ghi lại hoạt động trong ngày: r = thẻ đã ôn, m = tin nhắn với gia sư
+function bump(kind) {
+  const t = todayISO(), days = state.stats.days;
+  (days[t] ||= { r: 0, m: 0 })[kind] = (days[t][kind] || 0) + 1;
+  const keep = addDays(t, -70);
+  for (const d of Object.keys(days)) if (d < keep) delete days[d];
+  saveStats();
+}
+const activeOn = (d) => { const x = state.stats.days[d]; return !!x && (x.r > 0 || x.m > 0); };
+function streak() {
+  let day = todayISO(), n = 0;
+  if (!activeOn(day)) day = addDays(day, -1);
+  while (activeOn(day)) { n++; day = addDays(day, -1); }
+  return n;
+}
 function saveChat(id) {
   const chat = state.chats[id] || { turns: [] };
   while (chat.turns.length > 2 && new Blob([JSON.stringify(chat)]).size > 200000) chat.turns.splice(0, 2);
@@ -148,6 +172,7 @@ async function loadData() {
       else if (d.id.startsWith("chat-")) state.chats[d.id.slice(5)] = { turns: v.turns || [] };
       else if (d.id === "mail") state.mail = { seen: v.seen || [], recent: v.recent || [], lastRun: v.lastRun || "" };
       else if (d.id === "status") state.status = v.date ? v : null;
+      else if (d.id === "stats") state.stats = { days: v.days || {} };
     }
     showNotice("");
   } catch (e) {
@@ -233,7 +258,8 @@ function mergeEvents(events, source) {
   saveAgenda();
   return added;
 }
-function upcoming(days) { const t = todayISO(), end = addDays(t, days); return state.agenda.filter((a) => !a.done && a.date && a.date >= t && a.date <= end); }
+const byDate = (a, b) => (a.date || "9999").localeCompare(b.date || "9999") || (a.time || "").localeCompare(b.time || "");
+function upcoming(days) { const t = todayISO(), end = addDays(t, days); return state.agenda.filter((a) => !a.done && a.date && a.date >= t && a.date <= end).sort(byDate); }
 function agendaText(items) {
   return items.length ? items.map((a) => `- [${a.type}] ${a.date || "?"} ${a.time || ""} — ${a.title}${a.course ? " — " + a.course : ""}${a.to_submit ? " — à rendre : " + a.to_submit : ""}${a.exam_content ? " — programme : " + a.exam_content : ""}`).join("\n") : "(agenda vide)";
 }

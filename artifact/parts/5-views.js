@@ -45,7 +45,8 @@ function nextCard() {
   $("#sCount").textContent = `${Math.min(sess.done + 1, sess.total)}/${sess.total}`;
   if (!sess.cur) {
     $("#sCardWrap").hidden = true; $("#sDone").hidden = false;
-    $("#sDoneMascot").innerHTML = mascot("lg");
+    $("#sDoneMascot").innerHTML = mascot("lg", "party");
+    confetti();
     $("#sDoneText").textContent = `Bạn đã ôn ${sess.total} thẻ. Những thẻ khó sẽ quay lại sớm hơn. Hẹn gặp lại ngày mai nhé.`;
     $("#sCount").textContent = `${sess.total}/${sess.total}`;
     renderBadges();
@@ -62,6 +63,21 @@ function nextCard() {
   $$("#sGrades .grade").forEach((b) => { const copy = { ...card }; grade(copy, +b.dataset.g); b.querySelector("span").textContent = ivLabel(copy.interval); });
   $("#sGrades").hidden = true; $("#sFlip").hidden = false;
 }
+function confetti() {
+  if (reduceMotion) return;
+  const cs = getComputedStyle(document.documentElement);
+  const colors = ["--k-rose", "--k-butter", "--k-mint", "--k-sky", "--accent", "--k-peach"].map((v) => cs.getPropertyValue(v).trim());
+  for (let i = 0; i < 46; i++) {
+    const el = document.createElement("i");
+    el.className = "confetti";
+    el.style.background = colors[i % colors.length];
+    document.body.appendChild(el);
+    const a = Math.random() * Math.PI * 2, d = 120 + Math.random() * 180;
+    el.animate([{ transform: "translate(-50%, 0) rotate(0)", opacity: 1 },
+      { transform: `translate(calc(-50% + ${Math.cos(a) * d}px), ${Math.sin(a) * d * 0.6 + 260}px) rotate(${Math.random() * 720 - 360}deg)`, opacity: 0 }],
+      { duration: 1300 + Math.random() * 900, easing: "cubic-bezier(.15,.7,.3,1)" }).onfinish = () => el.remove();
+  }
+}
 function flipCard() {
   if (!sess.cur || sess.flipped) return;
   sess.flipped = true;
@@ -71,7 +87,7 @@ function flipCard() {
 function gradeCur(g) {
   if (!sess.cur || !sess.flipped) return;
   const { deck, card } = sess.cur;
-  grade(card, g); saveDeck(deck);
+  grade(card, g); saveDeck(deck); bump("r");
   if (g < 3) sess.queue.push(sess.cur); else sess.done++;
   nextCard();
 }
@@ -79,51 +95,71 @@ function renderReview() {
   const decks = deckList(), total = decks.reduce((n, d) => n + d.total, 0), due = decks.reduce((n, d) => n + d.due, 0);
   $("#rSub").textContent = total ? (due ? `Hôm nay có ${due} thẻ cần ôn` : "Hôm nay ôn xong rồi, giỏi quá!") : "Lặp lại ngắt quãng giúp nhớ lâu";
   if (!total) {
-    $("#rList").innerHTML = `<div class="empty">${mascot("lg")}<h3>Chưa có thẻ nào</h3><p>Trong màn Học, bấm ⋯ → “Tạo flashcards”. Khi bạn viết tiếng Pháp sai, lỗi cũng tự thành thẻ ở đây.</p><button class="btn soft" data-go="study">Đi tới Học</button></div>`;
+    $("#rList").innerHTML = `<div class="empty">${mascot("lg", "happy")}<h3>Chưa có thẻ nào</h3><p>Trong màn Học, bấm ⋯ → “Tạo flashcards”. Khi bạn viết tiếng Pháp sai, lỗi cũng tự thành thẻ ở đây.</p><button class="btn soft" data-go="study">Đi tới Học</button></div>`;
     return;
   }
   $("#rList").innerHTML = (due ? `<button class="btn primary block lg" data-act="review-all">${icon("cards")} Ôn tất cả · ${due} thẻ</button>` : "")
-    + decks.filter((d) => d.total).map((d) => `<div class="deck-row">${d.id === FR ? `<span class="fr-glyph">Fr</span>` : resistor(d.id)}<div><strong>${esc(d.title)}</strong><span class="faint small">${d.total} thẻ · ${d.due ? d.due + " cần ôn" : "đã ôn xong"}</span></div><button class="btn sm ${d.due ? "soft" : "ghost"}" data-act="deck-start" data-deck="${esc(d.id)}" ${d.due ? "" : "disabled"}>Ôn</button></div>`).join("")
+    + decks.filter((d) => d.total).map((d) => `<div class="deck-row" style="--tk: var(--k-${d.id === FR ? "sky" : tintOf(d.id)})">${d.id === FR ? `<span class="fr-glyph">Fr</span>` : resistor(d.id)}<div><strong>${esc(d.title)}</strong><span class="faint small">${d.total} thẻ · ${d.due ? d.due + " cần ôn" : "đã ôn xong hôm nay"}</span><span class="bar"><i style="width:${Math.round(((d.total - d.due) / d.total) * 100)}%"></i></span></div><button class="btn sm ${d.due ? "soft" : "ghost"}" data-act="deck-start" data-deck="${esc(d.id)}" ${d.due ? "" : "disabled"}>Ôn</button></div>`).join("")
     + `<p class="faint small center">Thẻ nhớ tốt quay lại sau 1, 4, 10… ngày. Thẻ quên quay lại ngay trong phiên.</p>`;
 }
 
 // ================= điện trở: màu riêng cho mỗi môn =================
 const BANDS = ["#8a5a3c", "#e05547", "#f08a3c", "#e9b93f", "#43a971", "#4c7fe0", "#8b6ae6", "#9a98a8"];
+const TINTS = ["lav", "sky", "mint", "peach", "rose", "butter"];
+const hashOf = (id) => { let h = 0; for (const ch of String(id)) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h; };
+const tintOf = (id) => TINTS[hashOf(id) % TINTS.length];
 function resistor(id) {
-  let h = 0; for (const ch of String(id)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
-  return `<span class="res" aria-hidden="true"><i style="--b1:${BANDS[h % 8]};--b2:${BANDS[(h >>> 3) % 8]};--b3:${BANDS[(h >>> 6) % 8]}"></i></span>`;
+  const h = hashOf(id), t = tintOf(id);
+  return `<span class="cover" style="--tint: var(--t-${t}); --tk: var(--k-${t})" aria-hidden="true"><i style="--b1:${BANDS[h % 8]};--b2:${BANDS[(h >>> 3) % 8]};--b3:${BANDS[(h >>> 6) % 8]}"></i></span>`;
 }
 
 // ================= màn Hôm nay =================
+const VERDICT_IC = { go: "building", stay: "home", partial: "half", unknown: "question" };
 function renderHome() {
-  $("#hGreet").textContent = greeting();
+  const g = greeting();
+  $("#hGreet").innerHTML = `${esc(g.pre)} <em>${esc(g.word)}</em>`;
   $("#hDate").textContent = longDate(todayISO());
-  if (!$("#hMascot").firstChild) $("#hMascot").innerHTML = mascot();
+  $("#hMascot").innerHTML = mascot("md", g.mood);
+  const up7 = upcoming(7), exams = up7.filter((a) => a.type === "exam").length, dues = up7.filter((a) => a.type === "deadline").length;
+  $("#hSub").textContent = exams || dues ? `7 ngày tới: ${[exams && exams + " kỳ thi", dues && dues + " hạn nộp"].filter(Boolean).join(", ")}.` : g.mood === "sleep" ? "Mai học tiếp, giờ đi ngủ thôi." : "Tuần này nhẹ nhàng, tranh thủ ôn bài nhé.";
   // campus
-  const s = state.status, fresh = s && s.date === todayISO(), v = VERDICT[fresh ? s.verdict : "unknown"] || VERDICT.unknown;
-  const steps = `<ol class="steps"><li><b>Chép lệnh</b> có sẵn lịch của bạn</li><li><b>Dán vào Claude</b>, bật Tìm kiếm web</li><li><b>Dán kết quả</b> vào đây</li></ol>`;
-  $("#hStatus").innerHTML = `
-    <div class="st-head"><span class="label">Campus Jussieu</span><span class="faint small">${s ? (fresh ? "Cập nhật " + hhmm(s.updatedAt) : "Bản tin " + countdown(s.date)) : ""}</span></div>
-    <div class="st-verdict ${v.cls}"><span class="st-dot"></span><strong>${esc(fresh ? v.label : "Hôm nay có cần lên trường không?")}</strong></div>
-    ${fresh && s.headline ? `<p>${esc(s.headline)}</p>` : `<p class="muted small">${s ? "Chưa có bản tin hôm nay. " : ""}Hỏi Claude (có tìm kiếm web) về blocus, biểu tình, giao thông, rồi dán kết quả vào đây.</p>`}
-    ${fresh && s.points?.length ? `<ul class="st-points">${s.points.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>` : steps}
+  const s = state.status, fresh = s && s.date === todayISO(), vk = fresh && VERDICT[s.verdict] ? s.verdict : "unknown", v = VERDICT[vk];
+  const el = $("#hStatus");
+  el.className = "tile tinted " + v.cls;
+  el.innerHTML = `
+    <div class="tile-head"><span class="badge-ic" style="background: color-mix(in srgb, var(--surface) 70%, transparent)">${icon(VERDICT_IC[vk])}</span><div><span class="label" style="color: var(--tk)">Campus Jussieu</span><span class="faint small">${s ? (fresh ? "Cập nhật lúc " + hhmm(s.updatedAt) : "Bản tin gần nhất: " + countdown(s.date)) : "Chưa có bản tin"}</span></div></div>
+    <div class="stack" style="gap:6px"><p class="verdict">${esc(fresh ? v.label : "Hôm nay có cần lên trường không?")}</p>
+    ${fresh && s.headline ? `<p class="verdict-sub">${esc(s.headline)}</p>` : `<p class="verdict-sub">Hỏi Claude (có tìm kiếm web) về blocus, biểu tình, giao thông, rồi dán kết quả vào đây.</p>`}</div>
+    ${fresh && s.points?.length ? `<div class="chips">${s.points.map((p) => `<span>${esc(p)}</span>`).join("")}</div>`
+      : `<ol class="steps"><li><b>Chép lệnh</b> có sẵn lịch của bạn</li><li><b>Dán vào Claude</b>, bật Tìm kiếm web</li><li><b>Dán kết quả</b> vào đây</li></ol>`}
     <div class="row">
-      <button class="btn ${fresh ? "ghost" : "soft"} sm" data-act="copy-brief">${icon("copy")} Chép lệnh</button>
-      <a class="btn ghost sm" href="https://claude.ai/new" target="_blank" rel="noopener">${icon("external")} Mở Claude</a>
-      <button class="btn ${fresh ? "soft" : "primary"} sm" data-act="paste-brief">${icon("paste")} ${fresh ? "Dán bản mới" : "Dán kết quả"}</button>
+      <button class="btn glass sm" data-act="copy-brief">${icon("copy")} Chép lệnh</button>
+      <a class="btn glass sm" href="https://claude.ai/new" target="_blank" rel="noopener">${icon("external")} Mở Claude</a>
+      <button class="btn primary sm" data-act="paste-brief">${icon("paste")} ${fresh ? "Dán bản mới" : "Dán kết quả"}</button>
     </div>`;
+  // ôn tập: vòng tiến độ hôm nay
+  const due = totalDue(), done = state.stats.days[todayISO()]?.r || 0, pct = due + done ? done / (due + done) : 1, C = 2 * Math.PI * 30;
+  $("#hReview").innerHTML = `
+    <span class="label">Ôn tập</span>
+    <div class="row" style="gap:12px; flex-wrap:nowrap"><div class="ring"><svg viewBox="0 0 74 74"><circle class="tr" cx="37" cy="37" r="30"/><circle class="pg" cx="37" cy="37" r="30" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C * (1 - pct)).toFixed(1)}"/></svg><b>${due}</b></div>
+    <span class="small muted" style="font-weight:700">${due ? "thẻ chờ ôn" : done ? "Xong hết, giỏi quá!" : "Chưa có thẻ"}</span></div>
+    ${due ? `<button class="btn primary sm block" data-act="review-all">Ôn ngay</button>` : `<button class="btn glass sm block" data-go="review">Xem bộ thẻ</button>`}`;
+  // chuỗi ngày học
+  const n = streak(), t = todayISO();
+  const week = Array.from({ length: 7 }, (_, k) => addDays(t, k - 6));
+  $("#hStreak").innerHTML = `
+    <span class="label">Chuỗi ngày học</span>
+    <p class="tile-num">${n}<small>ngày</small></p>
+    <div class="week">${week.map((d) => `<span><i class="${activeOn(d) ? "on" : ""} ${d === t ? "today" : ""}"></i>${wdOf(d)}</span>`).join("")}</div>`;
   // mail
   const m = state.mail, imp = m.recent.filter((x) => x.importance === "haute");
   const shown = (imp.length ? imp : m.recent).slice(0, 2);
   $("#hMail").innerHTML = `
-    <div class="stack" style="gap:4px"><span class="label">Hộp thư trường</span><span class="small" data-mailmsg></span></div>
+    <div class="tile-head"><span class="badge-ic" style="${"--tint: var(--t-mint); --tk: var(--k-mint)"}">${icon("mail")}</span><div><span class="label">Hộp thư trường</span><span class="small" data-mailmsg></span></div></div>
     ${shown.length ? `<ul class="mini-mails">${shown.map((x) => `<li><span class="imp imp-${esc(x.importance)}"></span><div><strong>${esc(x.subject || "(không tiêu đề)")}</strong><p>${esc(x.action || x.resume)}</p></div></li>`).join("")}</ul>`
       : `<p class="muted small">Mail Moodle, giảng viên và danh sách [etudiants] sẽ được tóm tắt ở đây.</p>`}
     <div class="row"><button class="btn primary sm" data-act="read-mail">${icon("mail")} Đọc mail mới</button><button class="btn ghost sm" data-go="inbox">Xem tất cả</button></div>`;
   paintMailMsg();
-  // ôn tập
-  const due = totalDue();
-  $("#hNudge").innerHTML = due ? `<button class="nudge" data-act="review-all">${mascot("sm")}<span><strong>${due} thẻ đang chờ bạn</strong><span class="muted small">Ôn 5 phút cho nhớ lâu</span></span><span class="btn primary sm">Ôn ngay</span></button>` : "";
   // sắp tới
   const up = upcoming(14).slice(0, 5);
   $("#hUpcoming").innerHTML = up.length ? up.map((a) => evRow(a, true)).join("")
@@ -157,7 +193,7 @@ function renderAgenda() {
   }
   $("#aStrip").innerHTML = strip;
   const groups = { today: [], tomorrow: [], week: [], later: [], nodate: [], past: [] };
-  for (const a of state.agenda) {
+  for (const a of [...state.agenda].sort(byDate)) {
     if (!a.date) { groups.nodate.push(a); continue; }
     const d = diffDays(a.date);
     groups[d < 0 ? "past" : d === 0 ? "today" : d === 1 ? "tomorrow" : d <= 7 ? "week" : "later"].push(a);
@@ -177,8 +213,8 @@ function jumpDay(d) {
 function openEvMenu(id) {
   const a = state.agenda.find((x) => x.id === id); if (!a) return;
   openSheet({ title: a.title, html: `<div class="menu">
-    <button class="menu-i" data-act="ev-done" data-id="${esc(id)}">${icon("check")}<span><strong>${a.done ? "Bỏ đánh dấu đã xong" : "Đánh dấu đã xong"}</strong></span></button>
-    <button class="menu-i danger" data-act="ev-del" data-id="${esc(id)}">${icon("trash")}<span><strong>Xoá khỏi lịch</strong></span></button></div>` });
+    <button class="menu-i" data-act="ev-done" data-id="${esc(id)}"><span class="badge-ic" style="--tint: var(--t-mint); --tk: var(--k-mint)">${icon("check")}</span><span><strong>${a.done ? "Bỏ đánh dấu đã xong" : "Đánh dấu đã xong"}</strong></span></button>
+    <button class="menu-i danger" data-act="ev-del" data-id="${esc(id)}"><span class="badge-ic">${icon("trash")}</span><span><strong>Xoá khỏi lịch</strong></span></button></div>` });
 }
 function openAddEvent() {
   const kinds = ["exam", "deadline", "event", "closure", "holiday"];
@@ -228,7 +264,8 @@ function renderStudy() {
   el.innerHTML = sorted.map((c) => {
     const n = (state.decks[c.id] || []).length;
     const meta = [`${c.pageCount} trang`, n ? `${n} thẻ` : "", c.lastStudied ? "học " + timeAgo(c.lastStudied) : "chưa học"].filter(Boolean).join(" · ");
-    return `<button class="course-card" data-act="open-course" data-id="${esc(c.id)}">${resistor(c.id)}<span class="cc-body"><span class="cc-title">${esc(c.title)}</span><span class="cc-meta">${esc(meta)}</span>${c.examContent ? `<span class="cc-exam">Thi: ${esc(c.examContent)}</span>` : ""}</span>${icon("chevron", "faint")}</button>`;
+    const pct = c.pageCount ? Math.min(100, Math.round(((c.maxPage || 0) / c.pageCount) * 100)) : 0;
+    return `<button class="course-card" data-act="open-course" data-id="${esc(c.id)}" style="--tk: var(--k-${tintOf(c.id)})">${resistor(c.id)}<span class="cc-body"><span class="cc-title">${esc(c.title)}</span><span class="cc-meta">${esc(meta)}</span>${c.examContent ? `<span class="cc-meta" style="font-weight:600; color: var(--ink-2)">Thi: ${esc(c.examContent)}</span>` : ""}<span class="bar" title="Đã học tới trang ${c.maxPage || 0}"><i style="width:${pct}%"></i></span></span>${icon("chevron", "faint")}</button>`;
   }).join("") + `<button class="btn ghost block" data-act="add-course">${icon("plus")} Thêm tài liệu</button>`;
 }
 
