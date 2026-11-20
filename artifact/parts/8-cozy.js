@@ -87,7 +87,7 @@ function failFocus(sec) {
 
 // --- thống kê ---
 const stv = { tab: "sum", off: 0 };
-const TABS_ST = [["sum", "Tổng quan"], ["day", "Ngày"], ["week", "Tuần"], ["month", "Tháng"], ["year", "Năm"]];
+const TABS_ST = [["sum", "Tổng"], ["day", "Ngày"], ["week", "Tuần"], ["month", "Tháng"], ["year", "Năm"]];
 function fmtMin(m) { m = Math.round(m); if (m < 60) return `${m} phút`; const h = Math.floor(m / 60), r = m % 60; return r ? `${h} giờ ${r} phút` : `${h} giờ`; }
 const shortMin = (m) => (m < 60 ? `${Math.round(m)}p` : `${Math.floor(m / 60)}g${Math.round(m % 60) ? String(Math.round(m % 60)).padStart(2, "0") : ""}`);
 const parisParts = (ts) => { const p = Object.fromEntries(new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit", hour: "numeric", minute: "numeric", hourCycle: "h23" }).formatToParts(new Date(ts)).map((x) => [x.type, x.value])); return { date: `${p.year}-${p.month}-${p.day}`, h: +p.hour, mi: +p.minute }; };
