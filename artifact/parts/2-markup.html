@@ -91,9 +91,13 @@
   <!-- HỌC -->
   <section id="v-study" class="view" hidden>
     <header class="page-h">
-      <div><h1>Học</h1><p class="muted">Gia sư Feynman cho từng tài liệu</p></div>
-      <button class="icon-btn solid" data-act="add-course" aria-label="Thêm tài liệu"><svg class="i"><use href="#i-plus"></use></svg></button>
+      <div><h1>Học</h1><p class="muted">Gia sư Feynman và luyện đề thi</p></div>
+      <button class="icon-btn solid" id="sdAdd" data-act="add-course" aria-label="Thêm tài liệu"><svg class="i"><use href="#i-plus"></use></svg></button>
     </header>
+    <div class="segmented" id="sdSeg" role="tablist" aria-label="Học">
+      <button role="tab" data-sseg="docs" aria-selected="true">Tài liệu</button>
+      <button role="tab" data-sseg="exams" aria-selected="false">Luyện đề</button>
+    </div>
     <div id="sList" class="stack"></div>
   </section>
 
@@ -110,7 +114,7 @@
       <button class="icon-btn solid" data-act="add-event" aria-label="Thêm mốc thời gian"><svg class="i"><use href="#i-plus"></use></svg></button>
     </header>
     <div class="strip" id="aStrip"></div>
-    <button class="btn soft block" data-act="plan"><svg class="i"><use href="#i-sparkle"></use></svg> Lập kế hoạch ôn thi</button>
+    <div class="two"><button class="btn soft" data-act="moodle"><svg class="i"><use href="#i-upload"></use></svg> Nhập từ Moodle</button><button class="btn soft" data-act="plan"><svg class="i"><use href="#i-sparkle"></use></svg> Lập kế hoạch</button></div>
     <div id="aList" class="list"></div>
   </section>
 
@@ -174,22 +178,20 @@
     <article class="card" id="stMain"></article>
     <div class="records" id="stRec"></div>
     <article class="card" id="stSubj"></article>
-    <div class="lab-links"><button class="btn soft" data-go="lab"><svg class="i"><use href="#i-atom"></use></svg> Bảng tuần hoàn</button><button class="btn" data-act="quests"><svg class="i"><use href="#i-flame"></use></svg> Nhiệm vụ &amp; chuỗi ngày</button></div>
+    <div class="lab-links"><button class="btn soft" data-go="prog"><svg class="i"><use href="#i-target"></use></svg> Tiến độ môn học</button><button class="btn" data-act="quests"><svg class="i"><use href="#i-flame"></use></svg> Mục tiêu &amp; chuỗi ngày</button></div>
   </div>
 </section>
 
-<!-- PHÒNG THÍ NGHIỆM: BẢNG NỔI -->
-<section id="v-lab" class="immersive pv" hidden>
+<!-- TIẾN ĐỘ MÔN HỌC: BẢNG NỔI -->
+<section id="v-prog" class="immersive pv" hidden>
   <span class="pv-leaf" style="left:14%;transform:rotate(-24deg)" aria-hidden="true"></span><span class="pv-leaf" style="left:46%;top:8px;transform:rotate(18deg) scale(.8)" aria-hidden="true"></span><span class="pv-leaf" style="left:84%;top:26px;transform:rotate(40deg) scale(.7)" aria-hidden="true"></span>
   <div class="pv-card">
-    <h1 class="pv-title">Phòng lab</h1>
-    <button class="x-btn" data-go="stats" aria-label="Đóng phòng lab"><svg class="i"><use href="#i-x"></use></svg></button>
-    <p class="muted pv-sub">Mỗi môn là một nguyên tử. Học càng nhiều, nguyên tử càng lớn.</p>
-    <div class="widget space wide" id="labLevel"></div>
-    <div class="atoms" id="labAtoms"></div>
-    <div class="sec-head"><span class="label">Bảng tuần hoàn của bạn</span><span class="small muted" id="ptCount"></span></div>
-    <div class="ptable space"><div class="pt" id="pt"></div><div class="legend" id="ptLegend"></div></div>
-    <p class="muted small">Cứ 5 phút tập trung = 1 electron cho môn đó, và nguyên tử “tiến hoá” sang nguyên tố kế tiếp. Ôn 10 flashcards cũng được thưởng 1 electron.</p>
+    <h1 class="pv-title">Tiến độ môn học</h1>
+    <button class="x-btn" data-go="stats" aria-label="Đóng tiến độ môn học"><svg class="i"><use href="#i-x"></use></svg></button>
+    <div class="pg-top" id="pgTop"></div>
+    <div class="pg-list" id="pgList"></div>
+    <p class="small muted" id="pgLevel"></p>
+    <p class="small muted">Chậu cây lớn khi bạn thật sự nhớ bài: thẻ đã thuộc (khoảng ôn từ 21 ngày) và điểm luyện đề, không chỉ là thời gian ngồi học.</p>
   </div>
 </section>
 
@@ -253,19 +255,33 @@
   <div class="bar-in focus-in">
     <div class="f-room" id="fRoom"></div>
     <p class="f-cap" id="fElem"></p>
-    <div class="circuit" id="fCircuit"></div>
     <div id="fSetup" class="stack" style="gap:14px">
       <div><p class="w-sub" style="margin-bottom:8px">Môn học</p><div class="f-pick" id="fSubj"></div></div>
+      <label class="field f-goal"><span>Phiên này mình sẽ…</span><input type="text" id="fGoal" maxlength="120" autocomplete="off" placeholder="vd: làm xong bài 2 TD Kirchhoff"></label>
       <div><p class="w-sub" style="margin-bottom:8px">Thời gian</p><div class="f-pick" id="fDur" style="justify-content:center; flex-wrap:wrap; overflow:visible"></div></div>
       <button class="btn go lg block" id="fStart"><svg class="i"><use href="#i-play"></use></svg> Bắt đầu tập trung</button>
       <p class="f-hint" id="fHint"></p>
     </div>
     <div id="fRun" class="stack" style="gap:12px" hidden>
-      <p class="f-time" id="fTime">25:00</p>
+      <div class="f-ring"><div id="fRing"></div><p class="f-time" id="fTime">25:00</p></div>
+      <p class="f-goal-show" id="fGoalShow" hidden></p>
+      <details class="f-notes"><summary id="fNotesSum">Chợt nhớ việc khác? Ghi lại để sau</summary>
+        <div class="row" style="flex-wrap:nowrap"><input type="text" id="fNoteIn" maxlength="140" autocomplete="off" placeholder="vd: nhắn nhóm TP về lịch nộp" aria-label="Việc chợt nhớ"><button class="btn sm" id="fNoteAdd">Ghi</button></div>
+        <ul id="fNoteList"></ul></details>
       <p class="f-hint" id="fRunHint"></p>
       <button class="btn quiet block" id="fStop">Dừng sớm</button>
     </div>
   </div>
+</section>
+
+<!-- LUYỆN ĐỀ: CHẾ ĐỘ TOÀN MÀN HÌNH -->
+<section id="v-drill" class="immersive" hidden>
+  <header class="topbar"><div class="bar-in">
+    <button class="icon-btn" id="drBack" aria-label="Quay lại Luyện đề"><svg class="i"><use href="#i-back"></use></svg></button>
+    <div class="tb-title"><strong id="drTitle"></strong><span class="tb-sub" id="drSub"></span></div>
+    <button class="icon-btn" id="drNew" aria-label="Đề tương tự khác"><svg class="i"><use href="#i-refresh"></use></svg></button>
+  </div></header>
+  <div class="bar-in stack drill-in" id="drBody"></div>
 </section>
 
 <!-- TRUYỆN: CHẾ ĐỘ TOÀN MÀN HÌNH -->
@@ -273,8 +289,7 @@
   <div class="bar-in">
     <div class="vn-top"><button class="icon-btn" id="vnExit" aria-label="Thoát truyện (tự lưu chỗ đang đọc)"><svg class="i"><use href="#i-x"></use></svg></button><span class="ttl" id="vnTitle"></span><button class="vn-skip" id="vnSkip">Bỏ qua</button></div>
     <div class="vn-stage" id="vnStage"><div class="vn-actors" id="vnActors"></div></div>
-    <div class="vn-box" id="vnBox" role="button" tabindex="0" aria-label="Chạm để đọc tiếp"><span class="vn-name" id="vnName" hidden></span><p class="vn-text" id="vnText"></p><span class="vh" id="vnLive" aria-live="polite"></span><i class="vn-next" id="vnNext" aria-hidden="true"></i></div>
-    <div class="vn-choices" id="vnChoices"></div>
+    <div class="vn-box" id="vnBox" role="button" tabindex="0" aria-label="Chạm để đọc tiếp"><span class="vn-name" id="vnName" hidden></span><p class="vn-text" id="vnText"></p><span class="vh" id="vnLive" aria-live="polite"></span><i class="vn-next" id="vnNext" aria-hidden="true"></i><div class="vn-choices" id="vnChoices"></div></div>
   </div>
 </section>
 

@@ -72,7 +72,7 @@ function chapterState(ch) {
   if (prev && !isDone(prev.id)) return { lock: "prev", text: `Hoàn thành ${prev.no} trước` };
   if (lv.n < ch.req) {
     const need = LEVELS[ch.req - 1][0] - lv.t;
-    return { lock: "level", text: `Cần Cấp ${ch.req} · còn ${need} e⁻ (≈ ${need * 5} phút tập trung)` };
+    return { lock: "level", text: `Cần Cấp ${ch.req} · còn ${need} phút tập trung` };
   }
   return { lock: "" };
 }
@@ -562,7 +562,7 @@ function compTalk(el) {
 
 // --- trình đọc & trận đấu: sự kiện ---
 $("#vnBox").addEventListener("click", vnNext);
-$("#vnChoices").addEventListener("click", (e) => { const b = e.target.closest("[data-k]"); if (b) vnChoose(+b.dataset.k); });
+$("#vnChoices").addEventListener("click", (e) => { e.stopPropagation(); const b = e.target.closest("[data-k]"); if (b) vnChoose(+b.dataset.k); });
 $("#vnExit").addEventListener("click", vnExit);
 $("#vnSkip").addEventListener("click", vnSkip);
 document.addEventListener("keydown", (e) => {

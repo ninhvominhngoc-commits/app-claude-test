@@ -79,12 +79,12 @@ const QB = {
 // s = đổi cảnh, fx = flash|shake, join = nhân vật gia nhập, g = chữ nhiễu, ch = lựa chọn, if = [mã lựa chọn, số thứ tự]
 const STORY = [
   { id: "p", no: "Mở đầu", title: "Mất điện ở Jussieu", req: 1, scene: "night", boss: "nhieu", topic: "ohm", cover: "ohmi", gems: 300,
-    blurb: "18:47, cả campus tắt phụt. Một electron nhỏ bay ra từ điện thoại của bạn…",
+    blurb: "18:47, cả campus tắt phụt. Một bé mèo tí hon chui ra từ điện thoại của bạn…",
     pre: [
       { s: "night", t: "Thứ Ba, 18:47. Bạn vừa bước ra khỏi giảng đường thì cả campus Jussieu tắt phụt." },
       { t: "Không một bóng đèn. Tháp Zamansky chìm vào bóng tối. Điện thoại còn đúng 1% pin." },
       { c: "elec", m: "happy", t: "Này! Này!! Bạn có nghe thấy mình không?" },
-      { t: "Một bé mèo con tí hon chui ra từ màn hình điện thoại, quanh đầu có một electron bay vòng vòng. Là bé Elec trong app học của bạn." },
+      { t: "Một bé mèo con tí hon chui ra từ màn hình điện thoại, trên trán có vệt tia chớp nhỏ. Là bé Elec trong app học của bạn." },
       { c: "elec", m: "party", t: "Mình là {name} nè, meo! Đừng hỏi sao mình ra được ngoài này, chính mình cũng không biết luôn~" },
       { c: "elec", m: "think", t: "Có thứ gì đó đang hút sạch điện của trường. Mình gọi nó là… Nhiễu Trắng." },
       { id: "p1", ch: [

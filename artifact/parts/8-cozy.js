@@ -1,5 +1,5 @@
 
-// ================= cozy: bé electron biết nói, cài đặt, âm thanh, thống kê =================
+// ================= cozy: bé mèo biết nói, cài đặt, âm thanh, thống kê =================
 const PREF_DEFAULT = { name: "Elec", sfx: true, wake: true, strict: false, dur: 25 };
 const prefs = () => ({ ...PREF_DEFAULT, ...(state.prefs || {}) });
 
@@ -34,12 +34,12 @@ function buddyLines() {
   const h = parisHour(), due = totalDue(), d = state.stats.days[todayISO()] || {};
   const soon = upcoming(3).filter((a) => a.type === "exam" || a.type === "deadline")[0];
   const L = [];
-  if (state.focus?.endAt) L.push("Đang tập trung nè, cố lên! Mình đang hút electron đó.");
+  if (state.focus?.endAt) L.push("Đang tập trung nè, cố lên! Mình ngồi học cùng bạn đây.");
   if (h >= 23 || h < 5) L.push("Khuya rồi đó… ngủ sớm, mai mình học tiếp nha.");
   if (d.gold) L.push("Hôm nay hoàn hảo luôn! Tự hào về bạn ghê.");
   if (soon) L.push(`${soon.type === "exam" ? "Sắp thi" : "Sắp tới hạn"} “${soon.title}” (${countdown(soon.date)}). Mình ôn cùng nhau nha!`);
   if (due) L.push(`Có ${due} thẻ đang chờ bạn ôn đó~`);
-  if (!d.f) L.push(h < 11 ? "Nạp vài electron đầu ngày nhé? Bấm Tập trung là mình lắp mạch cùng bạn!" : "Hôm nay mình chưa lắp được mạch nào… tập trung 25 phút không?");
+  if (!d.f) L.push(h < 11 ? "Bắt đầu ngày mới bằng 25 phút tập trung nhé? Ghi mục tiêu phiên là làm nhanh hơn đó!" : "Hôm nay mình chưa học phiên nào… tập trung 25 phút không?");
   L.push("Mỗi phút tập trung là 2 Tinh thể ✦ để trang trí phòng đó!", "Học kiểu Feynman: giảng lại cho mình nghe đi, meo!", "Nhớ uống nước nha.", "Viết tiếng Pháp sai cũng không sao, mình sửa cho!");
   const g = greeting();
   if (g.mood !== "sleep") L[0] = `${g.pre} ${g.word}! ${L[0]}`;
@@ -48,7 +48,7 @@ function buddyLines() {
 function updateClock() {
   const el = $("#hClock"); if (!el) return;
   const t = todayISO();
-  el.textContent = `${hhmm(Date.now())} · ${wdOf(t)} ${+t.slice(8)}/${+t.slice(5, 7)} · Cấp ${levelInfo().n}`;
+  el.textContent = `${hhmm(Date.now())} · ${wdOf(t)} ${+t.slice(8)}/${+t.slice(5, 7)}`;
 }
 function renderHero() {
   const p = prefs(), g = greeting();
@@ -75,7 +75,7 @@ function openSettings() {
       <label class="set-card peach">${icon("sun")}Giữ màn hình sáng<input type="checkbox" class="switch" role="switch" id="stWake" ${p.wake ? "checked" : ""}></label>
       <label class="set-card sky">${icon("lock")}Tập trung nghiêm<input type="checkbox" class="switch" role="switch" id="stStrict" ${p.strict ? "checked" : ""}></label>
     </div>
-    <p class="small muted">Âm thanh chỉ là tiếng “ting” nhỏ khi lật thẻ, xong phiên, mở khoá nguyên tố. Tập trung nghiêm: đang tập trung mà rời app quá 15 giây (kể cả khoá màn hình) thì bé mèo chạy mất và phiên bị huỷ.</p>
+    <p class="small muted">Âm thanh chỉ là tiếng “ting” nhỏ khi lật thẻ, xong phiên, mở khoá nguyên tố. Tập trung nghiêm: khoá màn hình thì không sao; nếu rời app quá 15 giây, khi quay lại bé mèo sẽ hỏi bạn vừa khoá màn hình hay mở app khác (mở app khác thì phiên bị huỷ).</p>
     <div class="field"><span>Thời gian tập trung mặc định</span><div class="pills" id="stDur">${DURS.map((d) => `<button type="button" data-d="${d}" aria-pressed="${d === p.dur}">${d} phút</button>`).join("")}</div></div>
     <button class="btn primary block" id="stSave">Lưu</button>`,
     onMount: (el) => {
@@ -99,8 +99,20 @@ document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "hidden") { hiddenAt = Date.now(); return; }
   const away = hiddenAt ? Date.now() - hiddenAt : 0;
   hiddenAt = 0;
-  if (away > 15000 && Date.now() < state.focus.endAt) failFocus(Math.round(away / 1000));
+  if (away > 15000 && Date.now() < state.focus.endAt) askAway(Math.round(away / 1000));
 });
+// Trên iPhone, trang web không phân biệt được "khoá màn hình" với "mở app khác", nên hỏi thẳng bạn
+function askAway(sec) {
+  sfx("tick");
+  openSheet({ title: "Bạn vừa đi đâu thế?", html: `<div class="reward"><div style="width:110px">${kitten("think")}</div>
+    <p>Bạn rời app <b>${sec} giây</b>. Khoá màn hình để làm bài trên giấy thì vẫn tính là đang tập trung.</p>
+    <p class="muted small">Nếu lỡ mở app khác (mạng xã hội, game…), hãy thành thật nhé: phiên này sẽ dừng lại.</p>
+    <div class="two" style="width:100%"><button class="btn" id="awOther">Mình mở app khác</button><button class="btn primary" id="awLock">Mình chỉ khoá màn hình</button></div></div>`,
+    onMount: (el) => {
+      $("#awLock", el).addEventListener("click", () => { closeSheet(); toast(`${prefs().name} vẫn đang làm việc cùng bạn!`); });
+      $("#awOther", el).addEventListener("click", () => { closeSheet(); failFocus(sec); });
+    } });
+}
 function failFocus(sec) {
   state.focus = {}; save("focus", {});
   try { wakeLock?.release?.(); } catch {} wakeLock = null;
@@ -209,7 +221,7 @@ function renderStats() {
     const start = !days[0] || days[0] > addDays(todayISO(), -6) ? addDays(todayISO(), -6) : days[0] < addDays(todayISO(), -59) ? addDays(todayISO(), -59) : days[0];
     let acc = Object.entries(dm).filter(([d]) => d < start).reduce((n, [, m]) => n + m, 0);
     const pts = []; for (let d = start; d <= todayISO(); d = addDays(d, 1)) { acc += dm[d] || 0; pts.push({ v: acc, label: `${+d.slice(8)}/${+d.slice(5, 7)}`, key: d }); }
-    main.innerHTML = `<span class="label">Tổng quan</span><div class="big-stat"><b>${esc(fmtMin(total))}</b><span class="muted">tập trung · ${sessions} phiên · ${totalE()} e⁻</span></div><div class="chart" id="stChart">${areaChart(pts)}</div>`;
+    main.innerHTML = `<span class="label">Tổng quan</span><div class="big-stat"><b>${esc(fmtMin(total))}</b><span class="muted">tập trung · ${sessions} phiên</span></div><div class="chart" id="stChart">${areaChart(pts)}</div>`;
     main._points = pts.map((p) => ({ label: p.label, text: `tổng ${fmtMin(p.v)}` }));
     const allR = Object.values(state.stats.days).reduce((n, x) => n + (x.r || 0), 0);
     const bestDay = Math.max(0, ...Object.values(dm)), longest = Math.max(0, ...state.sessions.map((s) => s.m));

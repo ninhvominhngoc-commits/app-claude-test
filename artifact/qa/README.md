@@ -1,6 +1,6 @@
 # Bộ kiểm thử app Sorbonne Copilot
 
-Chạy toàn bộ kịch bản (người dùng mới, gia sư, flashcards, mail, kiểm tra tin, tải PDF, lỗi mạng, trò chơi nguyên tử, căn phòng của bé mèo Elec (trang trí, nhiệm vụ, quà, khách ghé thăm, màn chờ), phiêu lưu: truyện, trận đấu, cầu nguyện và bảo hiểm 50 lượt, bố cục 320–820px sáng/tối, kiểm tra truy cập axe):
+Chạy toàn bộ kịch bản (người dùng mới, gia sư, flashcards, mail, kiểm tra tin, tải PDF, lỗi mạng, tiến độ học (3 vòng mục tiêu, tiến độ từng môn, phiên tập trung có mục tiêu và ghi chú), luyện đề (đề tương tự, chấm cách trình bày), nhập lịch Moodle (.ics), căn phòng của bé mèo Elec (trang trí, nhiệm vụ, quà, khách ghé thăm, màn chờ), phiêu lưu: truyện, trận đấu, cầu nguyện và bảo hiểm 50 lượt, bố cục 320–820px sáng/tối, kiểm tra truy cập axe):
 
 ```bash
 cd artifact/qa

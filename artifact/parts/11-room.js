@@ -35,8 +35,9 @@ function renderRoom() {
   const box = $("#hRoom"); if (!box) return;
   box.innerHTML = roomHtml();
   const q = quests(), done = q.filter((x) => x.p >= 1).length, d = advDay(), qb = $("#hQuest");
-  $("#hQuestTxt").textContent = `Nhiệm vụ ${done}/3`;
-  qb.setAttribute("aria-label", `Nhiệm vụ ${done}/3${d.gift ? "" : ", có quà hôm nay"}`);
+  $("#hQuestTxt").textContent = `Hôm nay ${done}/3`;
+  const ic = qb.querySelector("svg"); if (ic) ic.outerHTML = ringsSvg(q, 42);
+  qb.setAttribute("aria-label", `Mục tiêu hôm nay ${done}/3${d.gift ? "" : ", có quà hôm nay"}`);
   qb.querySelector(".dot-new")?.remove();
   if (!d.gift) qb.insertAdjacentHTML("beforeend", `<span class="dot-new" aria-hidden="true">1</span>`);
   const ch = currentChapter(), avail = !isDone(ch.id) && !chapterState(ch).lock, sb = $("#hudStory");
@@ -106,11 +107,13 @@ function openQuests() {
     const score = (x.f || 0) + (x.r || 0) + (x.m || 0) * 2;
     heat += `<i class="${score >= 50 ? "l3" : score >= 20 ? "l2" : score > 0 ? "l1" : ""} ${x.gold ? "gold" : ""} ${iso === t ? "today" : ""}" title="${iso}"></i>`;
   }
-  openSheet({ title: "Nhiệm vụ hôm nay", html: `<div class="qpanel">
+  const done = q.filter((x) => x.p >= 1).length;
+  openSheet({ title: "Mục tiêu hôm nay", html: `<div class="qpanel">
+    <div class="q-rings">${ringsSvg(q, 128, `<text x="60" y="66" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="20" fill="currentColor">${done}/3</text>`)}<p class="small">Đóng đủ 3 vòng mỗi ngày: <b>tập trung</b>, <b>ôn thẻ</b>, và <b>luyện</b> (làm đề hoặc tự giảng). Ba việc này giúp nhớ lâu hơn hẳn chỉ đọc lại bài.</p></div>
     <div class="gift-row"><span aria-hidden="true" style="font-size:26px">🎁</span><span style="flex:1;min-width:0"><b>Quà mỗi ngày</b><br><span class="small">Ghé phòng mỗi ngày để nhận 50 ✦</span></span><button class="btn primary sm" data-act="gift" ${d.gift ? "disabled" : ""}>${d.gift ? "Đã nhận" : "Nhận +50 ✦"}</button></div>
-    <ul class="quests">${q.map((x) => `<li><span class="qdot ${x.p >= 1 ? "done" : ""}" style="--p:${x.p.toFixed(2)}">${x.p >= 1 ? icon("check") : ""}</span><span>${esc(x.t)}<small>${esc(x.v)}</small></span>${x.p >= 1 ? `<span class="q-reward done">+30 ✦ ✓</span>` : x.act ? `<button class="btn space-btn" data-act="${x.act[0]}">${x.act[1]}</button>` : `<span class="q-reward">+30 ✦</span>`}</li>`).join("")}</ul>
-    <p class="small muted" style="margin-top:-6px">Xong cả 3 nhiệm vụ là ngày hoàn hảo: thêm 60 ✦.</p>
-    <button class="lvl" data-go="lab" style="all:unset;cursor:pointer;display:grid;gap:6px"><span class="lvl-top"><span>Cấp ${lv.n} · <b>${esc(lv.title)}</b></span><span>${lv.t} e⁻${lv.next ? " / " + lv.next : ""}</span></span><span class="xp"><i style="width:${Math.round(lv.pct * 100)}%"></i></span></button>
+    <ul class="quests">${q.map((x) => `<li><span class="qdot ${x.p >= 1 ? "done" : ""}" style="--p:${x.p.toFixed(2)};--chart:${x.col}">${x.p >= 1 ? icon("check") : ""}</span><span>${esc(x.t)}<small>${esc(x.v)}</small></span>${x.p >= 1 ? `<span class="q-reward done">+30 ✦ ✓</span>` : x.act ? `<button class="btn space-btn" data-act="${x.act[0]}">${x.act[1]}</button>` : `<span class="q-reward">+30 ✦</span>`}</li>`).join("")}</ul>
+    <p class="small muted" style="margin-top:-6px">Đủ 3 vòng: thêm 60 ✦. Tổng ${esc(fmtMin(lv.t))} tập trung từ trước tới nay.</p>
+    <button class="btn soft block" data-go="prog">${icon("target")} Xem tiến độ từng môn</button>
     <div class="heat-head"><p class="w-title">Tháng ${+t.slice(5, 7)}</p><span class="flame">${icon("flame")} ${n} ngày liên tiếp</span></div>
     <div class="heat">${heat}</div>
     <p class="small muted">Kỷ lục chuỗi ngày: ${best} ngày.</p></div>` });
@@ -120,34 +123,8 @@ function openEarnInfo() {
     <p class="center"><span class="gem" style="font-size:22px;padding:6px 16px"><b>✦</b> ${fmtN(adv().gems)}</span></p>
     <ul class="earn-list">
       <li><b>Tập trung</b><span>1 phút = 2 ✦</span></li><li><b>Ôn flashcards</b><span>1 thẻ = 1 ✦</span></li>
-      <li><b>Tự giảng Feynman</b><span>20 ✦ (5 lần/ngày)</span></li><li><b>Nhiệm vụ hằng ngày</b><span>30 ✦ mỗi cái · ngày hoàn hảo 60 ✦</span></li>
+      <li><b>Tự giảng Feynman · luyện đề</b><span>20 ✦ · 30 ✦ (5 lần/ngày)</span></li><li><b>Mỗi vòng mục tiêu</b><span>30 ✦ · đủ 3 vòng thêm 60 ✦</span></li>
       <li><b>Quà mỗi ngày · khách ghé chơi</b><span>50 ✦ · 20 ✦</span></li><li><b>Thắng đấu tập</b><span>100 ✦ (3 lần/ngày)</span></li><li><b>Xong một chương truyện</b><span>300–500 ✦</span></li></ul>
     <p class="small muted">Không có tiền thật nào ở đây cả: mọi Tinh thể đều đến từ việc học.</p>
     <div class="two"><button class="btn" data-act="decor">Trang trí phòng</button><button class="btn primary" data-close data-go="wish">Cầu nguyện</button></div></div>` });
-}
-
-// --- màn tập trung: mạch 5 linh kiện sáng dần theo thời gian ---
-const PARTS = [["r", "R"], ["c", "C"], ["l", "L"], ["d", "D"], ["led", "LED"]];
-function circuitSvg() {
-  const xs = [30, 90, 150, 210, 270];
-  const shape = (k, x) => ({
-    r: `<rect class="part r" x="${x - 16}" y="16" width="32" height="14" rx="5"/>`,
-    c: `<path class="part c" d="M${x - 5} 9V37M${x + 5} 9V37" style="fill:none;stroke-width:4"/>`,
-    l: `<path class="part l" d="M${x - 18} 23c0-10 9-10 9 0c0-10 9-10 9 0c0-10 9-10 9 0c0-10 9-10 9 0" style="fill:none"/>`,
-    d: `<path class="part d" d="M${x - 9} 12L${x + 7} 23 ${x - 9} 34Z"/><path class="part d" d="M${x + 8} 12V34" style="fill:none"/>`,
-    led: `<circle class="glow" cx="${x}" cy="23" r="20"/><path class="part led" d="M${x - 9} 12L${x + 7} 23 ${x - 9} 34Z"/><path class="part led" d="M${x + 8} 12V34M${x + 3} 7l5-5M${x + 10} 10l6-4" style="fill:none"/>`,
-  })[k];
-  let wires = `<path class="wire" data-w="0" d="M4 23H${xs[0] - 18}"/>`, parts = "";
-  for (let i = 0; i < 5; i++) {
-    parts += `<g data-p="${i}">${shape(PARTS[i][0], xs[i])}<text x="${xs[i]}" y="54">${PARTS[i][1]}</text></g>`;
-    wires += i < 4 ? `<path class="wire" data-w="${i + 1}" d="M${xs[i] + 18} 23H${xs[i + 1] - 18}"/>` : `<path class="wire" data-w="5" d="M${xs[4] + 18} 23H296"/>`;
-  }
-  return `<svg viewBox="0 0 300 60" role="img" aria-label="Mạch đang lắp: 0/5 linh kiện">${wires}${parts}</svg>`;
-}
-function paintCircuit(p) {
-  const box = $("#fCircuit"); if (!box) return;
-  const n = Math.floor(clamp(p, 0, 1) * 5 + 1e-9);
-  box.querySelectorAll("[data-p]").forEach((g, i) => g.querySelectorAll(".part, .glow").forEach((x) => x.classList.toggle("on", i < n)));
-  box.querySelectorAll("[data-w]").forEach((w) => w.classList.toggle("on", n > 0 && +w.dataset.w <= n));
-  box.querySelector("svg")?.setAttribute("aria-label", `Mạch đang lắp: ${n}/5 linh kiện`);
 }

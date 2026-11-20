@@ -106,7 +106,7 @@ async function copyText(text, label) {
 }
 
 // ================= dữ liệu (riêng tư theo người dùng) =================
-const state = { agenda: [], courses: [], decks: {}, chats: {}, mail: { seen: [], recent: [], lastRun: "" }, status: null, stats: { days: {} }, atoms: {}, focus: {}, facts: {}, prefs: {}, sessions: [], adv: null, cur: null, view: "home", seg: "mail", mailMsg: null };
+const state = { agenda: [], courses: [], decks: {}, chats: {}, mail: { seen: [], recent: [], lastRun: "" }, status: null, stats: { days: {} }, atoms: {}, focus: {}, facts: {}, prefs: {}, sessions: [], adv: null, drill: { list: [] }, exams: [], cur: null, view: "home", seg: "mail", mailMsg: null };
 let base = null, dataReady = false, loadFailed = false;
 const writeQueue = new Map();
 function queue(docId, op) {
@@ -169,6 +169,8 @@ async function loadData() {
       else if (d.id === "facts") state.facts = v.list || {};
       else if (d.id === "prefs") state.prefs = v || {};
       else if (d.id === "sessions") state.sessions = Array.isArray(v.list) ? v.list : [];
+      else if (d.id === "drill") state.drill = { list: Array.isArray(v.list) ? v.list : [] };
+      else if (d.id === "exams") state.exams = Array.isArray(v.list) ? v.list : [];
       else if (d.id === "adv") { const z = ADV0(); state.adv = { ...z, ...v, own: v.own || {}, choice: v.choice || {}, aff: v.aff || {}, day: v.day || {}, furni: v.furni || z.furni, equip: v.equip || z.equip }; }
     }
     showNotice("");

@@ -38,6 +38,15 @@
     if (s.includes("mails universitaires")) return { mails: [{ ref: 0, resume_vi: "AG Jussieu kêu gọi biểu tình chiều nay.", importance: "haute", action_vi: "Tránh khu Panthéon từ 13h" }, { ref: "1", resume_vi: "Phòng TP đổi lịch.", importance: "moyenne", action_vi: "" }],
       events: [{ type: "event", title: "Manifestation 10 améliorable", date: today, time: "13:00" }, { type: "exam", title: "Partiel de Maths", date: plus(9), time: "14:00", exam_content: "Suites" }, { type: "deadline", title: "Ngày sai", date: "2026-13-45" }, { title: "" }] };
     if (s.includes("flashcards")) return [{ front: "Que fait une diode ?", back: "Elle laisse passer le courant dans **un seul sens**.", mnemonic: "Porte de métro" }, { front: "Seuil d'une diode Si ?", back: "$\\approx 0{,}6\\,V$", mnemonic: "" }, { bad: 1 }];
+    if (s.includes("sujet d'examen") && s.includes("Découpe-le en exercices")) return { subject: "Électrocinétique", exercises: [
+      { n: 1, title: "Diviseur de tension", points: "6 pts", topics: ["diviseur de tension"], statement: "Un générateur \\(E = 12\\,V\\) alimente \\(R_1 = 1\\,k\\Omega\\) et \\(R_2 = 2\\,k\\Omega\\) en série. Calculer \\(U_2\\)." },
+      { n: 2, title: "Charge d'un condensateur", points: "8 pts", topics: ["RC"], statement: "On ferme l'interrupteur à t = 0. Établir \\(u_C(t)\\)." }, { title: "vide" } ],
+      style: ["Énoncer la loi utilisée", "Expression littérale avant l'application numérique", "Unités et chiffres significatifs"] };
+    if (s.includes("Crée UN exercice NOUVEAU")) return { statement: "Un générateur \\(E = 9\\,V\\) alimente \\(R_1 = 3\\,k\\Omega\\) et \\(R_2 = 6\\,k\\Omega\\) en série. Exprimer puis calculer \\(U_2\\).",
+      rubric: [{ item: "Loi du diviseur de tension citée", points: 4 }, { item: "Expression littérale de U2", points: 6 }, { item: "Application numérique avec unité", points: 6 }, { item: "Phrase de conclusion", points: 4 }], tips_vi: ["Viết định luật trước khi thay số", "Luôn ghi đơn vị"] };
+    if (s.includes("Tu corriges la copie")) return { score: 13.5, total: 20, criteria: [{ item: "Loi du diviseur de tension citée", got: 4, max: 4, comment_vi: "Tốt" }, { item: "Expression littérale de U2", got: 3, max: 6, comment_vi: "Thiếu bước biến đổi" }],
+      errors: [{ wrong: "U2 = 6", right: "U2 = 6 V", why_vi: "Thiếu đơn vị" }, { wrong: "Pas de conclusion", right: "Conclusion : U2 = 6 V.", why_vi: "Giám khảo chờ câu kết luận" }],
+      model: "D'après la loi du diviseur de tension : \\(U_2 = E\\,\\frac{R_2}{R_1+R_2}\\). AN : \\(U_2 = 6\\,V\\).", advice_vi: "Khá lắm! Nhớ ghi đơn vị nhé." };
     if (s.includes("mini-jeu de révision")) return { questions: [
       ...Array.from({ length: 6 }, (_, i) => ({ q: `QCM du cours n°${i + 1} : que vaut \\(U\\) ?`, options: ["Faux A", "Faux B", `Juste ${i + 1}`, "Faux C"], answer: 2, explain_vi: "Vì U = R·I." })),
       { q: "Sans options" }, { q: "Trop d'options", options: ["a", "b", "c", "d", "e"], answer: 0 } ] };

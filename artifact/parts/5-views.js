@@ -20,7 +20,7 @@ function grade(card, g) {
 const ivLabel = (n) => (n === 0 ? "ngay" : n < 30 ? `${n} ngày` : n < 365 ? `${Math.round(n / 30)} tháng` : `${Math.round(n / 365)} năm`);
 function dueCards(deckId) { const t = todayISO(); return (state.decks[deckId] || []).filter((c) => c.due <= t); }
 function deckList() {
-  return [{ id: FR, title: "Ngữ pháp tiếng Pháp" }, ...state.courses.map((c) => ({ id: c.id, title: c.title }))]
+  return [{ id: FR, title: "Ngữ pháp tiếng Pháp" }, ...(state.decks.redac?.length ? [{ id: "redac", title: "Cách trình bày bài thi" }] : []), ...state.courses.map((c) => ({ id: c.id, title: c.title }))]
     .map((d) => ({ ...d, total: (state.decks[d.id] || []).length, due: dueCards(d.id).length }));
 }
 const totalDue = () => deckList().reduce((n, d) => n + d.due, 0);
@@ -38,7 +38,7 @@ function startSession(deckIds) {
   show("session");
   nextCard();
 }
-function deckTitle(id) { return id === FR ? "Ngữ pháp tiếng Pháp" : state.courses.find((c) => c.id === id)?.title || ""; }
+function deckTitle(id) { return id === FR ? "Ngữ pháp tiếng Pháp" : id === "redac" ? "Cách trình bày bài thi" : state.courses.find((c) => c.id === id)?.title || ""; }
 function nextCard() {
   sess.cur = sess.queue?.shift() || null;
   $("#sProg").style.width = (sess.total ? Math.round((sess.done / sess.total) * 100) : 0) + "%";
@@ -88,7 +88,7 @@ function flipCard() {
 function gradeCur(g) {
   if (!sess.cur || !sess.flipped) return;
   const { deck, card } = sess.cur;
-  grade(card, g); saveDeck(deck); bump("r"); sfx("pop"); rewardReview(deck); advCard(); checkGold();
+  grade(card, g); saveDeck(deck); bump("r"); sfx("pop"); advCard(); checkGold();
   if (g < 3) sess.queue.push(sess.cur); else sess.done++;
   nextCard();
 }
@@ -196,6 +196,7 @@ function jumpDay(d) {
 function openEvMenu(id) {
   const a = state.agenda.find((x) => x.id === id); if (!a) return;
   openSheet({ title: a.title, html: `<div class="menu">
+    <button class="menu-i" data-act="ev-guide" data-id="${esc(id)}"><span class="badge-ic" style="--tint: var(--t-sky); --tk: var(--k-sky)">${icon("bulb")}</span><span><strong>Hướng dẫn làm việc này</strong><span class="faint small">Chia nhỏ các bước, ước lượng thời gian</span></span></button>
     <button class="menu-i" data-act="ev-done" data-id="${esc(id)}"><span class="badge-ic" style="--tint: var(--t-mint); --tk: var(--k-mint)">${icon("check")}</span><span><strong>${a.done ? "Bỏ đánh dấu đã xong" : "Đánh dấu đã xong"}</strong></span></button>
     <button class="menu-i danger" data-act="ev-del" data-id="${esc(id)}"><span class="badge-ic">${icon("trash")}</span><span><strong>Xoá khỏi lịch</strong></span></button></div>` });
 }
@@ -238,6 +239,8 @@ Fais un plan de révision réaliste jusqu'au dernier examen : sessions de 25-50 
 
 // ================= màn Học (danh sách) =================
 function renderStudy() {
+  renderStudySeg();
+  if (studySeg === "exams") return renderExams();
   const el = $("#sList");
   if (!state.courses.length) {
     el.innerHTML = `<div class="empty">${mascot("lg")}<h3>Chưa có tài liệu nào</h3><p>Thêm slide hoặc giáo trình (PDF, ảnh). Gia sư giảng từng ý bằng ví dụ vui, rồi để bạn tự giảng lại.</p><button class="btn primary" data-act="add-course">${icon("upload")} Thêm tài liệu</button></div>`;

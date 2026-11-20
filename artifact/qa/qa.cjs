@@ -342,7 +342,7 @@ async function axe(p, label) {
   }
 
 
-  // ---------- 11. Trò chơi: tập trung, nguyên tử, bảng tuần hoàn ----------
+  // ---------- 11. Tiến độ học: tập trung có mục tiêu, 3 vòng, tiến độ môn ----------
   {
     const today = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Paris" }).format(new Date());
     const setStore = (p, kv) => p.evaluate((kv) => { for (const [k, v] of Object.entries(kv)) window.__store.set(k, v); sessionStorage.setItem("__store", JSON.stringify([...window.__store])); }, kv);
@@ -351,55 +351,51 @@ async function axe(p, label) {
     check("Tập trung: mở màn toàn màn hình", await vis(p, "#v-focus") && !(await vis(p, ".tabbar")));
     check("Tập trung: chọn được 3 môn (1 tài liệu + Tiếng Pháp + Tự học)", (await p.$$("#fSubj button")).length === 3);
     await p.click('#fSubj button[data-subj="free"]'); await p.click('#fDur button[data-dur="15"]');
-    check("Tập trung: gợi ý phần thưởng +30 ✦ và +3 e⁻ (Lithium)", /\+30 ✦ và \+3 e⁻ \(Lithium \(Li\)\)/.test(await txt(p, "#fHint")), await txt(p, "#fHint"));
-    check("Tập trung: mạch 5 linh kiện, chưa sáng", (await p.$$("#fCircuit [data-p]")).length === 5 && (await p.$$("#fCircuit .part.on")).length === 0);
+    check("Tập trung: gợi ý phần thưởng +30 ✦", /\+30 ✦/.test(await txt(p, "#fHint")), await txt(p, "#fHint"));
+    await p.fill("#fGoal", "Làm xong bài 2 TD");
     await p.click("#fStart"); await p.waitForTimeout(1200);
     check("Tập trung: đồng hồ đếm ngược chạy", /^1[45]:\d\d$/.test((await txt(p, "#fTime")).trim()), await txt(p, "#fTime"));
+    check("Tập trung: hiện mục tiêu phiên và vòng thời gian", /Làm xong bài 2 TD/.test(await txt(p, "#fGoalShow")) && (await vis(p, "#fRing svg")));
+    await p.click("#fNotesSum"); await p.fill("#fNoteIn", "Nhắn nhóm TP"); await p.press("#fNoteIn", "Enter");
     let st = await store(p);
-    check("Tập trung: phiên đang chạy được lưu", st["data/users/u1/focus"]?.subject === "free" && st["data/users/u1/focus"].dur === 15);
+    check("Tập trung: phiên đang chạy được lưu kèm mục tiêu và việc chợt nhớ", st["data/users/u1/focus"]?.subject === "free" && st["data/users/u1/focus"].dur === 15 && st["data/users/u1/focus"].goal === "Làm xong bài 2 TD" && st["data/users/u1/focus"].notes?.[0] === "Nhắn nhóm TP", JSON.stringify(st["data/users/u1/focus"]));
     await p.click('#v-focus [data-go="home"]'); await p.waitForTimeout(1100);
-    check("Widget: hiện 'Đang tập trung' và thời gian còn lại", /Đang tập trung/.test(await txt(p, "#wFocus")) && /1[45]:\d\d/.test(await txt(p, "#wFocus [data-left]")));
+    check("Nút Tập trung: hiện 'Đang tập trung' và thời gian còn lại", /Đang tập trung/.test(await txt(p, "#wFocus")) && /1[45]:\d\d/.test(await txt(p, "#wFocus [data-left]")));
     await p.reload({ waitUntil: "load" }); await p.waitForTimeout(800);
     check("Tải lại: phiên tập trung vẫn tiếp tục", /Đang tập trung/.test(await txt(p, "#wFocus")));
     await p.click("#wFocus"); await p.click("#fStop");
-    check("Dừng sớm (< 5 phút): hỏi lại trước khi dừng", /chưa đủ 5 phút/.test(await txt(p, "#sheetRoot")));
+    check("Dừng sớm (< 5 phút): hỏi lại trước khi dừng", /Cố thêm chút nữa/.test(await txt(p, "#sheetRoot")));
     await p.click("#cfYes"); await p.waitForTimeout(200);
     st = await store(p);
-    check("Dừng sớm: xoá phiên, không cộng electron", !st["data/users/u1/focus"]?.endAt && !(st["data/users/u1/atoms"]?.list?.free?.e));
-    // phiên đã hết giờ trong lúc đóng app -> tự hoàn thành khi mở lại
+    check("Dừng sớm: xoá phiên đang chạy", !st["data/users/u1/focus"]?.endAt);
     const now = Date.now();
-    await setStore(p, { "data/users/u1/focus": { subject: "free", start: now - 26 * 60000, endAt: now - 60000, dur: 25 } });
+    await setStore(p, { "data/users/u1/focus": { subject: "free", start: now - 26 * 60000, endAt: now - 60000, dur: 25, goal: "Ôn chương 2", notes: ["Mua pin máy tính"] } });
     await p.reload({ waitUntil: "load" }); await p.waitForTimeout(900);
-    check("Hoàn thành: mở lại app thì nhận thưởng", /Hoàn thành phiên tập trung/.test(await txt(p, "#sheetRoot")) && /\+5 e⁻/.test(await txt(p, "#sheetRoot")) && /\+50 ✦/.test(await txt(p, "#sheetRoot")), await txt(p, "#sheetRoot"));
-    check("Hoàn thành: thẻ nguyên tố mới là Bore (B)", (await txt(p, "#sheetRoot .elem-tile .s")).trim() === "B");
+    const sh = await txt(p, "#sheetRoot");
+    check("Hoàn thành: mở lại app thì nhận thưởng +50 ✦", /Hoàn thành phiên tập trung/.test(sh) && /\+50 ✦/.test(sh) && /25 phút/.test(sh), sh.slice(0, 200));
+    check("Hoàn thành: hỏi mục tiêu phiên đã xong chưa", /Ôn chương 2/.test(sh) && (await vis(p, '#sheetRoot [data-goal="done"]')));
+    await p.click('#sheetRoot [data-goal="done"]');
     st = await store(p);
-    check("Hoàn thành: lưu 5 e⁻ và 25 phút", st["data/users/u1/atoms"].list.free.e === 5 && st["data/users/u1/atoms"].list.free.min === 25);
+    const last = st["data/users/u1/sessions"]?.list?.slice(-1)[0];
+    check("Hoàn thành: ghi mục tiêu đã xong vào nhật ký phiên", last?.goal === "Ôn chương 2" && last.done === true, JSON.stringify(last));
+    await p.click("#notesToAgenda");
+    st = await store(p);
+    check("Việc chợt nhớ: thêm vào Lịch (chưa rõ ngày)", st["data/users/u1/agenda"]?.items?.some((x) => x.title === "Mua pin máy tính" && !x.date));
+    check("Hoàn thành: cộng 25 phút cho môn Tự học khác", st["data/users/u1/atoms"]?.list?.free?.min === 25, JSON.stringify(st["data/users/u1/atoms"]));
     check("Thống kê: 25 phút tập trung hôm nay", st["data/users/u1/stats"].days[today()].f === 25);
     await p.keyboard.press("Escape");
     if (await vis(p, "#v-focus")) await p.click('#v-focus [data-go="home"]');
-    check("Nhiệm vụ 1 (tập trung 25 phút) hoàn thành", /1\/3/.test(await txt(p, "#hQuestTxt")));
-    // phòng thí nghiệm
-    await p.click('.hero-actions [data-go="stats"]'); await p.click('#v-stats [data-go="lab"]');
-    check("Lab: mở từ bảng Thống kê, che thanh tab", (await vis(p, "#v-lab")) && !(await vis(p, ".tabbar")));
-    await p.waitForTimeout(200);
-    const painted = await p.$eval("#labAtoms canvas", (c) => { const d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data; let n = 0; for (let i = 3; i < d.length; i += 4) if (d[i] > 0) n++; return c.width > 0 && n > 50; });
-    check("Lab: nguyên tử được vẽ trên canvas", painted);
-    check("Lab: bảng tuần hoàn đủ 118 ô", (await p.$$("#pt .el")).length === 118);
-    check("Lab: đã tổng hợp 5/118", /5\/118/.test(await txt(p, "#ptCount")));
-    check("Lab: 5 ô đầu sáng lên, Bo là ô mới nhất", (await p.$$("#pt .el.on")).length === 5 && (await p.$eval("#pt .el.last", (e) => e.dataset.z)) === "5");
-    check("Lab: Oganesson ở hàng 7 cột 18", await p.$eval('#pt .el[data-z="118"]', (e) => e.style.gridRow === "7" && e.style.gridColumn.startsWith("18")));
-    check("Lab: Lantan ở hàng riêng (9)", await p.$eval('#pt .el[data-z="57"]', (e) => e.style.gridRow === "9"));
-    check("Lab: mỗi môn một thẻ nguyên tử", (await p.$$("#labAtoms .atom-card canvas")).length === 3);
-    await p.click('#pt .el[data-z="6"]');
-    check("Lab: ô khoá cho biết cần thêm bao nhiêu", /Carbone/.test(await txt(p, "#sheetRoot")) && /cần thêm 1 electron/.test(await txt(p, "#sheetRoot")));
-    await p.click("#elAsk"); await p.waitForTimeout(900);
-    st = await store(p);
-    check("Lab: chuyện thú vị được lưu lại", !!st["data/users/u1/facts"]?.list?.["6"] && (await vis(p, "#elFact strong")));
-    await p.keyboard.press("Escape");
-    await p.click('#labAtoms [data-act="focus-subj"][data-id="francais"]');
-    check("Lab: nút tập trung chọn đúng môn", await p.$eval('#fSubj button[data-subj="francais"]', (b) => b.getAttribute("aria-pressed") === "true"));
+    check("Vòng 1 (tập trung 25 phút) đã đóng", /1\/3/.test(await txt(p, "#hQuestTxt")));
+    await p.click('.hero-actions [data-go="stats"]'); await p.click('#v-stats [data-go="prog"]');
+    check("Tiến độ: mở từ Thống kê, che thanh tab", (await vis(p, "#v-prog")) && !(await vis(p, ".tabbar")));
+    check("Tiến độ: mỗi môn một thẻ có chậu cây", (await p.$$("#pgList .pg-card .plant")).length === 3);
+    check("Tiến độ: 3 vòng hôm nay ở đầu bảng", (await vis(p, "#pgTop .rings")) && /1\/3 vòng/.test(await txt(p, "#pgTop")));
+    check("Tiến độ: môn Tự học khác có 25 phút tuần này", /Tự học khác[\s\S]*25 phút/.test(await txt(p, "#pgList")));
+    check("Tiến độ: gợi ý việc nên làm tiếp (ôn thẻ đến hạn của Tiếng Pháp)", /Ôn 1 thẻ đến hạn/.test(await txt(p, "#pgList")));
+    await p.click('#pgList [data-act="deck-start"][data-deck="francais"]');
+    check("Tiến độ: nút gợi ý mở phiên ôn đúng bộ thẻ", await vis(p, "#v-session"));
     await p.close();
-    // ôn 10 thẻ -> +1 electron; ngày hoàn hảo
+    // ôn 10 thẻ + tự giảng → đủ 3 vòng
     const q = await open({ seed: true });
     const cards = Array.from({ length: 10 }, (_, i) => ({ id: "x" + i, front: "Q" + i, back: "A" + i, mnemonic: "", ef: 2.5, interval: 0, reps: 0, lapses: 0, due: today() }));
     await setStore(q, { "data/users/u1/deck-francais": { cards }, "data/users/u1/stats": { days: { [today()]: { r: 0, m: 0, f: 25 } } } });
@@ -408,25 +404,26 @@ async function axe(p, label) {
     for (let i = 0; i < 10; i++) { await q.keyboard.press("Space"); await q.keyboard.press("3"); }
     await q.waitForTimeout(200);
     let s2 = await store(q);
-    check("Ôn 10 thẻ: thưởng 1 electron cho Tiếng Pháp", s2["data/users/u1/atoms"]?.list?.francais?.e === 1);
+    check("Ôn 10 thẻ: vòng ôn thẻ đóng", s2["data/users/u1/stats"].days[today()].r === 10);
     await q.click('#sDone [data-go="review"]'); await tab(q, "study"); await q.click(".course-card");
     await q.click("#feynBtn"); await q.fill("#chatIn", "La diode laisse passer le courant dans un seul sens"); await q.click("#sendBtn");
     await q.waitForSelector("#sendBtn:not([hidden])", { timeout: 6000 }); await q.waitForTimeout(400);
     s2 = await store(q);
-    check("Ngày hoàn hảo: đủ 3 nhiệm vụ thì được đánh dấu vàng", s2["data/users/u1/stats"].days[today()].gold === 1 && s2["data/users/u1/stats"].days[today()].fe === 1);
+    check("Đủ 3 vòng: được đánh dấu vàng", s2["data/users/u1/stats"].days[today()].gold === 1 && s2["data/users/u1/stats"].days[today()].fe === 1);
     await q.click('#v-course [data-go="study"]'); await tab(q, "home");
-    check("Nhiệm vụ: 3/3", /3\/3/.test(await txt(q, "#hQuestTxt")));
+    check("Mục tiêu: 3/3", /3\/3/.test(await txt(q, "#hQuestTxt")));
     await q.click("#hQuest");
     check("Lịch nhiệt: hôm nay có viền vàng", await q.$eval("#sheetRoot .heat i.today", (e) => e.classList.contains("gold")));
-    check("Nhiệm vụ: đủ 3 nhiệm vụ đều hiện đã nhận thưởng", (await q.$$("#sheetRoot .q-reward.done")).length === 3);
+    check("Mục tiêu: cả 3 vòng hiện đã nhận thưởng", (await q.$$("#sheetRoot .q-reward.done")).length === 3);
     await q.close();
-    // cấp độ
+    // cấp độ theo phút tập trung; chậu cây lớn theo thẻ đã thuộc
     const r = await open({ seed: true });
-    await setStore(r, { "data/users/u1/atoms": { list: { free: { e: 12, min: 60, n: 2, rc: 0 } } } });
+    const mature = Array.from({ length: 10 }, (_, i) => ({ id: "m" + i, front: "Q" + i, back: "A" + i, ef: 2.5, interval: i < 8 ? 30 : 4, reps: 4, lapses: 0, due: "2099-01-01" }));
+    await setStore(r, { "data/users/u1/atoms": { list: { free: { min: 60, n: 2 } } }, "data/users/u1/deck-c1": { cards: mature } });
     await r.reload({ waitUntil: "load" }); await r.waitForTimeout(700);
-    check("Cấp độ: đồng hồ hiện Cấp 2", /Cấp 2/.test(await txt(r, "#hClock")));
-    await r.click("#hQuest");
-    check("Cấp độ: 12 e⁻ = cấp 2 'Proton tò mò'", /Cấp 2 · Proton tò mò/.test(await txt(r, "#sheetRoot")));
+    await r.click('.hero-actions [data-go="stats"]'); await r.click('#v-stats [data-go="prog"]');
+    check("Cấp độ: 60 phút = cấp 2 'Bạn học chăm'", /Cấp 2 \(Bạn học chăm\)/.test(await txt(r, "#pgLevel")), await txt(r, "#pgLevel"));
+    check("Chậu cây: 8/10 thẻ đã thuộc → Sắp nở", /Sắp nở/.test(await txt(r, "#pgList .pg-card:first-child")) && /8\/10 đã thuộc/.test(await txt(r, "#pgList")), await txt(r, "#pgList .pg-card:first-child"));
     await r.close();
   }
 
@@ -439,7 +436,7 @@ async function axe(p, label) {
     check("Phòng: bé mèo Elec và lời thoại", (await vis(p, "#hRoom .dweller.kit svg")) && (await txt(p, "#hBubble")).length > 10);
     const b1 = await txt(p, "#hBubble"); await p.click("#hRoom .dweller.kit"); const b2 = await txt(p, "#hBubble");
     check("Phòng: chạm bé mèo đổi lời thoại", b1 !== b2, b1 + " | " + b2);
-    check("Hero: lời thoại nhắc thẻ cần ôn hoặc hạn nộp", /thẻ đang chờ|Sắp tới hạn|Sắp thi|electron/.test(b1 + b2));
+    check("Hero: lời thoại nhắc thẻ cần ôn hoặc hạn nộp", /thẻ đang chờ|Sắp tới hạn|Sắp thi|tập trung/.test(b1 + b2));
     check("Hero: đồng hồ giờ Paris", /^\d\d:\d\d · /.test(await txt(p, "#hClock")));
     await p.click('.home .name-pill');
     await p.fill("#stName", "Mít"); await p.click('#stDur button[data-d="45"]'); await p.click("#stSfx"); await p.click("#stStrict"); await p.click("#stSave");
@@ -450,11 +447,21 @@ async function axe(p, label) {
     await p.click("#wFocus");
     check("Tập trung: chọn sẵn 45 phút", await p.$eval('#fDur button[data-dur="45"]', (b) => b.getAttribute("aria-pressed") === "true"));
     await p.click("#fStart"); await p.waitForTimeout(300);
-    await p.evaluate(() => { Object.defineProperty(document, "visibilityState", { configurable: true, get: () => "hidden" }); document.dispatchEvent(new Event("visibilitychange")); });
-    await p.waitForTimeout(15600);
-    await p.evaluate(() => { Object.defineProperty(document, "visibilityState", { configurable: true, get: () => "visible" }); document.dispatchEvent(new Event("visibilitychange")); });
-    await p.waitForTimeout(300);
-    check("Tập trung nghiêm: rời app > 15 giây thì phiên bị huỷ", /chạy mất rồi/.test(await txt(p, "#sheetRoot")) && !(await store(p))["data/users/u1/focus"]?.endAt);
+    const leave = () => p.evaluate(() => {
+      const setVis = (v) => { Object.defineProperty(document, "visibilityState", { configurable: true, get: () => v }); document.dispatchEvent(new Event("visibilitychange")); };
+      window.__realNow ||= Date.now.bind(Date);
+      setVis("hidden");
+      window.__shift = (window.__shift || 0) + 16000; Date.now = () => window.__realNow() + window.__shift;
+      setVis("visible");
+    });
+    await leave(); await p.waitForTimeout(200);
+    check("Tập trung nghiêm: rời app 16 giây thì hỏi đã khoá màn hình hay mở app khác", /Bạn vừa đi đâu thế/.test(await txt(p, "#sheetRoot")) && (await vis(p, "#awLock")));
+    await p.click("#awLock");
+    check("Tập trung nghiêm: khoá màn hình thì phiên vẫn chạy", !!(await store(p))["data/users/u1/focus"]?.endAt && !(await sheetOpen(p)));
+    await leave(); await p.waitForTimeout(200);
+    await p.click("#awOther");
+    check("Tập trung nghiêm: mở app khác thì phiên bị huỷ", /chạy mất rồi/.test(await txt(p, "#sheetRoot")) && !(await store(p))["data/users/u1/focus"]?.endAt);
+    await p.evaluate(() => { if (window.__realNow) { Date.now = window.__realNow; window.__shift = 0; } });
     await p.keyboard.press("Escape");
     // thống kê sau một phiên đã hoàn thành
     const now = Date.now();
@@ -808,8 +815,71 @@ async function axe(p, label) {
     const now = Date.now();
     await setStore(p, { "data/users/u1/focus": { subject: "free", start: now - 10 * 60000, endAt: now + 15 * 60000, dur: 25 } });
     await reopen(p, "#focus"); await p.waitForTimeout(1200);
-    check("Tập trung: Elec trong phòng đang lắp mạch", (await vis(p, "#fRoom .dweller.kit")) && /đang lắp mạch/.test(await txt(p, "#fElem")));
-    check("Tập trung: 10/25 phút = 2/5 linh kiện sáng", /2\/5/.test(await p.getAttribute("#fCircuit svg", "aria-label")) && (await p.$$("#fCircuit [data-p] .part.on")).length >= 2, await p.getAttribute("#fCircuit svg", "aria-label"));
+    check("Tập trung: Elec trong phòng học cùng bạn", (await vis(p, "#fRoom .dweller.kit")) && /đang học cùng bạn/.test(await txt(p, "#fElem")));
+    check("Tập trung: vòng thời gian đã chạy khoảng 40%", await p.$eval("#fRing .fr-on", (c) => { const [on, all] = c.getAttribute("stroke-dasharray").split(" ").map(Number); return on / all > 0.35 && on / all < 0.45; }));
+    await p.close();
+  }
+
+  // ---------- 15. Luyện đề, nhập Moodle, hướng dẫn từng việc ----------
+  {
+    const today = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Paris" }).format(new Date());
+    const plus = (n) => { const d = new Date(today() + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+    const p = await open({ seed: true });
+    await tab(p, "study");
+    await p.click('#sdSeg [data-sseg="exams"]');
+    check("Luyện đề: màn trống có nút thêm đề", await vis(p, '#sList [data-act="add-exam"]'));
+    check("Luyện đề: nút + đổi thành thêm đề", (await p.getAttribute("#sdAdd", "data-act")) === "add-exam");
+    await p.click('#sList [data-act="add-exam"]');
+    await p.setInputFiles("#aeF", { name: "partiel-2024.txt", mimeType: "text/plain", buffer: Buffer.from("Exercice 1. Diviseur de tension\nExercice 2. Circuit RC") });
+    check("Luyện đề: tên đề lấy từ tên file", (await p.inputValue("#aeT")) === "partiel-2024");
+    await p.click("#aeGo"); await p.waitForTimeout(500);
+    let st = await store(p);
+    const ex = st["data/users/u1/exams"]?.list?.[0];
+    check("Luyện đề: lưu đề với 2 bài (bỏ bài trống)", ex?.count === 2 && st[`data/users/u1/exam-${ex.id}`]?.exercises?.length === 2, JSON.stringify(ex));
+    check("Luyện đề: danh sách hiện đề vừa thêm", /partiel-2024/.test(await txt(p, "#sList")) && /2 bài/.test(await txt(p, "#sList")));
+    await p.click('#sList [data-act="ex-pick"]');
+    check("Luyện đề: chọn bài hoặc ngẫu nhiên", (await p.$$('#sheetRoot [data-act="ex-go"]')).length === 3);
+    await p.click('#sheetRoot [data-act="ex-go"][data-n="0"]'); await p.waitForTimeout(500);
+    check("Luyện đề: Claude soạn bài tương tự kèm barème", (await vis(p, "#v-drill")) && /Exprimer puis calculer/.test(await txt(p, "#drStatement")) && (await p.$$("#drBody .dr-list li")).length === 4);
+    check("Luyện đề: gửi bài gốc cho Claude", (await calls(p)).some((c) => c.kind === "json" && /Voici un exercice/.test(c.head)));
+    await p.click("#drSubmit");
+    check("Luyện đề: bài trống thì nhắc viết hoặc chụp ảnh", /Viết bài làm hoặc chụp ảnh/.test(await txt(p, "#toast")));
+    await p.fill("#drAns", "U2 = E R2/(R1+R2) = 6"); await p.click("#drSubmit"); await p.waitForTimeout(600);
+    check("Luyện đề: chấm 13.5/20 theo từng tiêu chí", /13\.5\/20/.test(await txt(p, ".dr-score")) && (await p.$$(".dr-score tr")).length === 2);
+    check("Luyện đề: chỉ ra lỗi trình bày và corrigé type", (await p.$$(".dr-errs li")).length === 2 && /diviseur de tension/.test(await txt(p, "#drModel")));
+    st = await store(p);
+    const att = st["data/users/u1/drill"]?.list?.slice(-1)[0];
+    check("Luyện đề: lưu lần luyện (điểm, môn)", att?.score === 13.5 && att.total === 20 && att.subj === ex.subj, JSON.stringify(att));
+    check("Luyện đề: đóng vòng Luyện và cộng ✦", st["data/users/u1/stats"]?.days?.[today()]?.p === 1 && (st["data/users/u1/adv"]?.gems || 0) >= 30);
+    await p.click("#drCards");
+    st = await store(p);
+    check("Luyện đề: lỗi trình bày thành flashcards", st["data/users/u1/deck-redac"]?.cards?.length === 2);
+    await p.click("#drBack"); await tab(p, "review");
+    check("Ôn tập: có bộ thẻ 'Cách trình bày bài thi'", /Cách trình bày bài thi/.test(await txt(p, "#rList")));
+    // Moodle
+    await tab(p, "agenda");
+    await p.click('#v-agenda [data-act="moodle"]');
+    const ics = ["BEGIN:VCALENDAR", "VERSION:2.0", "BEGIN:VEVENT", "UID:1@moodle", "SUMMARY:TP 3 : compte rendu est à remettre", "DESCRIPTION:Déposer le PDF\\, 4 pages max", "CATEGORIES:LU1EE001", `DTSTART:${plus(4).replace(/-/g, "")}T225900Z`, "END:VEVENT",
+      "BEGIN:VEVENT", "UID:2@moodle", "SUMMARY:Quiz chapitre 2 ferme", `DTSTART:${plus(6).replace(/-/g, "")}T210000Z`, "END:VEVENT",
+      "BEGIN:VEVENT", "UID:3@moodle", "SUMMARY:Vieux devoir est à remettre", "DTSTART:20200101T100000Z", "END:VEVENT", "END:VCALENDAR", ""].join("\r\n");
+    await p.setInputFiles("#mdFile", { name: "icalexport.ics", mimeType: "text/calendar", buffer: Buffer.from(ics) });
+    await p.waitForTimeout(300);
+    const rows = await p.$$eval(".pick-row", (e) => e.map((x) => x.textContent));
+    check("Moodle: đọc file .ics, bỏ việc đã qua", rows.length === 2, rows.join(" | "));
+    check("Moodle: nhận ra hạn nộp và đổi giờ UTC sang giờ Paris", rows.some((r) => /compte rendu/.test(r) && /Hạn nộp/.test(r) && /23:59/.test(r)), rows.join(" | "));
+    await p.click("#evAdd"); await p.waitForTimeout(200);
+    st = await store(p);
+    const mItem = st["data/users/u1/agenda"].items.find((x) => /compte rendu/.test(x.title));
+    check("Moodle: lưu vào Lịch kèm môn và mô tả", mItem?.course === "LU1EE001" && /PDF, 4 pages/.test(mItem.details) && mItem.source === "moodle", JSON.stringify(mItem));
+    await p.evaluate((id) => document.querySelector(`[data-act="ev-menu"][data-id="${id}"]`)?.click(), mItem.id);
+    await p.click('#sheetRoot [data-act="ev-guide"]'); await p.waitForTimeout(900);
+    st = await store(p);
+    check("Hướng dẫn: Claude chia nhỏ việc và lưu lại", (await vis(p, "#gdOut")) && !!st["data/users/u1/agenda"].items.find((x) => x.id === mItem.id)?.guide);
+    const n0 = (await calls(p)).length;
+    await p.keyboard.press("Escape");
+    await p.evaluate((id) => document.querySelector(`[data-act="ev-menu"][data-id="${id}"]`)?.click(), mItem.id);
+    await p.click('#sheetRoot [data-act="ev-guide"]'); await p.waitForTimeout(200);
+    check("Hướng dẫn: mở lại không hỏi Claude lần nữa", (await calls(p)).length === n0);
     await p.close();
   }
 
@@ -817,9 +887,9 @@ async function axe(p, label) {
   for (const scheme of ["light", "dark"]) {
     for (const width of [320, 390, 820]) {
       const p = await open({ seed: true, scheme, width, mobile: width < 700 });
-      for (const v of ["home", "study", "review", "agenda", "inbox", "stats", "lab"]) {
+      for (const v of ["home", "study", "review", "agenda", "inbox", "stats", "prog"]) {
         if (v === "stats") { await tab(p, "home"); await p.click('.hero-actions [data-go="stats"]'); }
-        else if (v === "lab") { await p.click('#v-stats [data-go="lab"]'); }
+        else if (v === "prog") { await p.click('#v-stats [data-go="prog"]'); }
         else await tab(p, v);
         await p.waitForTimeout(80);
         const o = await overflow(p);
@@ -827,7 +897,7 @@ async function axe(p, label) {
         if (width === 390) await axe(p, `${scheme} ${v}`);
         if (width === 320) await p.screenshot({ path: `${SHOTS}/${scheme}-${width}-${v}.png`, fullPage: true });
       }
-      await p.click('#v-lab [data-go="stats"]'); await p.click('#v-stats [data-go="home"]'); await p.click("#wFocus"); await p.waitForTimeout(300);
+      await p.click('#v-prog [data-go="stats"]'); await p.click('#v-stats [data-go="home"]'); await p.click("#wFocus"); await p.waitForTimeout(300);
       check(`Bố cục ${scheme} ${width}px focus: không tràn ngang`, (await overflow(p)) <= 0);
       if (width === 390) await axe(p, `${scheme} focus`);
       if (width === 320) await p.screenshot({ path: `${SHOTS}/${scheme}-${width}-focus.png` });

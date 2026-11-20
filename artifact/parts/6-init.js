@@ -2,12 +2,13 @@
 // ================= điều hướng =================
 const TABS = ["home", "study", "review", "agenda", "inbox"];
 const MAIN = [...TABS, "adv"];
-const IMMERSIVE = ["course", "session", "focus", "vn", "battle", "stats", "lab"];
+const IMMERSIVE = ["course", "session", "focus", "vn", "battle", "stats", "prog", "drill"];
 const START = location.hash.slice(1);
 function show(v) {
   if (v === "course" && !curCourse()) { const id = lsGet("cur"); if (state.courses.some((c) => c.id === id)) state.cur = id; else v = "study"; }
   if (v === "session" && !sess.queue) v = "review";
   if (v === "vn" && !vn.ch) v = "adv";
+  if (v === "drill" && !dr.examId) v = "study";
   if (v === "battle" && !bt.on) v = "adv";
   if (![...MAIN, ...IMMERSIVE, ...Object.keys(ADV_SEG)].includes(v)) v = "home";
   if (state.view === "course" && v !== "course" && chatAbort) chatAbort.abort();
@@ -27,7 +28,6 @@ function show(v) {
   if (location.hash.slice(1) !== v) history.replaceState(null, "", "#" + v);
   if (v !== "session" && v !== "vn") render(v);
   if (v === "course") requestAnimationFrame(() => scrollToEnd(false)); else window.scrollTo(0, 0);
-  kickAtoms();
 }
 function render(v = state.view) {
   renderBadges();
@@ -36,7 +36,8 @@ function render(v = state.view) {
   else if (v === "review") renderReview();
   else if (v === "agenda") renderAgenda();
   else if (v === "inbox") renderInbox();
-  else if (v === "lab") renderLab();
+  else if (v === "prog") renderProgress();
+  else if (v === "drill") renderDrill();
   else if (v === "stats") renderStats();
   else if (v === "focus") renderFocus();
   else if (ADV_SEG[v]) renderAdv();
@@ -83,7 +84,13 @@ const ACTIONS = {
   "settings": openSettings,
   "buddy": (el) => { lineIdx++; const L = buddyLines(); $("#hBubble").textContent = L[lineIdx % L.length]; hopEl(el); sfx("pop"); },
   "focus-subj": (el) => { focusPick.subject = el.dataset.id; lsSet("focusSubj", el.dataset.id); openFocus(); },
-  "el-info": (el) => openElement(+el.dataset.z),
+  "go-drill": () => { closeSheet(); studySeg = "exams"; show("study"); },
+  "add-exam": openAddExam,
+  "ex-pick": (el) => openExamPick(el.dataset.id),
+  "ex-go": (el) => startDrill(el.dataset.id, +el.dataset.n),
+  "ex-del": (el) => deleteExam(el.dataset.id),
+  "moodle": openMoodle,
+  "ev-guide": (el) => openGuide(el.dataset.id),
   "go-study": () => { closeSheet(); show("study"); },
   "add-found": () => lastCheck.events.length && openEventsSheet(lastCheck.events, "kiểm tra"),
   // phiêu lưu
@@ -149,10 +156,13 @@ window.addEventListener("resize", () => { clearTimeout(resizeT); resizeT = setTi
 $("#fSubj").addEventListener("click", (e) => { const b = e.target.closest("[data-subj]"); if (!b) return; focusPick.subject = b.dataset.subj; renderFocus(); });
 $("#fDur").addEventListener("click", (e) => { const b = e.target.closest("[data-dur]"); if (!b) return; focusPick.dur = +b.dataset.dur; renderFocus(); });
 $("#fStart").addEventListener("click", startFocus);
+$("#fGoal").addEventListener("input", (e) => { focusPick.goal = e.target.value; });
+$("#fNoteAdd").addEventListener("click", addNote);
+$("#fNoteIn").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); addNote(); } });
 $("#fStop").addEventListener("click", () => {
   const f = state.focus; if (!f?.endAt) return;
   const m = Math.min(f.dur, Math.floor((Date.now() - f.start) / 60000));
-  openConfirm({ title: "Dừng sớm?", text: m >= 5 ? `Bạn đã tập trung ${m} phút và vẫn nhận ${Math.floor(m / 5)} electron.` : `Mới ${m} phút, chưa đủ 5 phút cho 1 electron. Cố thêm chút nữa nhé?`, yes: "Dừng", danger: m < 5, onYes: () => finishFocus(false) });
+  openConfirm({ title: "Dừng sớm?", text: m >= 5 ? `Bạn đã tập trung ${m} phút (+${m * 2} ✦). Dừng phiên ở đây nhé?` : `Mới ${m} phút thôi. Cố thêm chút nữa nhé?`, yes: "Dừng", danger: m < 5, onYes: () => finishFocus(false) });
 });
 // hộp thư
 $$("#iSeg button").forEach((b) => b.addEventListener("click", () => { state.seg = b.dataset.seg; renderInbox(); }));

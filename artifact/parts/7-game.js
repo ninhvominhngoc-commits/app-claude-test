@@ -1,285 +1,152 @@
+// ================= tiến độ học: 3 mục tiêu mỗi ngày, tiến độ từng môn, phiên tập trung =================
+// Dựa trên cách học có bằng chứng: tập trung theo phiên (Pomodoro), ôn ngắt quãng, luyện truy hồi (làm đề, tự giảng lại),
+// ghi rõ mục tiêu phiên (implementation intention) và ghi lại việc chợt nhớ thay vì bỏ dở để làm ngay.
 
-// ================= trò chơi: mỗi môn là một nguyên tử =================
-const EL_SYM = "H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf Db Sg Bh Hs Mt Ds Rg Cn Nh Fl Mc Lv Ts Og".split(" ");
-const EL_FR = ("Hydrogène|Hélium|Lithium|Béryllium|Bore|Carbone|Azote|Oxygène|Fluor|Néon|Sodium|Magnésium|Aluminium|Silicium|Phosphore|Soufre|Chlore|Argon|Potassium|Calcium|"
-  + "Scandium|Titane|Vanadium|Chrome|Manganèse|Fer|Cobalt|Nickel|Cuivre|Zinc|Gallium|Germanium|Arsenic|Sélénium|Brome|Krypton|Rubidium|Strontium|Yttrium|Zirconium|"
-  + "Niobium|Molybdène|Technétium|Ruthénium|Rhodium|Palladium|Argent|Cadmium|Indium|Étain|Antimoine|Tellure|Iode|Xénon|Césium|Baryum|Lanthane|Cérium|Praséodyme|Néodyme|"
-  + "Prométhium|Samarium|Europium|Gadolinium|Terbium|Dysprosium|Holmium|Erbium|Thulium|Ytterbium|Lutécium|Hafnium|Tantale|Tungstène|Rhénium|Osmium|Iridium|Platine|Or|Mercure|"
-  + "Thallium|Plomb|Bismuth|Polonium|Astate|Radon|Francium|Radium|Actinium|Thorium|Protactinium|Uranium|Neptunium|Plutonium|Américium|Curium|Berkélium|Californium|Einsteinium|Fermium|"
-  + "Mendélévium|Nobélium|Lawrencium|Rutherfordium|Dubnium|Seaborgium|Bohrium|Hassium|Meitnerium|Darmstadtium|Roentgenium|Copernicium|Nihonium|Flérovium|Moscovium|Livermorium|Tennesse|Oganesson").split("|");
-function elPos(z) { // [hàng, cột] trong bảng tuần hoàn 18 cột; hàng 9–10 là họ Lantan/Actini
-  if (z === 1) return [1, 1]; if (z === 2) return [1, 18];
-  if (z <= 10) return [2, z <= 4 ? z - 2 : z + 8];
-  if (z <= 18) return [3, z <= 12 ? z - 10 : z];
-  if (z <= 36) return [4, z - 18];
-  if (z <= 54) return [5, z - 36];
-  if (z <= 56) return [6, z - 54];
-  if (z <= 71) return [9, z - 54];
-  if (z <= 86) return [6, z - 68];
-  if (z <= 88) return [7, z - 86];
-  if (z <= 103) return [10, z - 86];
-  return [7, z - 100];
-}
-const CAT = {
-  alkali: ["#ff9bb7", "Kim loại kiềm"], alkaline: ["#ffb38a", "Kim loại kiềm thổ"], transition: ["#93b6ff", "Kim loại chuyển tiếp"],
-  post: ["#9fd8e6", "Kim loại yếu"], metalloid: ["#7fd9ab", "Á kim"], nonmetal: ["#f1c75e", "Phi kim"], halogen: ["#d3f07a", "Halogen"],
-  noble: ["#b8adff", "Khí hiếm"], lan: ["#f7a8e0", "Họ Lantan"], act: ["#ffa6a6", "Họ Actini"],
-};
-function elCat(z) {
-  const [r, c] = elPos(z);
-  if (r === 9) return "lan"; if (r === 10) return "act";
-  if (c === 18) return "noble"; if (c === 17) return "halogen";
-  if ([1, 6, 7, 8, 15, 16, 34].includes(z)) return "nonmetal";
-  if (c === 1) return "alkali"; if (c === 2) return "alkaline";
-  if (c <= 12) return "transition";
-  if ([5, 14, 32, 33, 51, 52].includes(z)) return "metalloid";
-  return "post";
-}
-const elName = (z) => (z >= 1 && z <= 118 ? `${EL_FR[z - 1]} (${EL_SYM[z - 1]})` : "Chưa có electron");
-
-// --- môn học & điểm ---
+// --- môn học & thời gian theo môn (dữ liệu "atoms" cũ vẫn dùng: min = phút, n = số phiên) ---
 const FREE = "free";
 function subjects() {
   return [...state.courses.map((c) => ({ id: c.id, name: c.title, tint: tintOf(c.id) })), { id: FR, name: "Tiếng Pháp", tint: "sky" }, { id: FREE, name: "Tự học khác", tint: "butter" }];
 }
 const subjOf = (id) => subjects().find((s) => s.id === id) || { id, name: "Môn đã xoá", tint: "lav" };
-const atomOf = (id) => (state.atoms[id] ||= { e: 0, min: 0, n: 0, rc: 0 });
-const zOf = (id) => Math.min(118, state.atoms[id]?.e || 0);
-const saveAtoms = () => save("atoms", { list: state.atoms });
-const totalE = () => Object.values(state.atoms).reduce((n, a) => n + Math.min(118, a.e || 0), 0);
-const maxZ = () => Object.values(state.atoms).reduce((m, a) => Math.max(m, Math.min(118, a.e || 0)), 0);
-const LEVELS = [[0, "Hạt quark"], [10, "Proton tò mò"], [30, "Nguyên tử nhỏ"], [60, "Phân tử chăm chỉ"], [100, "Kỹ sư tập sự"], [160, "Thợ mạch điện"], [240, "Nhà vật lý trẻ"], [340, "Giáo sư Jussieu"], [460, "Huyền thoại Sorbonne"]];
+const statOf = (id) => (state.atoms[id] ||= { min: 0, n: 0 });
+const saveSubjStats = () => save("atoms", { list: state.atoms });
+const totalMin = () => Object.values(state.atoms).reduce((n, a) => n + (a.min || 0), 0);
+// cấp chỉ dùng để mở chương truyện; tính theo tổng phút tập trung
+const LEVELS = [[0, "Tân binh L1"], [50, "Bạn học chăm"], [150, "Người giữ nhịp"], [300, "Thợ ôn bài"], [500, "Kỹ sư tập sự"], [800, "Thợ mạch điện"], [1200, "Nhà vật lý trẻ"], [1700, "Giáo sư Jussieu"], [2300, "Huyền thoại Sorbonne"]];
 function levelInfo() {
-  const t = totalE(); let i = 0;
+  const t = totalMin(); let i = 0;
   while (i + 1 < LEVELS.length && t >= LEVELS[i + 1][0]) i++;
   const next = LEVELS[i + 1];
   return { i, n: i + 1, title: LEVELS[i][1], t, base: LEVELS[i][0], next: next ? next[0] : null, pct: next ? (t - LEVELS[i][0]) / (next[0] - LEVELS[i][0]) : 1 };
 }
-function addElectrons(id, n) {
-  if (n <= 0) return { news: [], levelUp: 0 };
-  const lv0 = levelInfo().i, a = atomOf(id), z0 = Math.min(118, a.e);
-  a.e = Math.min(118, a.e + n);
-  saveAtoms();
-  const news = [];
-  for (let z = z0 + 1; z <= a.e; z++) news.push(z);
-  const lv1 = levelInfo().i;
-  return { news, levelUp: lv1 > lv0 ? lv1 + 1 : 0 };
-}
 function lastSubject() {
-  const id = lsGet("focusSubj");
-  const list = subjects();
+  const id = lsGet("focusSubj"), list = subjects();
   return list.find((s) => s.id === id) || list.slice().sort((a, b) => (state.atoms[b.id]?.min || 0) - (state.atoms[a.id]?.min || 0))[0];
 }
-// Ôn flashcards: cứ 10 thẻ = 1 electron cho môn của bộ thẻ
-function rewardReview(deck) {
-  const a = atomOf(deck); a.rc = (a.rc || 0) + 1;
-  if (a.rc % 10) { saveAtoms(); return; }
-  const r = addElectrons(deck, 1);
-  toast(`+1 e⁻ cho ${subjOf(deck).name} (10 thẻ đã ôn)` + (r.news.length ? ` → ${elName(r.news[r.news.length - 1])}` : ""), 3600);
-}
-// --- nhiệm vụ hằng ngày ---
+
+// --- 3 mục tiêu mỗi ngày (3 vòng): tập trung, ôn thẻ, luyện truy hồi ---
 function quests() {
-  const d = state.stats.days[todayISO()] || {}, f = d.f || 0, r = d.r || 0, fe = d.fe || 0;
+  const d = state.stats.days[todayISO()] || {}, f = d.f || 0, r = d.r || 0, fe = d.fe || 0, pr = d.p || 0;
   return [
-    { t: "Tập trung 25 phút", v: `${f}/25 phút`, p: Math.min(1, f / 25), act: f < 25 ? ["focus-open", "Bắt đầu"] : null },
-    { t: "Ôn 10 thẻ hoặc hết thẻ đến hạn", v: `${r} thẻ`, p: r >= 10 || (r > 0 && totalDue() === 0) ? 1 : r / 10, act: totalDue() ? ["review-all", "Ôn"] : null },
-    { t: "Tự giảng lại 1 khái niệm", v: fe ? "Xong" : "Chế độ Feynman", p: fe ? 1 : 0, act: !fe && state.courses.length ? ["go-study", "Học"] : null },
+    { k: "focus", t: "Tập trung 25 phút", v: f >= 25 ? `${f} phút` : `${f}/25 phút`, p: Math.min(1, f / 25), act: f < 25 ? ["focus-open", "Bắt đầu"] : null, col: "#ec7a98" },
+    { k: "review", t: "Ôn 10 thẻ hoặc hết thẻ đến hạn", v: `${r} thẻ`, p: r >= 10 || (r > 0 && totalDue() === 0) ? 1 : Math.min(1, r / 10), act: totalDue() ? ["review-all", "Ôn"] : null, col: "#72ab4a" },
+    { k: "practice", t: "Luyện 1 bài: làm đề hoặc tự giảng", v: fe || pr ? "Xong" : "Luyện đề hoặc Feynman", p: fe || pr ? 1 : 0, act: fe || pr ? null : ["go-drill", "Luyện"], col: "#5a99d0" },
   ];
 }
 function checkGold() {
   const d = state.stats.days[todayISO()];
-  if (d && !d.gold && quests().every((q) => q.p >= 1)) { d.gold = 1; saveStats(); confetti(); sfx("unlock"); toast("Ngày hoàn hảo! Cả 3 nhiệm vụ đã xong", 4000); }
-  advQuests(); // thưởng Tinh thể cho nhiệm vụ & ngày hoàn hảo
+  if (d && !d.gold && quests().every((q) => q.p >= 1)) { d.gold = 1; saveStats(); confetti(); sfx("unlock"); toast("Đóng đủ 3 vòng hôm nay! Giỏi quá đi", 4000); }
+  advQuests(); // thưởng Tinh thể cho mục tiêu & ngày đủ vòng
+}
+function ringsSvg(q, size = 120, center = "") {
+  const R = [46, 35, 24], sw = 9.5, done = q.filter((x) => x.p >= 1).length;
+  return `<svg class="rings" viewBox="0 0 120 120" width="${size}" height="${size}" role="img" aria-label="Mục tiêu hôm nay: ${done}/3 vòng">${q.map((x, i) => {
+    const c = 2 * Math.PI * R[i], on = clamp(x.p, 0, 1) * c;
+    return `<circle cx="60" cy="60" r="${R[i]}" fill="none" stroke="${x.col}" stroke-opacity=".2" stroke-width="${sw}"/>` + (x.p > 0 ? `<circle cx="60" cy="60" r="${R[i]}" fill="none" stroke="${x.col}" stroke-width="${sw}" stroke-linecap="round" stroke-dasharray="${on.toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 60 60)"/>` : "");
+  }).join("")}${center}</svg>`;
 }
 
-// --- vẽ nguyên tử kiểu vẽ tay (canvas, chuyển động nhẹ) ---
-const BODY = { lav: "#ebe5fb", sky: "#d9ecf7", mint: "#d8f0de", peach: "#ffe2c9", rose: "#ffdde5", butter: "#ffeaa8" };
-const ELEC = { lav: "#8f7ff0", sky: "#5aa3dd", mint: "#4fb37b", peach: "#ef9258", rose: "#ea6f93", butter: "#e0ae22" };
-const SHELLS = [2, 8, 18, 32, 32, 18, 8];
-const atomViews = new Set();
-let atomRaf = 0, inkCache = "";
-const ink = () => (inkCache ||= getComputedStyle(document.documentElement).getPropertyValue("--outline").trim() || "#6b4a3a");
-new MutationObserver(() => { inkCache = ""; kickAtoms(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "class", "style"] });
-matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { inkCache = ""; kickAtoms(); });
-function mountAtom(host, { z, tint = "lav", seed = "x", scale = 1, cx = 0.5, cy = 0.55 }) {
-  if (!host) return;
-  host.querySelector(":scope > .atom-cv")?.remove();
-  const cv = document.createElement("canvas"); cv.className = "atom-cv"; cv.setAttribute("aria-hidden", "true");
-  host.prepend(cv);
-  let h = hashOf(seed) || 7;
-  const rnd = () => ((h = (Math.imul(h, 1103515245) + 12345) >>> 0) / 4294967296);
-  atomViews.add({ cv, z, tint: BODY[tint] ? tint : "lav", scale, cx, cy, sparks: Array.from({ length: 9 }, () => [rnd(), rnd(), rnd()]), t0: performance.now() - rnd() * 10000 });
-  kickAtoms();
+// --- tiến độ từng môn: chậu cây lớn theo mức thật sự nhớ bài (thẻ đã thuộc + điểm luyện đề) ---
+const weekStart = () => addDays(todayISO(), -((new Date(todayISO() + "T12:00:00Z").getUTCDay() + 6) % 7));
+function subjProgress(s) {
+  const ws = weekStart(), pws = addDays(ws, -7), t = todayISO();
+  let wk = 0, prev = 0;
+  for (const x of state.sessions) if (x.subj === s.id) { const d = parisParts(x.s).date; if (d >= ws) wk += x.m; else if (d >= pws) prev += x.m; }
+  const cards = state.decks[s.id] || [];
+  const due = cards.filter((c) => c.due <= t).length, mature = cards.filter((c) => (c.interval || 0) >= 21).length;
+  const tries = (state.drill?.list || []).filter((a) => a.subj === s.id && a.score != null).slice(-3);
+  const avg = tries.length ? tries.reduce((n, a) => n + (a.score / (a.total || 20)) * 20, 0) / tries.length : null;
+  const cardPart = cards.length ? (mature + (cards.length - mature - due) * 0.35) / cards.length : null;
+  const m = cardPart == null && avg == null ? null : cardPart == null ? avg / 20 : avg == null ? cardPart : cardPart * 0.6 + (avg / 20) * 0.4;
+  return { wk, prev, cards: cards.length, due, mature, avg, tries: tries.length, m: m == null ? null : clamp(m, 0, 1) };
 }
-function kickAtoms() { if (!atomRaf) atomRaf = requestAnimationFrame(frameAtoms); }
-function frameAtoms(now) {
-  atomRaf = 0;
-  let live = false;
-  for (const v of atomViews) {
-    if (!v.cv.isConnected) { atomViews.delete(v); continue; }
-    if (v.cv.offsetParent === null) continue;
-    drawAtom(v, reduceMotion ? 0 : (now - v.t0) / 1000);
-    live = true;
-  }
-  if (live && !reduceMotion) atomRaf = requestAnimationFrame(frameAtoms);
+const PLANT_NAMES = ["Hạt giống", "Nảy mầm", "Lá non", "Xanh tốt", "Sắp nở", "Nở hoa"];
+const plantStage = (m) => (m == null ? 0 : m < 0.2 ? 1 : m < 0.45 ? 2 : m < 0.7 ? 3 : m < 0.9 ? 4 : 5);
+function plantSvg(m) {
+  const k = plantStage(m), I = SB_INK, leaf = (x, y, r, flip) => `<path d="M${x} ${y}c${flip ? -10 : 10}-2 ${flip ? -14 : 14}-10 ${flip ? -12 : 12}-${r}c${flip ? 6 : -6} 0 ${flip ? 10 : -10} 6 ${flip ? 12 : -12} ${r}z" fill="#9ccc6f" stroke="${I}" stroke-width="1.6" stroke-linejoin="round"/>`;
+  const stem = (h) => `<path d="M40 70V${70 - h}" stroke="#6aa84f" stroke-width="2.6" stroke-linecap="round"/>`;
+  let top = "";
+  if (k === 0) top = `<ellipse cx="40" cy="68" rx="4" ry="2.6" fill="#b98a5c" stroke="${I}" stroke-width="1.3"/>`;
+  if (k >= 1) top += stem(k === 1 ? 8 : 12 + k * 6) + leaf(40, 64, 8, false) + leaf(40, 64, 8, true);
+  if (k >= 2) top += leaf(40, 56 - (k - 2) * 2, 10, false) + leaf(40, 52 - (k - 2) * 2, 10, true);
+  if (k >= 3) top += leaf(40, 44, 9, false) + leaf(40, 40, 9, true);
+  if (k === 4) top += `<ellipse cx="40" cy="${70 - 12 - k * 6}" rx="5" ry="6.5" fill="#ffc3d3" stroke="${I}" stroke-width="1.5"/>`;
+  if (k === 5) top += `<g transform="translate(40 ${70 - 12 - k * 6})">${[0, 72, 144, 216, 288].map((a) => `<ellipse cx="0" cy="-6.5" rx="4.6" ry="6.5" transform="rotate(${a})" fill="#ff9db8" stroke="${I}" stroke-width="1.3"/>`).join("")}<circle r="3.6" fill="#ffe17a" stroke="${I}" stroke-width="1.2"/></g><path d="M62 18l1.2 2.8 2.8 1.2-2.8 1.2L62 26l-1.2-2.8-2.8-1.2 2.8-1.2z" fill="#ffd54d"/>`;
+  return `<svg class="plant" viewBox="0 0 80 96" aria-hidden="true">${top}<path d="M22 70h36l-5 22H27z" fill="#e8a07a" stroke="${I}" stroke-width="2" stroke-linejoin="round"/><rect x="19" y="66" width="42" height="8" rx="3" fill="#f0b48e" stroke="${I}" stroke-width="2"/></svg>`;
 }
-function spark(g, x, y, r) { g.beginPath(); g.moveTo(x, y - r); g.quadraticCurveTo(x, y, x + r, y); g.quadraticCurveTo(x, y, x, y + r); g.quadraticCurveTo(x, y, x - r, y); g.quadraticCurveTo(x, y, x, y - r); g.fill(); }
-function drawAtom(v, t) {
-  const cv = v.cv, w = cv.clientWidth, hgt = cv.clientHeight;
-  if (!w || !hgt) return;
-  const dpr = Math.min(2, window.devicePixelRatio || 1);
-  if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(hgt * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(hgt * dpr); }
-  const g = cv.getContext("2d"), INK = ink(), body = BODY[v.tint], elec = ELEC[v.tint];
-  g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, hgt);
-  g.fillStyle = "#f2c94c";
-  for (const [x, y, s] of v.sparks) { g.globalAlpha = 0.25 + 0.55 * Math.abs(Math.sin(t * (0.6 + s) + s * 20)); spark(g, x * w, y * hgt, 2.5 + s * 3); }
-  g.globalAlpha = 1;
-  const z = v.z, shells = [];
-  let left = z;
-  for (const cap of SHELLS) { if (left <= 0) break; shells.push(Math.min(cap, left)); left -= cap; }
-  const cx = w * v.cx, cy = hgt * v.cy + Math.sin(t * 1.6) * 2, tilt = -0.32, sq = 0.38;
-  const maxR = Math.min(w * 0.46, hgt * 1.05) * v.scale;
-  const size = clamp(Math.min(w, hgt) / 170, 0.8, 2.2);
-  const R = Math.max(10, Math.min(26, 9 + Math.sqrt(z + 1) * 2.1)) * Math.max(0.75, v.scale) * size;
-  const span = Math.max(shells.length, 2.4);
-  const radii = shells.map((_, i) => R * 1.6 + (maxR - R * 1.6) * ((i + 1) / span));
-  const ct = Math.cos(tilt), st = Math.sin(tilt), pts = [];
-  g.setLineDash([4, 5]); g.lineWidth = 1.6; g.strokeStyle = INK;
-  shells.forEach((n, i) => {
-    const r = radii[i], dir = i % 2 ? -1 : 1, sp = 0.8 / (i + 1);
-    g.globalAlpha = 0.45; g.beginPath(); g.ellipse(cx, cy, r, r * sq, tilt, 0, Math.PI * 2); g.stroke();
-    for (let k = 0; k < n; k++) {
-      const a = (k / n) * Math.PI * 2 + i * 0.7 + t * sp * dir, ex = r * Math.cos(a), ey = r * sq * Math.sin(a);
-      pts.push({ x: cx + ex * ct - ey * st, y: cy + ex * st + ey * ct, front: Math.sin(a) > 0 });
-    }
-  });
-  g.setLineDash([]); g.globalAlpha = 1;
-  const er = 3.6 * Math.max(0.8, v.scale) * Math.min(1.6, size);
-  const dot = (p) => { g.beginPath(); g.arc(p.x, p.y, p.front ? er : er * 0.8, 0, Math.PI * 2); g.fillStyle = elec; g.fill(); g.lineWidth = 1.4; g.strokeStyle = INK; g.stroke(); };
-  g.globalAlpha = 0.55; pts.filter((p) => !p.front).forEach(dot); g.globalAlpha = 1;
-  // hạt nhân: bé tròn có mặt
-  g.beginPath(); g.ellipse(cx, cy + R * 0.95, R * 0.8, R * 0.18, 0, 0, Math.PI * 2); g.fillStyle = "rgba(60, 40, 25, .14)"; g.fill();
-  g.beginPath(); g.arc(cx, cy, R, 0, Math.PI * 2); g.fillStyle = body; g.fill(); g.lineWidth = 2.2; g.strokeStyle = INK; g.stroke();
-  g.beginPath(); g.arc(cx - R * 0.35, cy - R * 0.4, R * 0.22, 0, Math.PI * 2); g.fillStyle = "rgba(255,255,255,.7)"; g.fill();
-  const face = "#3a2a20", ex = R * 0.34, ey = cy - R * 0.05, blink = !reduceMotion && (t % 5.5) > 5.3;
-  g.fillStyle = face; g.strokeStyle = face; g.lineWidth = Math.max(1.3, R * 0.09); g.lineCap = "round";
-  if (!z || blink) { for (const sx of [-1, 1]) { g.beginPath(); g.arc(cx + sx * ex, ey, R * 0.12, 0.15 * Math.PI, 0.85 * Math.PI); g.stroke(); } }
-  else for (const sx of [-1, 1]) { g.beginPath(); g.arc(cx + sx * ex, ey, R * 0.11, 0, Math.PI * 2); g.fill(); }
-  g.beginPath(); g.arc(cx, cy + R * 0.18, R * 0.18, 0.15 * Math.PI, 0.85 * Math.PI); g.stroke();
-  g.fillStyle = "rgba(255, 140, 160, .55)";
-  for (const sx of [-1, 1]) { g.beginPath(); g.ellipse(cx + sx * R * 0.58, cy + R * 0.2, R * 0.16, R * 0.1, 0, 0, Math.PI * 2); g.fill(); }
-  pts.filter((p) => p.front).forEach(dot);
-  if (!z) { g.fillStyle = INK; g.globalAlpha = 0.6; g.font = `800 ${Math.round(R * 0.55)}px Nunito, sans-serif`; g.fillText("z", cx + R * 0.9, cy - R * 0.8); g.fillText("z", cx + R * 1.25, cy - R * 1.25); g.globalAlpha = 1; }
+function nextAction(s, p) {
+  if (p.due) return { t: `Ôn ${p.due} thẻ đến hạn`, act: `data-act="deck-start" data-deck="${esc(s.id)}"` };
+  if (p.avg != null && p.avg < 12) return { t: "Luyện thêm 1 bài đề", act: `data-act="go-drill"` };
+  if (!p.wk) return { t: "Tập trung 25 phút cho môn này", act: `data-act="focus-subj" data-id="${esc(s.id)}"` };
+  if (!p.cards && state.courses.some((c) => c.id === s.id)) return { t: "Tạo flashcards từ tài liệu", act: `data-act="open-course" data-id="${esc(s.id)}"` };
+  if (state.courses.some((c) => c.id === s.id)) return { t: "Tự giảng lại một khái niệm", act: `data-act="open-course" data-id="${esc(s.id)}"` };
+  return { t: "Tập trung thêm một phiên", act: `data-act="focus-subj" data-id="${esc(s.id)}"` };
 }
-
-// --- widget ở màn Hôm nay ---
-const fmtLeft = (ms) => { const s = Math.max(0, Math.ceil(ms / 1000)); return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`; };
-function renderWidgets() {
-  const box = $("#hWidgets"); if (!box) return;
-  const f = state.focus?.endAt ? state.focus : null;
-  const subj = f ? subjOf(f.subject) : lastSubject();
-  const z = zOf(subj.id), a = state.atoms[subj.id] || { min: 0 };
-  const lv = levelInfo(), n = streak(), t = todayISO();
-  const first = t.slice(0, 8) + "01", pad = (new Date(first + "T12:00:00Z").getUTCDay() + 6) % 7;
-  const days = new Date(Date.UTC(+t.slice(0, 4), +t.slice(5, 7), 0)).getUTCDate();
-  let heat = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"].map((d) => `<span>${d}</span>`).join("") + '<i class="pad"></i>'.repeat(pad);
-  for (let d = 1; d <= days; d++) {
-    const iso = t.slice(0, 8) + String(d).padStart(2, "0"), x = state.stats.days[iso] || {};
-    const score = (x.f || 0) + (x.r || 0) + (x.m || 0) * 2;
-    heat += `<i class="${score >= 50 ? "l3" : score >= 20 ? "l2" : score > 0 ? "l1" : ""} ${x.gold ? "gold" : ""} ${iso === t ? "today" : ""}" title="${iso}"></i>`;
-  }
-  const q = quests(), done = q.filter((x) => x.p >= 1).length, best = bestStreak();
-  box.innerHTML = `
-    <button class="widget space" data-go="lab" id="wAtom" aria-label="Mở phòng thí nghiệm">
-      <div><p class="w-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(subj.name)}</p><p class="w-sub">${z ? esc(EL_FR[z - 1]) : "Chưa có electron"}</p></div>
-      <div class="w-row"><span class="w-foot"><b>${(a.min / 60).toFixed(1)}</b>giờ</span><span class="sym-chip">${z ? EL_SYM[z - 1] : "·"}</span></div>
-    </button>
-    <button class="widget space" data-go="stats" id="wStreak" aria-label="Mở thống kê">
-      <div><p class="w-title">Chuỗi ngày</p><p class="w-sub">Kỷ lục ${best} ngày</p></div>
-      <div class="w-row"><span class="w-big">${n}<span class="w-sub" style="margin-left:4px">ngày</span></span><span class="sym-chip" style="background:var(--t-butter)">${icon("flame")}</span></div>
-    </button>
-    <div class="widget space wide">
-      <div class="heat-head"><p class="w-title">Nhiệm vụ hôm nay</p><span class="w-sub">${done}/3</span></div>
-      <ul class="quests">${q.map((x) => `<li><span class="qdot ${x.p >= 1 ? "done" : ""}" style="--p:${x.p.toFixed(2)}">${x.p >= 1 ? icon("check") : ""}</span><span>${esc(x.t)}<small>${esc(x.v)}</small></span>${x.act && x.p < 1 ? `<button class="btn space-btn" data-act="${x.act[0]}">${x.act[1]}</button>` : ""}</li>`).join("")}</ul>
-      <button class="lvl" data-go="lab" style="all:unset;cursor:pointer;display:grid;gap:6px"><span class="lvl-top"><span>Cấp ${lv.n} · <b>${esc(lv.title)}</b></span><span>${lv.t} e⁻${lv.next ? " / " + lv.next : ""}</span></span><span class="xp"><i style="width:${Math.round(lv.pct * 100)}%"></i></span></button>
-    </div>
-    <div class="widget space wide">
-      <div class="heat-head"><p class="w-title">Tháng ${+t.slice(5, 7)}</p><span class="flame">${icon("flame")} ${n} ngày liên tiếp</span></div>
-      <div class="heat">${heat}</div>
-    </div>`;
-  mountAtom($("#wAtom"), { z, tint: subj.tint, seed: subj.id, scale: 0.62, cx: 0.66, cy: 0.5 });
-}
-
-// --- phòng thí nghiệm ---
-function renderLab() {
-  const lv = levelInfo(), mz = maxZ();
-  $("#labLevel").innerHTML = `<div class="lvl"><span class="lvl-top"><span>Cấp ${lv.n} · <b>${esc(lv.title)}</b></span><span>${lv.t} e⁻${lv.next ? " / " + lv.next : " · tối đa"}</span></span><span class="xp"><i style="width:${Math.round(lv.pct * 100)}%"></i></span>
-    <span class="w-sub">${lv.next ? `Còn ${lv.next - lv.t} electron nữa để lên cấp ${lv.n + 1}` : "Bạn đã đạt cấp cao nhất!"}</span></div>`;
-  const list = subjects();
-  $("#labAtoms").innerHTML = list.map((s) => {
-    const z = zOf(s.id), a = state.atoms[s.id] || { min: 0, n: 0 };
-    return `<div class="widget space atom-card" data-atom="${esc(s.id)}">
-      <div><p class="w-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(s.name)}</p><p class="w-sub">${z ? `${esc(EL_FR[z - 1])} · Z = ${z}` : "Chưa có electron"}</p></div>
-      <div class="w-row"><span class="w-foot"><b>${(a.min / 60).toFixed(1)}</b>giờ · ${a.n || 0} phiên</span><button class="play" data-act="focus-subj" data-id="${esc(s.id)}" aria-label="Tập trung cho ${esc(s.name)}">${icon("play")}</button></div>
-    </div>`;
+function renderProgress() {
+  const q = quests(), done = q.filter((x) => x.p >= 1).length, lv = levelInfo();
+  const wkAll = subjects().reduce((n, s) => n + subjProgress(s).wk, 0);
+  const soon = upcoming(30).find((a) => a.type === "exam");
+  $("#pgTop").innerHTML = `${ringsSvg(q, 112)}<div class="pg-sum"><p class="w-title">Hôm nay ${done}/3 vòng</p>
+    <p class="small">${q.map((x) => `<span class="dotc" style="--c:${x.col}"></span>${esc(x.t)}: <b>${esc(x.v)}</b>`).join("<br>")}</p>
+    <p class="small muted">Tuần này ${esc(fmtMin(wkAll))} tập trung · ${totalDue()} thẻ đến hạn${soon ? ` · thi gần nhất: ${esc(soon.title)} (${esc(countdown(soon.date))})` : ""}</p></div>`;
+  $("#pgList").innerHTML = subjects().map((s) => {
+    const p = subjProgress(s), k = plantStage(p.m), na = nextAction(s, p);
+    const trend = p.prev ? (p.wk >= p.prev ? `↑ so với tuần trước (${fmtMin(p.prev)})` : `↓ so với tuần trước (${fmtMin(p.prev)})`) : "";
+    return `<article class="pg-card" style="--tint: var(--t-${s.tint}); --tk: var(--k-${s.tint})">
+      <div class="pg-plant">${plantSvg(p.m)}<span class="pg-stage">${PLANT_NAMES[k]}${p.m != null ? ` · ${Math.round(p.m * 100)}%` : ""}</span></div>
+      <div class="pg-body"><h3>${esc(s.name)}</h3>
+        <p class="pg-row"><span>Tuần này</span><b>${esc(fmtMin(p.wk))}</b>${trend ? `<small>${esc(trend)}</small>` : ""}</p>
+        <p class="pg-row"><span>Flashcards</span><b>${p.cards ? `${p.mature}/${p.cards} đã thuộc` : "chưa có"}</b>${p.due ? `<small>${p.due} thẻ đến hạn</small>` : ""}</p>
+        <p class="pg-row"><span>Luyện đề</span><b>${p.avg != null ? `${p.avg.toFixed(1)}/20` : "chưa làm"}</b>${p.tries ? `<small>trung bình ${p.tries} bài gần nhất</small>` : ""}</p>
+        <button class="btn sm soft" ${na.act}>${icon("arrow")} ${esc(na.t)}</button></div></article>`;
   }).join("");
-  $$("#labAtoms [data-atom]").forEach((el) => { const s = subjOf(el.dataset.atom); mountAtom(el, { z: zOf(s.id), tint: s.tint, seed: s.id, scale: 0.78, cx: 0.5, cy: 0.5 }); });
-  let cells = "";
-  for (let z = 1; z <= 118; z++) {
-    const [r, c] = elPos(z), on = z <= mz;
-    cells += `<button class="el ${on ? "on" : ""} ${z === mz ? "last" : ""}" style="grid-row:${r};grid-column:${c};--cat:${CAT[elCat(z)][0]}" data-act="el-info" data-z="${z}" aria-label="${esc(EL_FR[z - 1])}, số ${z}${on ? "" : ", chưa mở khoá"}" title="${esc(EL_FR[z - 1])}">${EL_SYM[z - 1]}<small>${z}</small></button>`;
-  }
-  $("#pt").innerHTML = cells + `<span class="pt-gap" style="grid-row:8"></span>`;
-  $("#ptCount").textContent = `Đã tổng hợp ${mz}/118`;
-  $("#ptLegend").innerHTML = Object.values(CAT).map(([col, name]) => `<span><i style="--cat:${col}"></i>${name}</span>`).join("");
-}
-function elemTile(z) { return `<div class="elem-tile" style="--cat:${CAT[elCat(z)][0]}"><span class="z">${z}</span><span class="s">${EL_SYM[z - 1]}</span><span class="n">${esc(EL_FR[z - 1])}</span></div>`; }
-function openElement(z) {
-  const on = z <= maxZ(), holder = subjects().find((s) => zOf(s.id) >= z);
-  const best = subjects().reduce((m, s) => Math.max(m, zOf(s.id)), 0);
-  openSheet({ title: EL_FR[z - 1], html: `${elemTile(z)}
-    <p class="center muted small">${CAT[elCat(z)][1]} · số hiệu nguyên tử ${z}</p>
-    <p class="center">${on ? `Đã tổng hợp nhờ môn <b>${esc(holder?.name || "")}</b>.` : `Chưa mở khoá: cần thêm <b>${z - best}</b> electron (${(z - best) * 5} phút tập trung) ở một môn.`}</p>
-    <div class="md" id="elFact">${state.facts[z] ? md(state.facts[z]) : ""}</div>
-    ${state.facts[z] ? "" : `<button class="btn soft block" id="elAsk">${icon("sparkle")} Kể chuyện thú vị về nguyên tố này</button>`}` ,
-    onMount: (el) => $("#elAsk", el)?.addEventListener("click", async (ev) => {
-      const sample = await getSample(); if (!sample) return toast(NEED_CLAUDE);
-      const btn = ev.currentTarget, out = $("#elFact", el); btn.disabled = true; out.innerHTML = thinking("Claude đang kể…");
-      try {
-        const r = await sample(`Raconte en vietnamien, en 3 phrases courtes et drôles, un fait étonnant sur l'élément ${EL_FR[z - 1]} (${EL_SYM[z - 1]}, Z = ${z}), si possible lié à l'électronique, l'énergie électrique ou l'automatique (niveau L1 EEA). Garde le nom français de l'élément en gras.`, { modelTier: "quick" });
-        state.facts[z] = r.text; save("facts", { list: state.facts });
-        if (out.isConnected) { setMd(out, r.text); btn.remove(); }
-      } catch (err) { if (out.isConnected) { out.innerHTML = `<span class="err">${esc(sampleErr(err))}</span>`; btn.disabled = false; } }
-    }) });
+  $("#pgLevel").textContent = `Tổng ${fmtMin(lv.t)} tập trung · Cấp ${lv.n} (${lv.title}) dùng để mở chương truyện.`;
 }
 
-// --- phiên tập trung (Pomodoro) ---
+// --- phiên tập trung: mục tiêu phiên, vòng thời gian, sổ ghi việc chợt nhớ ---
+const fmtLeft = (ms) => { const s = Math.max(0, Math.ceil(ms / 1000)); return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`; };
 const DURS = [15, 25, 45, 60];
-let focusPick = { subject: null, dur: 0 }, wakeLock = null;
+let focusPick = { subject: null, dur: 0, goal: "" }, wakeLock = null;
+function focusRing(p) {
+  const c = 2 * Math.PI * 88;
+  return `<svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="88" fill="none" stroke="var(--line)" stroke-width="12"/><circle class="fr-on" cx="100" cy="100" r="88" fill="none" stroke="var(--accent-btn)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${(clamp(p, 0, 1) * c).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 100 100)"/></svg>`;
+}
 function renderFocus() {
   const f = state.focus?.endAt ? state.focus : null;
   if (!focusPick.subject || !subjects().some((s) => s.id === focusPick.subject)) focusPick.subject = lastSubject().id;
   if (!focusPick.dur) focusPick.dur = prefs().dur;
-  const subj = subjOf(f ? f.subject : focusPick.subject), z = zOf(subj.id), lv = levelInfo();
-  $("#fLevel").textContent = `Cấp ${lv.n} · ${lv.title}`;
+  const subj = subjOf(f ? f.subject : focusPick.subject);
+  $("#fLevel").textContent = subj.name;
   $("#fSetup").hidden = !!f; $("#fRun").hidden = !f;
   $("#fRoom").innerHTML = roomHtml({ focus: true, mood: f ? "think" : "happy" });
-  $("#fElem").textContent = f ? `${prefs().name} đang lắp mạch cùng bạn… · ${subj.name}${z ? ` · ${EL_FR[z - 1]}` : ""}` : `Chọn môn và thời gian, ${prefs().name} sẽ lắp mạch cùng bạn.`;
-  $("#fCircuit").innerHTML = circuitSvg();
+  $("#fElem").textContent = f ? `${prefs().name} đang học cùng bạn…` : `Chọn môn, ghi mục tiêu, rồi bắt đầu. ${prefs().name} sẽ ngồi học cùng bạn.`;
   if (!f) {
     $("#fSubj").innerHTML = subjects().map((s) => `<button data-subj="${esc(s.id)}" aria-pressed="${s.id === focusPick.subject}">${esc(s.name)}</button>`).join("");
     $("#fDur").innerHTML = DURS.map((d) => `<button data-dur="${d}" aria-pressed="${d === focusPick.dur}">${d} phút</button>`).join("");
-    const gain = Math.floor(focusPick.dur / 5), target = Math.min(118, z + gain);
-    $("#fHint").textContent = `Xong phiên: +${focusPick.dur * 2} ✦ và +${gain} e⁻ (${elName(target)}). Màn hình được giữ sáng; khoá máy thì đồng hồ vẫn chạy.`;
-    paintCircuit(0);
+    if ($("#fGoal").value !== focusPick.goal) $("#fGoal").value = focusPick.goal;
+    $("#fHint").textContent = `Xong phiên: +${focusPick.dur * 2} ✦. Màn hình được giữ sáng; khoá máy để làm bài trên giấy thì đồng hồ vẫn chạy.`;
   } else {
-    $("#fRunHint").textContent = `Mỗi phút = 2 ✦, cứ 5 phút trọn vẹn = 1 electron cho “${subj.name}”. Dừng sớm vẫn giữ phần đã có.`;
+    $("#fGoalShow").innerHTML = f.goal ? `${icon("target")} <span>${esc(f.goal)}</span>` : "";
+    $("#fGoalShow").hidden = !f.goal;
+    paintNotes();
+    $("#fRunHint").textContent = `Mỗi phút = 2 ✦. Dừng sớm vẫn giữ phần đã học.`;
     tickFocus();
   }
 }
+function paintNotes() {
+  const n = state.focus?.notes || [];
+  $("#fNoteList").innerHTML = n.map((x) => `<li>${esc(x)}</li>`).join("");
+  $("#fNotesSum").textContent = n.length ? `Việc chợt nhớ (${n.length}) · ghi lại để sau` : "Chợt nhớ việc khác? Ghi lại để sau";
+}
+function addNote() {
+  const inp = $("#fNoteIn"), v = inp.value.trim(); if (!v || !state.focus?.endAt) return;
+  (state.focus.notes ||= []).push(v.slice(0, 140)); save("focus", state.focus);
+  inp.value = ""; paintNotes(); sfx("tick");
+}
 async function startFocus() {
   const subj = subjOf(focusPick.subject);
-  state.focus = { subject: subj.id, start: Date.now(), endAt: Date.now() + focusPick.dur * 60000, dur: focusPick.dur };
+  focusPick.goal = $("#fGoal").value.trim().slice(0, 120);
+  state.focus = { subject: subj.id, start: Date.now(), endAt: Date.now() + focusPick.dur * 60000, dur: focusPick.dur, goal: focusPick.goal, notes: [] };
   save("focus", state.focus); lsSet("focusSubj", subj.id);
   audioCtx(); sfx("tick");
   if (prefs().wake) { try { wakeLock = await navigator.wakeLock?.request("screen"); } catch { wakeLock = null; } }
@@ -291,45 +158,52 @@ function tickFocus() {
   const left = f.endAt - Date.now();
   if (left <= 0) { finishFocus(true); return; }
   const s = fmtLeft(left);
-  if (state.view === "focus") { $("#fTime").textContent = s; paintCircuit(1 - left / (f.dur * 60000)); }
+  if (state.view === "focus") { $("#fTime").textContent = s; $("#fRing").innerHTML = focusRing(1 - left / (f.dur * 60000)); }
   $$("[data-left]").forEach((el) => (el.textContent = s));
   if (state.view === "home" && $("#wFocusLabel").textContent !== "Đang tập trung") renderHero();
 }
 function finishFocus(complete) {
   const f = state.focus; if (!f?.endAt) return;
   const minutes = complete ? f.dur : Math.min(f.dur, Math.floor((Date.now() - f.start) / 60000));
+  const lv0 = levelInfo().i;
   state.focus = {}; save("focus", {});
   try { wakeLock?.release?.(); } catch {} wakeLock = null;
-  const a = atomOf(f.subject); a.min += minutes; a.n = (a.n || 0) + (minutes >= 5 ? 1 : 0);
+  const st = statOf(f.subject); st.min = (st.min || 0) + minutes; st.n = (st.n || 0) + (minutes >= 5 ? 1 : 0);
+  saveSubjStats();
+  const entry = { s: f.start, m: minutes, subj: f.subject, ...(f.goal ? { goal: f.goal } : {}) };
   if (minutes > 0) {
     bump("f", minutes);
-    state.sessions.push({ s: f.start, m: minutes, subj: f.subject });
+    state.sessions.push(entry);
     if (state.sessions.length > 3000) state.sessions.splice(0, state.sessions.length - 3000);
     save("sessions", { list: state.sessions });
   }
-  const res = addElectrons(f.subject, Math.floor(minutes / 5));
-  saveAtoms();
-  const gems = advFocus(minutes);
-  if (res.news.length) sfx("unlock"); else if (complete) sfx("chime");
-  const subj = subjOf(f.subject), gain = Math.floor(minutes / 5);
+  const gems = advFocus(minutes), lv = levelInfo(), up = lv.i > lv0 ? lv : null;
+  if (complete) sfx("chime");
+  const subj = subjOf(f.subject), notes = f.notes || [];
   if (state.view === "focus") renderFocus(); else render();
-  if (gain) {
+  if (minutes >= 5) {
     confetti();
-    const z = res.news[res.news.length - 1];
     openSheet({ title: complete ? "Hoàn thành phiên tập trung!" : "Đã dừng phiên tập trung", html: `<div class="reward">
-      ${z ? elemTile(z) : `<div class="sticker" style="width:110px">${kitten("party")}</div>`}
+      <div style="width:110px">${kitten("party")}</div>
       <p class="gain gems">+${gems} ✦</p>
-      <p>${esc(prefs().name)} đã lắp xong mạch cùng bạn! ${esc(subj.name)}: ${minutes} phút · +${gain} e⁻${z ? ` · nguyên tử đã thành <b>${esc(EL_FR[z - 1])}</b>` : ""}${res.news.length > 1 ? ` (mở khoá ${res.news.length} nguyên tố mới)` : ""}.</p>
-      ${res.levelUp ? `<p class="tag c-holiday">Lên cấp ${res.levelUp}: ${esc(LEVELS[res.levelUp - 1][1])}!</p>` : ""}
-      <p class="muted small">Nghỉ 5 phút, uống nước rồi quay lại nhé.</p>
-      <div class="two" style="width:100%"><button class="btn" data-close>Nghỉ đã</button><button class="btn primary" data-act="focus-open">Phiên mới</button></div></div>` });
-  } else toast(minutes ? `Đã ghi ${minutes} phút (+${gems} ✦). Cần đủ 5 phút để có 1 electron.` : "Đã dừng phiên tập trung");
+      <p>Bạn đã tập trung <b>${minutes} phút</b> cho ${esc(subj.name)}.</p>
+      ${f.goal ? `<div class="goal-check"><p class="small"><b>Mục tiêu phiên:</b> ${esc(f.goal)}</p><div class="two"><button class="btn sm" data-goal="half">Còn dở</button><button class="btn sm primary" data-goal="done">Xong rồi!</button></div></div>` : ""}
+      ${notes.length ? `<div class="notes-after"><p class="small"><b>Việc bạn chợt nhớ trong phiên:</b></p><ul>${notes.map((x) => `<li>${esc(x)}</li>`).join("")}</ul><button class="btn sm" id="notesToAgenda">${icon("calendar")} Thêm vào lịch để làm sau</button></div>` : ""}
+      ${up ? `<p class="tag c-holiday">Lên cấp ${up.n}: ${esc(up.title)}!</p>` : ""}
+      <p class="muted small">Nghỉ 5 phút: đứng dậy, uống nước, nhìn ra xa 20 giây cho mắt nghỉ.</p>
+      <div class="two" style="width:100%"><button class="btn" data-close>Nghỉ đã</button><button class="btn primary" data-act="focus-open">Phiên mới</button></div></div>`,
+      onMount: (el) => el.addEventListener("click", (e) => {
+        const g = e.target.closest("[data-goal]");
+        if (g) { entry.done = g.dataset.goal === "done"; save("sessions", { list: state.sessions }); g.parentElement.innerHTML = `<p class="small">${entry.done ? "Tuyệt vời! Đã ghi là xong." : "Không sao, phiên sau làm tiếp nhé."}</p>`; sfx(entry.done ? "chime" : "pop"); if (!entry.done) focusPick.goal = f.goal; return; }
+        if (e.target.closest("#notesToAgenda")) { const n = mergeEvents(notes.map((x) => ({ type: "other", title: x, date: "" })), "tập trung"); e.target.closest("#notesToAgenda").replaceWith(Object.assign(document.createElement("p"), { className: "small", textContent: n ? `Đã thêm ${n} việc vào Lịch (mục Chưa rõ ngày).` : "Các việc này đã có trong Lịch." })); }
+      }) });
+  } else toast(minutes ? `Đã ghi ${minutes} phút (+${gems} ✦).` : "Đã dừng phiên tập trung");
   checkGold();
 }
 function openFocus() { closeSheet(); show("focus"); }
 setInterval(tickFocus, 1000);
 document.addEventListener("visibilitychange", async () => {
   if (document.visibilityState !== "visible") return;
-  tickFocus(); kickAtoms();
+  tickFocus();
   if (state.focus?.endAt && !wakeLock && prefs().wake) { try { wakeLock = await navigator.wakeLock?.request("screen"); } catch {} }
 });

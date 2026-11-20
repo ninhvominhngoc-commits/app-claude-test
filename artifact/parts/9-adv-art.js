@@ -1,18 +1,18 @@
 // ================= tranh vẽ tay mềm bằng SVG: bé mèo Elec, các Linh Kiện tai mèo, quái vật, cảnh =================
 // Nhân vật gốc của app. Nét mảnh màu nâu, màu pastel, mắt dịu, tai mèo và đuôi.
-const SB_INK = "#664536", SKIN = "#ffeade", SKIN_SH = "#f4cdbd", BLUSH = "#ff9db0";
+const SB_INK = "#6b4e42", SKIN = "#fdeee6", SKIN_SH = "#f1d3c6", BLUSH = "#f4a3b4";
 let svgN = 0;
 const ART = {
-  ohmi: { hair: "#f2a970", hair2: "#d9864f", ear: "#ffd1bf", eye: ["#7d3f21", "#e8955a"], cloth: "#ffd8be", cloth2: "#ef9a6c", shoe: "#c46f45", leg: SKIN, back: "bob", front: "side", outfit: "hoodie", acc: "resistor" },
-  capa: { hair: "#9fcdf0", hair2: "#6aa4d6", ear: "#ffd6dc", eye: ["#2a5288", "#86c2ec"], cloth: "#ffffff", cloth2: "#6584c4", shoe: "#4a6aa8", leg: "#ffffff", back: "twinlow", front: "even", outfit: "sailor", acc: "capacitor" },
-  kirch: { hair: "#8bd2a0", hair2: "#58ab74", ear: "#ffd3cf", eye: ["#235a3b", "#8fd5a8"], cloth: "#ecf6e4", cloth2: "#5aac70", shoe: "#3f7f52", leg: "#5f6d8e", back: "short", front: "spiky", outfit: "jacket", acc: "arrow" },
-  indu: { hair: "#c0adf0", hair2: "#9480d8", ear: "#ffd0e0", eye: ["#52389a", "#c3b2fb"], cloth: "#f2ecff", cloth2: "#9c84e0", shoe: "#7a63c2", leg: SKIN, back: "cat", front: "even", outfit: "bell", acc: "coil" },
-  bobo: { hair: "#f4d06a", hair2: "#d6a840", ear: "#ffd3c4", eye: ["#6d500f", "#ecc76a"], cloth: "#fff4cf", cloth2: "#e7b74d", shoe: "#b98a2c", leg: "#ea96a2", back: "curly", front: "curly", outfit: "sweater", acc: "beret" },
-  lumi: { hair: "#ffbccd", hair2: "#ef90aa", ear: "#ffe0e8", eye: ["#b33f68", "#ffb9cf"], cloth: "#fff2f6", cloth2: "#f08fab", shoe: "#e46f8f", leg: SKIN, back: "long", front: "even", outfit: "frill", acc: "led" },
-  tranz: { hair: "#968ad9", hair2: "#6555b4", ear: "#f6d0e6", eye: ["#33287c", "#a79bf0"], cloth: "#4a4074", cloth2: "#f0c869", shoe: "#2f2753", leg: "#4a4074", back: "twinhigh", front: "side", outfit: "cape", acc: "transistor" },
-  ope: { hair: "#f3f5f6", hair2: "#a6d8ce", ear: "#ffd8dc", eye: ["#2a776c", "#9be0d2"], cloth: "#ffffff", cloth2: "#5fbcac", shoe: "#3f8f83", leg: "#5f6d8e", back: "pony", front: "center", outfit: "coat", acc: "opamp" },
+  ohmi: { hair: "#e0a27c", hair2: "#c4835e", ear: "#ffd1bf", eye: ["#7d3f21", "#e8955a"], cloth: "#f6dccb", cloth2: "#de9b78", shoe: "#c46f45", leg: SKIN, back: "bob", front: "side", outfit: "hoodie", acc: "resistor" },
+  capa: { hair: "#a8c7e0", hair2: "#7ea3c4", ear: "#ffd6dc", eye: ["#2a5288", "#86c2ec"], cloth: "#fbfaf6", cloth2: "#7b90bd", shoe: "#4a6aa8", leg: "#ffffff", back: "twinlow", front: "even", outfit: "sailor", acc: "capacitor" },
+  kirch: { hair: "#9ecaa9", hair2: "#73a683", ear: "#ffd3cf", eye: ["#235a3b", "#8fd5a8"], cloth: "#eef3e8", cloth2: "#6fa47c", shoe: "#3f7f52", leg: "#5f6d8e", back: "short", front: "spiky", outfit: "jacket", acc: "arrow" },
+  indu: { hair: "#bfb3e0", hair2: "#998cc4", ear: "#ffd0e0", eye: ["#52389a", "#c3b2fb"], cloth: "#f2eef8", cloth2: "#a093c9", shoe: "#7a63c2", leg: SKIN, back: "cat", front: "even", outfit: "bell", acc: "coil" },
+  bobo: { hair: "#e6cd8c", hair2: "#c9a960", ear: "#ffd3c4", eye: ["#6d500f", "#ecc76a"], cloth: "#fbf2da", cloth2: "#d9b467", shoe: "#b98a2c", leg: "#ea96a2", back: "curly", front: "curly", outfit: "sweater", acc: "beret" },
+  lumi: { hair: "#f0c0cb", hair2: "#dc9dae", ear: "#ffe0e8", eye: ["#b33f68", "#ffb9cf"], cloth: "#fbf2f4", cloth2: "#e09cb0", shoe: "#e46f8f", leg: SKIN, back: "long", front: "even", outfit: "frill", acc: "led" },
+  tranz: { hair: "#9f97cc", hair2: "#776fab", ear: "#f6d0e6", eye: ["#33287c", "#a79bf0"], cloth: "#58537c", cloth2: "#e0c27e", shoe: "#2f2753", leg: "#4a4074", back: "twinhigh", front: "side", outfit: "cape", acc: "transistor" },
+  ope: { hair: "#eef0ee", hair2: "#b3d2ca", ear: "#ffd8dc", eye: ["#2a776c", "#9be0d2"], cloth: "#fdfdfb", cloth2: "#7eb2a6", shoe: "#3f8f83", leg: "#5f6d8e", back: "pony", front: "center", outfit: "coat", acc: "opamp" },
 };
-const st = (w = 2) => `stroke="${SB_INK}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`;
+const st = (w = 1.8) => `stroke="${SB_INK}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`;
 const limb = (d, col, w = 11) => `<path d="${d}" fill="none" stroke="${SB_INK}" stroke-width="${w + 4}" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`;
 // nét vẽ tay hơi run (chỉ dùng cho hình lớn, đứng yên)
 const roughDefs = (id) => `<filter id="${id}" x="-4%" y="-4%" width="108%" height="108%"><feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="5" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.7" xChannelSelector="R" yChannelSelector="G"/></filter>`;
@@ -56,20 +56,31 @@ function tailOf(c) {
   return `<path d="${d}" fill="none" stroke="${SB_INK}" stroke-width="11" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${c.hair}" stroke-width="7" stroke-linecap="round"/><path d="M152 176C153 170 150 165 145 166" fill="none" stroke="${c.hair2}" stroke-width="5" stroke-linecap="round"/>`;
 }
 // --- khuôn mặt: mắt dịu kiểu anime (L, R = toạ độ x hai mắt, Y = tâm mắt, k = tỉ lệ) ---
-function eyesOf(c, mood, gid, L = 79, R = 121, Y = 115, k = 1) {
-  const [dk] = c.eye;
-  const open = (x, y, s) => `<ellipse cx="${x}" cy="${y}" rx="${10.5 * k}" ry="${12.5 * k}" fill="#fff"/><ellipse cx="${x}" cy="${y + 1.6 * k}" rx="${8.6 * k}" ry="${10.8 * k}" fill="url(#${gid})"/><ellipse cx="${x}" cy="${y + 3 * k}" rx="${4.2 * k}" ry="${5.6 * k}" fill="${dk}" opacity=".9"/>`
-    + `<circle cx="${x - 3.2 * k}" cy="${y - 3.6 * k}" r="${3.1 * k}" fill="#fff"/><circle cx="${x + 3.6 * k}" cy="${y + 5.4 * k}" r="${1.4 * k}" fill="#fff" opacity=".9"/>`
-    + `<path d="M${x - 12 * k} ${y - 5 * k}Q${x} ${y - 15.5 * k} ${x + 12 * k} ${y - 6 * k}" fill="none" ${st(2.9 * k)}/><path d="M${x + s * 11.5 * k} ${y - 5.6 * k}l${s * 3.6 * k} ${-2.6 * k}" fill="none" ${st(2 * k)}/>`
-    + `<path d="M${x - 5 * k} ${y + 13.4 * k}Q${x} ${y + 14.8 * k} ${x + 5 * k} ${y + 13.4 * k}" fill="none" stroke="${SB_INK}" stroke-width="${1.1 * k}" stroke-linecap="round" opacity=".55"/>`;
-  const shut = (x, y) => `<path d="M${x - 10 * k} ${y + 3 * k}Q${x} ${y - 8 * k} ${x + 10 * k} ${y + 3 * k}" fill="none" ${st(2.7 * k)}/>`;
-  const down = (x, y) => `<path d="M${x - 10 * k} ${y}Q${x} ${y + 7 * k} ${x + 10 * k} ${y}" fill="none" ${st(2.6 * k)}/>`;
-  const dot = (x, y) => `<ellipse cx="${x}" cy="${y}" rx="${9.5 * k}" ry="${11.5 * k}" fill="#fff" ${st(1.8 * k)}/><circle cx="${x}" cy="${y + k}" r="${3.2 * k}" fill="${SB_INK}"/>`;
-  if (mood === "joy") return shut(L, Y) + shut(R, Y);
-  if (mood === "sleep") return down(L, Y) + down(R, Y);
-  if (mood === "wink") return open(L, Y, -1) + shut(R, Y);
-  if (mood === "shock") return dot(L, Y) + dot(R, Y);
-  return open(L, Y, -1) + open(R, Y, 1);
+function eyesDot(c, mood, L = 79, R = 121, Y = 118) { // chibi: mắt chấm đen bóng như tranh vẽ tay
+  const dot = (x) => `<ellipse cx="${x}" cy="${Y}" rx="5.6" ry="7.4" fill="#3b2a26"/><circle cx="${x - 1.8}" cy="${Y - 3}" r="2.1" fill="#fff"/><circle cx="${x + 2}" cy="${Y + 3.2}" r=".9" fill="#fff" opacity=".9"/>`;
+  const shut = (x) => `<path d="M${x - 7} ${Y + 2}Q${x} ${Y - 6} ${x + 7} ${Y + 2}" fill="none" ${st(2.4)}/>`;
+  const down = (x) => `<path d="M${x - 7} ${Y}Q${x} ${Y + 5} ${x + 7} ${Y}" fill="none" ${st(2.3)}/>`;
+  const ring = (x) => `<circle cx="${x}" cy="${Y}" r="6.4" fill="#fff" ${st(1.8)}/><circle cx="${x}" cy="${Y + 0.6}" r="2.6" fill="#3b2a26"/>`;
+  if (mood === "joy") return shut(L) + shut(R);
+  if (mood === "sleep") return down(L) + down(R);
+  if (mood === "wink") return dot(L) + shut(R);
+  if (mood === "shock") return ring(L) + ring(R);
+  return dot(L) + dot(R);
+}
+function eyesAlmond(c, mood, L, R, Y, uid) { // chân dung: mắt hạnh nhân, mí trên đậm, tròng tối, lấp lánh nhỏ
+  const [dk, lt] = c.eye;
+  const one = (x, s, i) => {
+    const o = `M${x - 12 * s} ${Y + 1}Q${x - 2 * s} ${Y - 13} ${x + 12 * s} ${Y - 3}Q${x + 5 * s} ${Y + 11} ${x - 12 * s} ${Y + 1}Z`;
+    return `<clipPath id="${uid}${i}"><path d="${o}"/></clipPath><path d="${o}" fill="#fff"/><g clip-path="url(#${uid}${i})"><circle cx="${x + 1 * s}" cy="${Y + 0.4}" r="8.2" fill="${dk}"/><circle cx="${x + 1 * s}" cy="${Y + 4}" r="5.6" fill="${lt}" opacity=".45"/><circle cx="${x + 1 * s}" cy="${Y + 0.4}" r="3.7" fill="#2b1f1d"/><circle cx="${x - 2 * s}" cy="${Y - 3}" r="2.3" fill="#fff"/><circle cx="${x + 3.4 * s}" cy="${Y + 4}" r="1" fill="#fff" opacity=".85"/></g>`
+      + `<path d="M${x - 12.5 * s} ${Y + 1.5}Q${x - 2 * s} ${Y - 13.8} ${x + 12.5 * s} ${Y - 3.4}" fill="none" ${st(2.8)}/><path d="M${x + 12 * s} ${Y - 3.2}l${3.4 * s} -2.2" fill="none" ${st(1.8)}/>`
+      + `<path d="M${x - 3 * s} ${Y + 9.6}Q${x + 3 * s} ${Y + 10.6} ${x + 9 * s} ${Y + 6.2}" fill="none" stroke="${SB_INK}" stroke-width="1.1" stroke-linecap="round" opacity=".6"/>`;
+  };
+  const shut = (x) => `<path d="M${x - 11} ${Y + 1}Q${x} ${Y - 6} ${x + 11} ${Y + 1}" fill="none" ${st(2.5)}/>`;
+  const half = (x, s) => `<path d="M${x - 12 * s} ${Y + 1}Q${x} ${Y - 3} ${x + 12 * s} ${Y}" fill="none" ${st(2.6)}/><path d="M${x - 9 * s} ${Y + 1.5}Q${x} ${Y + 6} ${x + 9 * s} ${Y + 1.5}" fill="${dk}" opacity=".85"/>`;
+  if (mood === "joy") return shut(L) + shut(R);
+  if (mood === "sleep") return half(L, -1) + half(R, 1);
+  if (mood === "wink") return one(L, -1, "a") + shut(R);
+  return one(L, -1, "a") + one(R, 1, "b");
 }
 function mouthOf(mood, x = 100, y = 131, k = 1) {
   const P = (dx, dy) => `${x + dx * k} ${y + dy * k}`;
@@ -88,7 +99,7 @@ function browsOf(mood, L = 79, R = 121, Y = 115, k = 1) {
   const style = `fill="none" stroke="${SB_INK}" stroke-width="${1.8 * k}" stroke-linecap="round" opacity=".85"`;
   if (mood === "angry") return `<path d="${b(L, 1, 4 * k)} ${b(R, -1, 4 * k)}" ${style}/>`;
   if (mood === "sad") return `<path d="${b(L, -1, 3 * k)} ${b(R, 1, 3 * k)}" ${style}/>`;
-  return `<path d="${b(L, 0, 0)} ${b(R, 0, 0)}" ${style} opacity=".55"/>`;
+  return `<path d="${b(L, 0, 0)} ${b(R, 0, 0)}" ${style}/>`;
 }
 const blushOf = (Lx, Rx, y, k = 1) => `<ellipse cx="${Lx}" cy="${y}" rx="${9 * k}" ry="${5 * k}" fill="${BLUSH}" opacity=".38"/><ellipse cx="${Rx}" cy="${y}" rx="${9 * k}" ry="${5 * k}" fill="${BLUSH}" opacity=".38"/>`
   + `<path d="M${Lx - 4 * k} ${y}l${2.4 * k} ${-3.4 * k}M${Lx + 1 * k} ${y + 1 * k}l${2.4 * k} ${-3.4 * k}M${Rx - 3 * k} ${y + 1 * k}l${2.4 * k} ${-3.4 * k}M${Rx + 2 * k} ${y}l${2.4 * k} ${-3.4 * k}" stroke="#ef7f98" stroke-width="${1.2 * k}" stroke-linecap="round" opacity=".8"/>`;
@@ -123,19 +134,17 @@ function accOf(c) {
   return "";
 }
 const zzz = (x, y, k = 1) => `<text x="${x}" y="${y}" font-family="Baloo 2, sans-serif" font-weight="800" font-size="${20 * k}" fill="${SB_INK}">z</text><text x="${x + 15 * k}" y="${y - 17 * k}" font-family="Baloo 2, sans-serif" font-weight="800" font-size="${14 * k}" fill="${SB_INK}">z</text>`;
-const eyeGrad = (gid, c) => `<linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c.eye[0]}"/><stop offset="1" stop-color="${c.eye[1]}"/></linearGradient>`;
 
 // nhân vật toàn thân (nhỏ): phòng, thẻ nhân vật, đội hình
 function chibi(id, { mood = "happy", cls = "" } = {}) {
   const c = ART[id]; if (!c) return "";
-  const gid = "ce" + (++svgN);
-  const glasses = c.acc === "beret" ? `<circle cx="79" cy="115" r="15.5" fill="#fff" fill-opacity=".16" ${st(2)}/><circle cx="121" cy="115" r="15.5" fill="#fff" fill-opacity=".16" ${st(2)}/><path d="M95 112Q100 108 105 112" fill="none" ${st(1.8)}/>` : "";
-  return `<svg class="chibi ${cls}" viewBox="0 -6 200 256" aria-hidden="true"><defs>${eyeGrad(gid, c)}</defs>
+  const glasses = c.acc === "beret" ? `<circle cx="79" cy="118" r="12.5" fill="#fff" fill-opacity=".16" ${st(1.8)}/><circle cx="121" cy="118" r="12.5" fill="#fff" fill-opacity=".16" ${st(1.8)}/><path d="M91.5 116Q100 112 108.5 116" fill="none" ${st(1.6)}/>` : "";
+  return `<svg class="chibi ${cls}" viewBox="0 -6 200 256" aria-hidden="true">
 <ellipse cx="100" cy="243" rx="44" ry="6" fill="${SB_INK}" opacity=".12"/>${tailOf(c)}${capeBack(c)}${hairBack(c)}
 ${limb("M90 204L89 228", c.leg)}${limb("M110 204L111 228", c.leg)}<ellipse cx="87" cy="233" rx="10" ry="6" fill="${c.shoe}" ${st(1.9)}/><ellipse cx="113" cy="233" rx="10" ry="6" fill="${c.shoe}" ${st(1.9)}/>
 ${outfitOf(c)}${limb("M77 166Q63 180 66 195", c.cloth)}${limb("M123 166Q137 180 134 195", c.cloth)}<circle cx="66" cy="198" r="6.5" fill="${SKIN}" ${st(1.8)}/><circle cx="134" cy="198" r="6.5" fill="${SKIN}" ${st(1.8)}/>
 <rect x="93" y="146" width="14" height="14" rx="5" fill="${SKIN_SH}"/>${catEars(c)}<path d="M46 102C46 66 70 46 100 46S154 66 154 102C154 134 130 154 100 154S46 134 46 102Z" fill="${SKIN}" ${st()}/>
-${blushOf(70, 130, 130)}${eyesOf(c, mood, gid)}<path d="M100 123l-1.2 3.2" stroke="${SB_INK}" stroke-width="1.3" stroke-linecap="round" opacity=".45"/>${mouthOf(mood)}${hairFront(c)}${browsOf(mood)}${glasses}${accOf(c)}${mood === "sleep" ? zzz(150, 40) : ""}</svg>`;
+${blushOf(70, 130, 131)}${eyesDot(c, mood)}${mouthOf(mood, 100, 133, 0.7)}${hairFront(c)}${browsOf(mood)}${glasses}${accOf(c)}${mood === "sleep" ? zzz(150, 40) : ""}</svg>`;
 }
 
 // chân dung bán thân: truyện, màn ra nhân vật, hồ sơ — mặt thon hơn, vai áo, nét vẽ tay
@@ -158,12 +167,12 @@ function portrait(id, { mood = "happy", cls = "", rough = true } = {}) {
   const art = `<g transform="translate(20 -4) scale(1 1.3)">${hairBack(c)}</g>${torso}${collar}
 <path d="M107 176V222Q120 230 133 222V176Z" fill="${SKIN}" ${st(1.8)}/><path d="M107 186Q120 202 133 186V198Q120 212 107 198Z" fill="${SKIN_SH}"/>
 <g transform="translate(20 4)">${catEars(c)}</g><path d="M68 112C68 74 92 52 120 52S172 74 172 112C172 142 162 166 146 181 137 189 129 193 120 193S103 189 94 181C78 166 68 142 68 112Z" fill="${SKIN}" ${st()}/>
-${blushOf(92, 148, 152, k)}${eyesOf(c, mood, gid, L, R, Y, k)}<path d="M120 145l-1.4 4" stroke="${SB_INK}" stroke-width="1.4" stroke-linecap="round" opacity=".45"/>${mouthOf(mood, 120, 163, 1.05)}
+${blushOf(92, 148, 152, k)}${eyesAlmond(c, mood, L, R, Y, gid)}<path d="M120 145l-1.4 4" stroke="${SB_INK}" stroke-width="1.4" stroke-linecap="round" opacity=".45"/>${mouthOf(mood, 120, 163, 1.05)}
 <g transform="translate(20 4) scale(1 1.04)">${hairFront(c)}</g>${browsOf(mood, L, R, Y + 2, k)}${glasses}<g transform="translate(20 4) scale(1 1.04)">${accOf(c)}</g>${mood === "sleep" ? zzz(176, 56) : ""}`;
-  return `<svg class="chibi portrait ${cls}" viewBox="0 6 240 296" aria-hidden="true"><defs>${eyeGrad(gid, c)}${rough ? roughDefs(fid) : ""}</defs>${rough ? `<g filter="url(#${fid})">${art}</g>` : art}</svg>`;
+  return `<svg class="chibi portrait ${cls}" viewBox="0 6 240 296" aria-hidden="true"><defs>${rough ? roughDefs(fid) : ""}</defs>${rough ? `<g filter="url(#${fid})">${art}</g>` : art}</svg>`;
 }
 
-// bé mèo Elec: mèo con màu kem, vệt tia chớp trên trán, một electron bay quanh đầu
+// bé mèo Elec: mèo con màu kem, vệt tia chớp trên trán; lúc học thì đeo kính tròn
 function kitten(mood = "happy", cls = "") {
   const I = SB_INK;
   const eyes = {
@@ -173,8 +182,6 @@ function kitten(mood = "happy", cls = "") {
     sleep: `<path d="M43 58q6 5 12 0M65 58q6 5 12 0" fill="none" ${st(2.4)}/>`,
   }[mood] || "";
   const mouth = mood === "party" ? `<path d="M55 66q5 10 10 0z" fill="#f08a99" ${st(1.7)}/>` : mood === "think" ? `<ellipse cx="60" cy="68" rx="2.4" ry="2.8" fill="#f08a99" ${st(1.5)}/>` : `<path d="M54 66q3 3.4 6 0q3 3.4 6 0" fill="none" ${st(1.9)}/>`;
-  const orbit = "M22 22a38 10 0 1 0 76 0a38 10 0 1 0 -76 0";
-  const motion = reduceMotion ? "" : `<animateMotion dur="5s" repeatCount="indefinite" path="${orbit}"/>`;
   return `<svg class="mascot kitten ${cls}" viewBox="0 0 120 120" aria-hidden="true">
 <ellipse cx="60" cy="113" rx="30" ry="4.5" fill="${I}" opacity=".13"/>
 <path d="M84 104C102 106 108 90 100 80C96 76 91 79 95 84" fill="none" stroke="${I}" stroke-width="10" stroke-linecap="round"/><path d="M84 104C102 106 108 90 100 80C96 76 91 79 95 84" fill="none" stroke="#fff3e0" stroke-width="6" stroke-linecap="round"/><path d="M101 86C103 82 100 78 97 80" fill="none" stroke="#f3c59a" stroke-width="5" stroke-linecap="round"/>
@@ -187,8 +194,7 @@ function kitten(mood = "happy", cls = "") {
 <ellipse cx="42" cy="67" rx="5.2" ry="3.2" fill="${BLUSH}" opacity=".5"/><ellipse cx="78" cy="67" rx="5.2" ry="3.2" fill="${BLUSH}" opacity=".5"/>
 ${eyes}<path d="M58 62h4l-2 2.4z" fill="#f08a99" ${st(1)}/>${mouth}
 <path d="M34 63h-9M35 68l-8 2.4M86 63h9M85 68l8 2.4" stroke="${I}" stroke-width="1.3" stroke-linecap="round" opacity=".75"/>
-<path d="${orbit}" fill="none" stroke="${I}" stroke-width="1.5" stroke-dasharray="3 4" opacity=".5" transform="rotate(-8 60 22)"/>
-<g transform="rotate(-8 60 22)"><circle cx="${reduceMotion ? 22 : 0}" cy="${reduceMotion ? 22 : 0}" r="4" fill="#ffd54d" ${st(1.4)}>${motion}</circle></g>
+${mood === "think" ? `<circle cx="50" cy="56" r="8.5" fill="#fff" fill-opacity=".25" ${st(1.8)}/><circle cx="72" cy="56" r="8.5" fill="#fff" fill-opacity=".25" ${st(1.8)}/><path d="M58.5 55q2.5-2 5 0" fill="none" ${st(1.6)}/>` : ""}
 ${mood === "party" ? `<path d="M14 18l1.4 3.2 3.2 1.4-3.2 1.4L14 27.2l-1.4-3.2-3.2-1.4 3.2-1.4zM104 12l1 2.4 2.4 1-2.4 1-1 2.4-1-2.4-2.4-1 2.4-1z" fill="#ffd54d" ${st(1)}/>` : ""}${mood === "sleep" ? zzz(88, 30, 0.8) : ""}</svg>`;
 }
 
