@@ -514,15 +514,15 @@ async function axe(p, label) {
     await p.close();
   }
 
-  // ---------- 14. Màn chờ, dữ liệu trò chơi cũ, đồng hồ tập trung ----------
+  // ---------- 14. Không màn chờ, dữ liệu trò chơi cũ, đồng hồ tập trung ----------
   {
     const setStore = (p, kv) => p.evaluate((kv) => { for (const [k, v] of Object.entries(kv)) window.__store.set(k, v); sessionStorage.setItem("__store", JSON.stringify([...window.__store])); }, kv);
     const reopen = async (p, hash) => { await p.goto("https://app.test/" + hash, { waitUntil: "load" }); await p.reload({ waitUntil: "load" }); await p.waitForTimeout(700); };
-    // màn chờ: hiện khi dữ liệu đang tải, tự tắt khi xong
+    // không có màn chờ: vào thẳng Hôm nay khi dữ liệu còn đang tải, tải xong tự cập nhật
     const s0 = await open({ cfg: { slowDb: 1600 } });
-    check("Màn chờ: hiện trong lúc tải dữ liệu", (await vis(s0, "#splash")) && !(await s0.$eval("#splash", (e) => e.classList.contains("out"))) && (await vis(s0, "#splash .sp-logo")));
+    check("Không có màn chờ: vào thẳng Hôm nay khi dữ liệu đang tải", !(await s0.$("#splash")) && (await vis(s0, "#v-home")) && (await vis(s0, "#wLcd svg")));
     await s0.waitForTimeout(1500);
-    check("Màn chờ: tự tắt khi dữ liệu đã tải", !(await vis(s0, "#splash")) || (await s0.$eval("#splash", (e) => e.classList.contains("out"))));
+    check("Dữ liệu tải xong: Hôm nay tự cập nhật", /Việc nên làm bây giờ/.test(await txt(s0, "#hNow")) && (await vis(s0, "#hGoals .quests")));
     await s0.close();
     // người dùng cũ có dữ liệu trò chơi: app bỏ qua, link cũ về Hôm nay, dữ liệu không bị xoá
     const w = await open({});
