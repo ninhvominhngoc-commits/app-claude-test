@@ -89,7 +89,7 @@ const STORY = [
       { c: "elec", m: "think", t: "Có thứ gì đó đang hút sạch điện của trường. Mình gọi nó là… Nhiễu Trắng." },
       { id: "p1", ch: [
         { t: "Bình tĩnh. Kể mình nghe từ đầu.", r: [{ c: "elec", m: "happy", t: "Bạn ngầu ghê. Được, nghe kỹ nè…" }] },
-        { t: "KHOAN. Electron biết nói á?!", r: [{ c: "elec", m: "party", t: "Biết nói, biết kêu meo, và biết dỗi nếu bạn không tập trung đủ 25 phút mỗi ngày đó nha." }] }] },
+        { t: "KHOAN. Mèo biết nói á?!", r: [{ c: "elec", m: "party", t: "Biết nói, biết kêu meo, và biết dỗi nếu bạn không tập trung đủ 25 phút mỗi ngày đó nha." }] }] },
       { fx: "shake", t: "Rè… rè… Một đám mây lốm đốm như TV mất sóng lăn ra từ phòng máy." },
       { c: "nhieu", t: "Rè rè! Điện của Jussieu giờ là của ta! Đèn đóm, wifi, máy chiếu… ăn hết! Rè!" },
       { c: "elec", m: "think", t: "Nó đang ăn dòng điện thật kìa! Mình cần một Linh Kiện để chống lại nó…" },

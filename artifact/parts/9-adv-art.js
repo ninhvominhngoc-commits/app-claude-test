@@ -74,9 +74,8 @@ const MINI = {
       + `<circle cx="78" cy="160" r="14" fill="#fff" fill-opacity=".22" stroke="${FACE}" stroke-width="3"/><circle cx="114" cy="160" r="14" fill="#fff" fill-opacity=".22" stroke="${FACE}" stroke-width="3"/><path d="M92 157q4-3 8 0" fill="none" stroke="${FACE}" stroke-width="3" stroke-linecap="round"/>`;
   } },
   lumi: { f: [100, 152], draw: (m) => { // đèn LED hồng: mái vòm, vành, hai mũi tên ánh sáng
-    const C = "#f3abbd", D = "#e48aa1", Y = "#f2c14e", glow = m === "joy" || m === "wow" || m === "happy";
+    const C = "#f3abbd", D = "#e48aa1", Y = "#f2c14e";
     return shadow(48) + ln("M86 212V229", LEAD) + ln("M114 212V229", LEAD) + feet("#d77c94", 84, 116, 232)
-      + (glow ? `<circle cx="100" cy="140" r="64" fill="#ffd6e0" opacity=".45"/>` : "")
       + `<path d="M64 204V134A36 36 0 0 1 136 134V204Z" fill="${C}"/><rect x="56" y="198" width="88" height="16" rx="7" fill="${D}"/><rect x="72" y="112" width="9" height="26" rx="4.5" fill="#fff" opacity=".5"/>`
       + ln("M140 104l13 -13", Y, 4) + `<path d="M148 84l11 -2 -2 11z" fill="${Y}" stroke="${Y}" stroke-width="2" stroke-linejoin="round"/>` + ln("M150 118l13 -13", Y, 4) + `<path d="M158 98l11 -2 -2 11z" fill="${Y}" stroke="${Y}" stroke-width="2" stroke-linejoin="round"/>`
       + face(m, 100, 152, { d: 16 });
