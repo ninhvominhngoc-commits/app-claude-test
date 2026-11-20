@@ -22,9 +22,9 @@ function lastSubject() {
 function quests() {
   const d = state.stats.days[todayISO()] || {}, f = d.f || 0, r = d.r || 0, fe = d.fe || 0, pr = d.p || 0;
   return [
-    { k: "focus", t: "Tập trung 25 phút", v: f >= 25 ? `${f} phút` : `${f}/25 phút`, p: Math.min(1, f / 25), act: f < 25 ? ["focus-open", state.focus?.endAt ? "Mở" : "Bắt đầu"] : null, col: "#d97757" },
-    { k: "review", t: "Ôn 10 thẻ hoặc hết thẻ đến hạn", v: `${r} thẻ`, p: r >= 10 || (r > 0 && totalDue() === 0) ? 1 : Math.min(1, r / 10), act: totalDue() ? ["review-all", "Ôn"] : null, col: "#7d9a5b" },
-    { k: "practice", t: "Luyện 1 bài: làm đề hoặc tự giảng", v: fe || pr ? "Xong" : "Luyện đề hoặc Feynman", p: fe || pr ? 1 : 0, act: fe || pr ? null : ["go-drill", "Luyện"], col: "#6a9bcc" },
+    { k: "focus", t: "Tập trung 25 phút", v: f >= 25 ? `${f} phút` : `${f}/25 phút`, p: Math.min(1, f / 25), act: f < 25 ? ["focus-open", state.focus?.endAt ? "Mở" : "Bắt đầu"] : null, col: "#a9cdf5" },
+    { k: "review", t: "Ôn 10 thẻ hoặc hết thẻ đến hạn", v: `${r} thẻ`, p: r >= 10 || (r > 0 && totalDue() === 0) ? 1 : Math.min(1, r / 10), act: totalDue() ? ["review-all", "Ôn"] : null, col: "#9fe2c8" },
+    { k: "practice", t: "Luyện 1 bài: làm đề hoặc tự giảng", v: fe || pr ? "Xong" : "Luyện đề hoặc Feynman", p: fe || pr ? 1 : 0, act: fe || pr ? null : ["go-drill", "Luyện"], col: "#c9b6ff" },
   ];
 }
 function checkGold() {
@@ -100,9 +100,26 @@ function renderProgress() {
 const fmtLeft = (ms) => { const s = Math.max(0, Math.ceil(ms / 1000)); return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`; };
 const DURS = [15, 25, 45, 60];
 let focusPick = { subject: null, dur: 0, goal: "" }, wakeLock = null;
-function focusRing(p) {
-  const c = 2 * Math.PI * 88;
-  return `<svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="88" fill="none" stroke="var(--line)" stroke-width="12"/><circle class="fr-on" cx="100" cy="100" r="88" fill="none" stroke="var(--accent-btn)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${(clamp(p, 0, 1) * c).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 100 100)"/></svg>`;
+// đồng hồ kiểu màn hình LCD 7 đoạn, vẽ bằng SVG (chữ thật để ẩn cho trình đọc màn hình)
+const SEG7 = { 0: "abcdef", 1: "bc", 2: "abged", 3: "abgcd", 4: "fgbc", 5: "afgcd", 6: "afgedc", 7: "abc", 8: "abcdefg", 9: "abcdfg" };
+function lcdSvg(str) {
+  const t = 9, g = 2.4, L = 6, R = 54, T = 6, M = 52, B = 98, W = 60, sp = 11;
+  const hz = (y, x1, x2) => `${x1},${y} ${x1 + t / 2},${y - t / 2} ${x2 - t / 2},${y - t / 2} ${x2},${y} ${x2 - t / 2},${y + t / 2} ${x1 + t / 2},${y + t / 2}`;
+  const vt = (x, y1, y2) => `${x},${y1} ${x + t / 2},${y1 + t / 2} ${x + t / 2},${y2 - t / 2} ${x},${y2} ${x - t / 2},${y2 - t / 2} ${x - t / 2},${y1 + t / 2}`;
+  const P = { a: hz(T, L + g, R - g), g: hz(M, L + g, R - g), d: hz(B, L + g, R - g), f: vt(L, T + g, M - g), b: vt(R, T + g, M - g), e: vt(L, M + g, B - g), c: vt(R, M + g, B - g) };
+  let x = 0, out = "";
+  for (const ch of String(str)) {
+    if (ch === ":") { out += `<g transform="translate(${x} 0)"><rect x="3" y="30" width="10" height="10" rx="2.5" class="on"/><rect x="3" y="64" width="10" height="10" rx="2.5" class="on"/></g>`; x += 16 + sp; continue; }
+    const on = SEG7[ch]; if (on === undefined) continue;
+    out += `<g transform="translate(${x} 0)">${"abcdefg".split("").map((k) => `<polygon points="${P[k]}" class="${on.includes(k) ? "on" : "off"}"/>`).join("")}</g>`;
+    x += W + sp;
+  }
+  return `<svg class="lcd-svg" viewBox="-14 0 ${x - sp + 20} 104" aria-hidden="true"><g transform="skewX(-6)">${out}</g></svg>`;
+}
+const lcdHtml = (s) => `<span class="vh">${esc(s)}</span>${lcdSvg(s)}`;
+function focusRing(p) { // thanh tiến độ mảnh dưới đồng hồ
+  const all = 294, on = clamp(p, 0, 1) * all;
+  return `<svg viewBox="0 0 300 6" preserveAspectRatio="none" aria-hidden="true"><line class="fr-bg" x1="3" y1="3" x2="297" y2="3"/><line class="fr-on" x1="3" y1="3" x2="297" y2="3" stroke-dasharray="${on.toFixed(1)} ${all}"/></svg>`;
 }
 function renderFocus() {
   const f = state.focus?.endAt ? state.focus : null;
@@ -111,7 +128,7 @@ function renderFocus() {
   const subj = subjOf(f ? f.subject : focusPick.subject);
   $("#fLevel").textContent = subj.name;
   $("#fSetup").hidden = !!f; $("#fRun").hidden = !f;
-  $("#fRoom").innerHTML = emptyIc("target");
+  $("#fRoom").innerHTML = f ? "" : emptyIc("target");
   $("#fElem").textContent = f ? "Chợt nhớ việc khác thì ghi vào sổ bên dưới, đừng bỏ dở để làm ngay." : "Chọn môn, ghi một mục tiêu cụ thể, rồi bắt đầu.";
   if (!f) {
     $("#fSubj").innerHTML = subjects().map((s) => `<button data-subj="${esc(s.id)}" aria-pressed="${s.id === focusPick.subject}">${esc(s.name)}</button>`).join("");
@@ -151,9 +168,9 @@ function tickFocus() {
   const left = f.endAt - Date.now();
   if (left <= 0) { finishFocus(true); return; }
   const s = fmtLeft(left);
-  if (state.view === "focus") { $("#fTime").textContent = s; $("#fRing").innerHTML = focusRing(1 - left / (f.dur * 60000)); }
+  if (state.view === "focus") { $("#fTime").innerHTML = lcdHtml(s); $("#fRing").innerHTML = focusRing(1 - left / (f.dur * 60000)); }
   $$("[data-left]").forEach((el) => (el.textContent = s));
-  if (state.view === "home" && $("#wFocusLabel").textContent !== "Đang tập trung") renderHero();
+  if (state.view === "home") { if (!$("#wFocus").classList.contains("on")) renderHero(); else $("#wLcd").innerHTML = lcdSvg(s); }
 }
 function finishFocus(complete) {
   const f = state.focus; if (!f?.endAt) return;

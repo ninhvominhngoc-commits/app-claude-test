@@ -436,6 +436,22 @@ async function axe(p, label) {
   }
 
 
+  // ---------- 11b. Hôm nay: đồng hồ LCD, − / +, một chạm là tập trung ----------
+  {
+    const o = await open({ seed: true });
+    check("Hôm nay: đồng hồ LCD hiện 25:00 và hàng số liệu", (await vis(o, "#wLcd svg.lcd-svg")) && (await txt(o, "#wFocus [data-left]")) === "25:00" && /Thẻ đến hạn/.test(await txt(o, "#hStats")) && /Chuỗi ngày/.test(await txt(o, "#hStats")));
+    await o.click("#hPlus"); await o.click("#hPlus");
+    check("Hôm nay: nút + tăng 5 phút mỗi lần", /35 phút/.test(await txt(o, "#hDur")) && (await txt(o, "#wFocus [data-left]")) === "35:00");
+    await o.click("#hMinus");
+    check("Hôm nay: nút − giảm 5 phút", /30 phút/.test(await txt(o, "#hDur")));
+    await o.click("#hStart"); await o.waitForTimeout(300);
+    const fs = (await store(o))["data/users/u1/focus"];
+    check("Hôm nay: chạm Bắt đầu là chạy ngay 30 phút và mở đồng hồ lớn", (await vis(o, "#v-focus")) && fs?.dur === 30 && !!fs.endAt && (await vis(o, "#fTime svg.lcd-svg")), JSON.stringify(fs));
+    await o.click('#v-focus [data-go="home"]'); await o.waitForTimeout(1100);
+    check("Hôm nay khi đang chạy: ẩn − / +, nút đổi thành Mở đồng hồ", !(await vis(o, "#hStepper")) && /Mở đồng hồ/.test(await txt(o, "#hStart")) && /Đang tập trung/.test(await txt(o, "#wFocusLabel")));
+    await o.close();
+  }
+
   // ---------- 12. Cài đặt, thống kê, tập trung nghiêm ----------
   {
     const today = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Paris" }).format(new Date());
@@ -520,7 +536,7 @@ async function axe(p, label) {
     const now = Date.now();
     await setStore(p, { "data/users/u1/focus": { subject: "free", start: now - 10 * 60000, endAt: now + 15 * 60000, dur: 25 } });
     await reopen(p, "#focus"); await p.waitForTimeout(1200);
-    check("Tập trung: biểu tượng đích và lời nhắc ghi việc chợt nhớ", (await vis(p, "#fRoom .empty-ic")) && /ghi vào sổ/.test(await txt(p, "#fElem")));
+    check("Tập trung: đồng hồ LCD lớn và lời nhắc ghi việc chợt nhớ", (await vis(p, "#fTime svg.lcd-svg")) && /ghi vào sổ/.test(await txt(p, "#fElem")));
     check("Tập trung: vòng thời gian đã chạy khoảng 40%", await p.$eval("#fRing .fr-on", (c) => { const [on, all] = c.getAttribute("stroke-dasharray").split(" ").map(Number); return on / all > 0.35 && on / all < 0.45; }));
     await p.click('#v-focus [data-go="home"]'); await p.waitForTimeout(300);
     check("Hôm nay khi đang tập trung: ẩn thẻ việc nên làm, nút lớn hiện giờ còn lại", !(await vis(p, "#hNow")) && /Đang tập trung/.test(await txt(p, "#wFocus")));

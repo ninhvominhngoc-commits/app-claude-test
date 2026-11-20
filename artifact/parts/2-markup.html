@@ -64,8 +64,15 @@
         <button class="icon-btn gear" data-act="settings" aria-label="Cài đặt"><svg class="i"><use href="#i-gear"></use></svg></button>
       </div>
     </div>
+    <section class="timer-hero" aria-label="Đồng hồ tập trung">
+      <p class="t-cap" id="wFocusLabel">Tập trung</p>
+      <button class="lcd" id="wFocus" data-act="focus-open" aria-label="Mở màn tập trung"><span class="lcd-screen" id="wLcd"></span><span class="vh" id="wFocusState"></span><span class="vh" data-left></span></button>
+      <div class="stepper" id="hStepper"><button class="step" id="hMinus" aria-label="Bớt 5 phút">−</button><span id="hDur" aria-live="polite"></span><button class="step" id="hPlus" aria-label="Thêm 5 phút">+</button></div>
+      <button class="pill-start" id="hStart"><svg class="i"><use href="#i-play"></use></svg><span id="hStartTxt">Bắt đầu</span></button>
+      <button class="link" data-act="focus-open" id="hCustom">Chọn môn và mục tiêu phiên</button>
+    </section>
+    <button class="stat-row" id="hStats" data-go="stats" aria-label="Xem thống kê"></button>
     <article class="now-card" id="hNow"></article>
-    <button class="main-btn" id="wFocus" data-act="focus-open"><svg class="i"><use href="#i-play"></use></svg><span id="wFocusLabel">Tập trung</span><small data-left></small></button>
     <article class="tile goals" id="hGoals"></article>
     <div class="today-h"><span class="label">Hôm nay ở trường</span><span class="small muted" id="hDate"></span></div>
     <article class="tile tinted" id="hStatus"></article>
@@ -233,7 +240,7 @@
       <p class="f-hint" id="fHint"></p>
     </div>
     <div id="fRun" class="stack" style="gap:12px" hidden>
-      <div class="f-ring"><div id="fRing"></div><p class="f-time" id="fTime">25:00</p></div>
+      <div class="f-clock"><div class="lcd big"><span class="lcd-screen" id="fTime"></span></div><div class="f-prog" id="fRing"></div></div>
       <p class="f-goal-show" id="fGoalShow" hidden></p>
       <details class="f-notes"><summary id="fNotesSum">Chợt nhớ việc khác? Ghi lại để sau</summary>
         <div class="row" style="flex-wrap:nowrap"><input type="text" id="fNoteIn" maxlength="140" autocomplete="off" placeholder="vd: nhắn nhóm TP về lịch nộp" aria-label="Việc chợt nhớ"><button class="btn sm" id="fNoteAdd">Ghi</button></div>

@@ -133,6 +133,9 @@ window.addEventListener("resize", () => { clearTimeout(resizeT); resizeT = setTi
 $("#fSubj").addEventListener("click", (e) => { const b = e.target.closest("[data-subj]"); if (!b) return; focusPick.subject = b.dataset.subj; renderFocus(); });
 $("#fDur").addEventListener("click", (e) => { const b = e.target.closest("[data-dur]"); if (!b) return; focusPick.dur = +b.dataset.dur; renderFocus(); });
 $("#fStart").addEventListener("click", startFocus);
+$("#hMinus").addEventListener("click", () => stepDur(-5));
+$("#hPlus").addEventListener("click", () => stepDur(5));
+$("#hStart").addEventListener("click", startNow);
 $("#fGoal").addEventListener("input", (e) => { focusPick.goal = e.target.value; });
 $("#fNoteAdd").addEventListener("click", addNote);
 $("#fNoteIn").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); addNote(); } });

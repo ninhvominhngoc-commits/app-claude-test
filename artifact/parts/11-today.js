@@ -35,14 +35,34 @@ function renderHero() {
   if (n) box.className = "now-card k-" + n.k;
   if (n) box.innerHTML = `<span class="now-ic">${icon(n.ic)}</span><div class="now-txt"><span class="label">Việc nên làm bây giờ</span><strong>${esc(n.t)}</strong><span class="small">${esc(n.s)}</span></div>`
     + (n.acts.length ? `<div class="now-acts">${n.acts.map(([a, l, c, id]) => `<button class="btn sm ${c}" data-act="${a}"${id ? ` data-id="${esc(id)}"` : ""}>${esc(l)}</button>`).join("")}</div>` : "");
-  const f = state.focus?.endAt ? state.focus : null;
+  // đồng hồ LCD: chưa chạy thì hiện số phút đã chọn, đang chạy thì đếm ngược
+  const f = state.focus?.endAt ? state.focus : null, dur = focusPick.dur || p.dur;
+  if (!focusPick.subject || !subjects().some((s) => s.id === focusPick.subject)) focusPick.subject = lastSubject().id;
+  const shown = f ? fmtLeft(f.endAt - Date.now()) : `${dur}:00`;
   $("#wFocus").classList.toggle("on", !!f);
-  $("#wFocusLabel").textContent = f ? "Đang tập trung" : "Tập trung";
-  $("#wFocus [data-left]").textContent = f ? fmtLeft(f.endAt - Date.now()) : `${p.dur}:00`;
+  $("#wFocusLabel").textContent = f ? `Đang tập trung · ${subjOf(f.subject).name}` : `Tập trung · ${subjOf(focusPick.subject).name}`;
+  $("#wFocusState").textContent = f ? "Đang tập trung" : "Tập trung";
+  $("#wFocus [data-left]").textContent = shown;
+  $("#wLcd").innerHTML = lcdSvg(shown);
+  $("#hStepper").hidden = !!f; $("#hCustom").hidden = !!f;
+  $("#hDur").textContent = `${dur} phút`;
+  $("#hStartTxt").textContent = f ? "Mở đồng hồ" : "Bắt đầu";
+  const day = state.stats.days[todayISO()] || {}, fm = day.f || 0;
+  $("#hStats").innerHTML = `<span><small>Tập trung</small><b>${fm < 60 ? `${fm}p` : `${Math.floor(fm / 60)}g${String(fm % 60).padStart(2, "0")}`}</b></span><span><small>Thẻ đến hạn</small><b>${totalDue()}</b></span><span><small>Chuỗi ngày</small><b>${streak()}</b></span>`;
   const q = quests(), done = q.filter((x) => x.p >= 1).length;
   $("#hGoals").innerHTML = `<div class="goals-head">${ringsSvg(q, 52)}<div><span class="label">Mục tiêu hôm nay</span><strong id="hGoalsTxt">${done}/3 đã xong</strong></div>
     <button class="btn sm ghost" data-act="quests" aria-label="Chuỗi ${streak()} ngày, xem lịch học">${icon("flame")} ${streak()} ngày</button></div><ul class="quests">${goalItems(q)}</ul>`;
 }
+
+// một chạm là tập trung ngay: môn gần nhất, số phút đang chọn, mục tiêu đã điền (nếu có)
+function startNow() {
+  if (state.focus?.endAt) return openFocus();
+  if (!focusPick.subject || !subjects().some((s) => s.id === focusPick.subject)) focusPick.subject = lastSubject().id;
+  if (!focusPick.dur) focusPick.dur = prefs().dur;
+  $("#fGoal").value = focusPick.goal || "";
+  startFocus(); show("focus");
+}
+function stepDur(d) { focusPick.dur = clamp((focusPick.dur || prefs().dur) + d, 5, 180); sfx("tick"); renderHero(); }
 
 // --- bảng mục tiêu & chuỗi ngày ---
 function openQuests() {
