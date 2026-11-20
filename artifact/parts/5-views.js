@@ -88,7 +88,7 @@ function flipCard() {
 function gradeCur(g) {
   if (!sess.cur || !sess.flipped) return;
   const { deck, card } = sess.cur;
-  grade(card, g); saveDeck(deck); bump("r"); sfx("pop"); advCard(); checkGold();
+  grade(card, g); saveDeck(deck); bump("r"); sfx("pop"); checkGold();
   if (g < 3) sess.queue.push(sess.cur); else sess.done++;
   nextCard();
 }
@@ -118,7 +118,6 @@ function resistor(id) {
 const VERDICT_IC = { go: "building", stay: "home", partial: "half", unknown: "question" };
 function renderHome() {
   $("#hDate").textContent = longDate(todayISO());
-  maybeWelcome();
   // campus
   const s = state.status, fresh = s && s.date === todayISO(), vk = fresh && VERDICT[s.verdict] ? s.verdict : "unknown", v = VERDICT[vk];
   const el = $("#hStatus");

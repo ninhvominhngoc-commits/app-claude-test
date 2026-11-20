@@ -44,7 +44,7 @@
 </svg>
 
 <div id="splash" role="status" aria-label="Đang tải app">
-  <p class="sp-sub">Cozy Study Companion</p>
+  <p class="sp-sub">Trợ lý học tập</p>
   <p class="sp-logo">Sorbonne<br>Copilot</p>
   <div class="sp-art" id="spArt"></div>
   <div class="sp-bar"><i></i><span>Đang tải…</span></div>
@@ -54,33 +54,21 @@
 <main class="wrap" id="main">
   <div id="notice" class="notice" hidden></div>
 
-  <!-- HÔM NAY: CĂN PHÒNG -->
+  <!-- HÔM NAY: việc nên làm ngay, nút Tập trung, 3 mục tiêu, trường -->
   <section id="v-home" class="view home">
     <div class="home-top">
       <div class="ht-left">
-        <button class="name-pill" data-act="settings" aria-label="Đổi tên bé mèo"><span id="buddyName">Elec</span><svg class="i"><use href="#i-pencil"></use></svg></button>
-        <span class="clock" id="hClock"></span>
+        <span class="h-mark" id="hMark" aria-hidden="true"></span>
+        <div class="h-hello"><p id="hHello"></p><span class="clock" id="hClock"></span></div>
       </div>
       <div class="ht-right">
-        <button class="cur-pill" data-act="earn-info" id="hGems"><span class="cur-ic" aria-hidden="true">✦</span><b data-gems>0</b><span class="cur-plus" aria-hidden="true">+</span></button>
+        <button class="icon-btn" data-go="stats" aria-label="Thống kê"><svg class="i"><use href="#i-chart"></use></svg></button>
         <button class="icon-btn gear" data-act="settings" aria-label="Cài đặt"><svg class="i"><use href="#i-gear"></use></svg></button>
       </div>
     </div>
-    <p class="bubble" id="hBubble" aria-live="polite"></p>
-    <div class="room-wrap">
-      <span class="cloud c1" aria-hidden="true"></span><span class="cloud c2" aria-hidden="true"></span><span class="cloud c3" aria-hidden="true"></span>
-      <div class="room" id="hRoom"></div>
-      <div class="room-hud">
-        <button class="hud-btn" data-go="adv" id="hudStory"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 8c4-2 8-2 12 1 4-3 8-3 12-1v17c-4-2-8-2-12 1-4-3-8-3-12-1z" fill="#ffd3dc" stroke="#664536" stroke-width="2" stroke-linejoin="round"/><path d="M16 9v17" stroke="#664536" stroke-width="2"/><path d="M10 15.5c-1.8-1.1-2.6-2.1-2.6-3a1.4 1.4 0 0 1 2.6-.7 1.4 1.4 0 0 1 2.6.7c0 .9-.8 1.9-2.6 3z" fill="#ef6f7f"/><path d="M19 13h6M19 17h6" stroke="#ef90aa" stroke-width="1.8" stroke-linecap="round"/></svg><span>Truyện</span></button>
-        <button class="hud-btn" data-go="wish" id="hudWish"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 27l8-8" stroke="#b49cff" stroke-width="3.4" stroke-linecap="round"/><path d="M6 20l5-5" stroke="#ffbccd" stroke-width="2.4" stroke-linecap="round"/><path d="M20 4l2.6 5.6 6 .9-4.4 4.2 1 6-5.2-2.8-5.4 2.8 1-6-4.2-4.2 6-.9z" fill="#ffe17a" stroke="#664536" stroke-width="2" stroke-linejoin="round"/></svg><span>Cầu nguyện</span></button>
-      </div>
-      <button class="quest-sticker" data-act="quests" id="hQuest"><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="9" y="6" width="22" height="28" rx="3" fill="#fff8e6" stroke="#664536" stroke-width="2"/><path d="M6 9a3 3 0 0 1 6 0v4H6zM28 31a3 3 0 0 0 6 0v-4h-6z" fill="#f4dca8" stroke="#664536" stroke-width="2" stroke-linejoin="round"/><path d="M14 15h12M14 20h12M14 25h8" stroke="#d9b48c" stroke-width="2" stroke-linecap="round"/><circle cx="29" cy="10" r="5.4" fill="#ef6f7f" stroke="#664536" stroke-width="1.6"/><path d="M27 10l1.4 1.4 2.6-2.8" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="hQuestTxt">Nhiệm vụ</span></button>
-    </div>
-    <div class="hero-actions">
-      <button class="side-btn" data-act="decor"><svg class="ic" viewBox="0 0 32 32" aria-hidden="true"><path d="M19 4l9 9-8.5 8.5-9-9z" fill="#ffd3a8" stroke="#664536" stroke-width="2" stroke-linejoin="round"/><path d="M21 6l5 5" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".7"/><path d="M10.5 12.5l9 9-3 3c-2.2 2.2-5.6 1.6-6.8 4-1-3.4-4.2-4.6-5.4-6.8 2.4-1.2 1.8-4.6 4-6.8z" fill="#ef9a6c" stroke="#664536" stroke-width="2" stroke-linejoin="round"/></svg>Trang trí</button>
-      <button class="main-btn" id="wFocus" data-act="focus-open"><svg class="sprout" viewBox="0 0 34 20" aria-hidden="true"><path d="M17 20V9" style="stroke: var(--outline); fill: none" stroke-width="2.2" stroke-linecap="round"/><path d="M17 10C14 3 7 2 3 4c2 6 9 8 14 6z" style="fill: #8fc45a; stroke: var(--outline)" stroke-width="2"/><path d="M17 10c3-7 10-8 14-6-2 6-9 8-14 6z" style="fill: #b3dc72; stroke: var(--outline)" stroke-width="2"/></svg><span id="wFocusLabel">Tập trung</span><small data-left>25:00 · +50 ✦</small></button>
-      <button class="side-btn" data-go="stats"><svg class="ic" viewBox="0 0 32 32" aria-hidden="true"><rect x="6" y="5" width="20" height="24" rx="3" fill="#fff8e6" stroke="#664536" stroke-width="2"/><rect x="11" y="3" width="10" height="5" rx="2" fill="#bcd76b" stroke="#664536" stroke-width="1.8"/><path d="M11 24v-5M16 24v-9M21 24v-6" stroke="#6f9530" stroke-width="3" stroke-linecap="round"/></svg>Thống kê</button>
-    </div>
+    <article class="now-card" id="hNow"></article>
+    <button class="main-btn" id="wFocus" data-act="focus-open"><svg class="i"><use href="#i-play"></use></svg><span id="wFocusLabel">Tập trung</span><small data-left></small></button>
+    <article class="tile goals" id="hGoals"></article>
     <div class="today-h"><span class="label">Hôm nay ở trường</span><span class="small muted" id="hDate"></span></div>
     <article class="tile tinted" id="hStatus"></article>
     <div id="hUpcoming" class="list"></div>
@@ -149,22 +137,6 @@
     </div>
   </section>
 
-  <!-- PHIÊU LƯU -->
-  <section id="v-adv" class="view" hidden>
-    <header class="page-h">
-      <div><h1>Phiêu lưu</h1><p class="muted">Hành trình Mạch Lớn · học để cứu campus Jussieu</p></div>
-      <button class="icon-btn" data-go="home" aria-label="Về Hôm nay"><svg class="i"><use href="#i-back"></use></svg></button>
-    </header>
-    <div class="adv-bar"><span id="advGem"></span><button class="adv-btn green gift-btn" id="advGift" data-act="gift">🎁 Quà hôm nay +50 ✦</button></div>
-    <div class="segmented" id="advSeg" role="tablist" aria-label="Phiêu lưu">
-      <button role="tab" data-seg="story" aria-selected="true">Cốt truyện</button>
-      <button role="tab" data-seg="wish" aria-selected="false">Cầu nguyện</button>
-      <button role="tab" data-seg="team" aria-selected="false">Nhân vật</button>
-    </div>
-    <div id="advStory" class="stack"></div>
-    <div id="advWish" class="stack" hidden></div>
-    <div id="advTeam" class="stack" hidden></div>
-  </section>
 </main>
 
 <!-- THỐNG KÊ: BẢNG NỔI -->
@@ -282,25 +254,6 @@
     <button class="icon-btn" id="drNew" aria-label="Đề tương tự khác"><svg class="i"><use href="#i-refresh"></use></svg></button>
   </div></header>
   <div class="bar-in stack drill-in" id="drBody"></div>
-</section>
-
-<!-- TRUYỆN: CHẾ ĐỘ TOÀN MÀN HÌNH -->
-<section id="v-vn" class="immersive vn" hidden>
-  <div class="bar-in">
-    <div class="vn-top"><button class="icon-btn" id="vnExit" aria-label="Thoát truyện (tự lưu chỗ đang đọc)"><svg class="i"><use href="#i-x"></use></svg></button><span class="ttl" id="vnTitle"></span><button class="vn-skip" id="vnSkip">Bỏ qua</button></div>
-    <div class="vn-stage" id="vnStage"><div class="vn-actors" id="vnActors"></div></div>
-    <div class="vn-box" id="vnBox" role="button" tabindex="0" aria-label="Chạm để đọc tiếp"><span class="vn-name" id="vnName" hidden></span><p class="vn-text" id="vnText"></p><span class="vh" id="vnLive" aria-live="polite"></span><i class="vn-next" id="vnNext" aria-hidden="true"></i><div class="vn-choices" id="vnChoices"></div></div>
-  </div>
-</section>
-
-<!-- TRẬN ĐẤU: CHẾ ĐỘ TOÀN MÀN HÌNH -->
-<section id="v-battle" class="immersive bt" hidden>
-  <div class="bar-in stack" style="gap:12px;padding-bottom:calc(24px + env(safe-area-inset-bottom, 0px))">
-    <div class="bt-top"><button class="icon-btn" id="btExit" aria-label="Rời trận đấu"><svg class="i"><use href="#i-x"></use></svg></button><span class="ttl" id="btTitle"></span><div class="hearts-row" id="btHearts" role="img"></div></div>
-    <div class="bt-stage" id="btStage"></div>
-    <div class="party" id="btParty"></div>
-    <div class="q-card" id="btQ"></div>
-  </div>
 </section>
 
 <nav class="tabbar" aria-label="Điều hướng"><div class="in">

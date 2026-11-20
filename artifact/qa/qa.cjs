@@ -52,13 +52,12 @@ async function axe(p, label) {
   // ---------- 1. Người dùng mới (chưa có dữ liệu) ----------
   {
     const p = await open();
-    check("Mới: lời chào hiển thị", /Chào buổi|Khuya rồi/.test(await txt(p, "#hBubble")), await txt(p, "#hBubble"));
+    check("Mới: lời chào hiển thị", /Chào buổi|Khuya rồi/.test(await txt(p, "#hHello")), await txt(p, "#hHello"));
     check("Mới: ô campus ở trạng thái chưa rõ", (await p.getAttribute("#hStatus", "class")).includes("v-unknown"));
-    check("Mới: căn phòng có bé mèo Elec", (await vis(p, "#hRoom .room-svg")) && (await vis(p, "#hRoom .dweller.kit svg")));
-    check("Mới: chưa có bạn đồng hành hay khách", !(await vis(p, "#hRoom .dweller.comp")) && !(await vis(p, "#hRoom .dweller.visit")));
-    check("Mới: nút Truyện báo có chương đang chờ", await vis(p, "#hudStory .dot-new"));
-    check("Mới: nhãn nhiệm vụ 0/3, có chấm quà", /0\/3/.test(await txt(p, "#hQuestTxt")) && (await vis(p, "#hQuest .dot-new")));
-    await p.click("#hQuest");
+    check("Mới: việc nên làm bây giờ là một phiên tập trung", /Tập trung 25 phút/.test(await txt(p, "#hNow")) && (await vis(p, '#hNow [data-act="focus-open"]')), await txt(p, "#hNow"));
+    check("Mới: 3 mục tiêu hôm nay ngay trên trang, 0/3", (await p.$$("#hGoals .quests li")).length === 3 && /0\/3/.test(await txt(p, "#hGoalsTxt")));
+    check("Mới: không còn trò chơi (phiêu lưu, ví ✦, căn phòng)", !(await p.$("#v-adv")) && !(await p.$("#hGems")) && !(await p.$("#hRoom")) && !/✦/.test(await p.innerText("#main")));
+    await p.click('#hGoals [data-act="quests"]');
     check("Mới: 3 nhiệm vụ hôm nay", (await p.$$("#sheetRoot .quests li")).length === 3);
     check("Mới: chuỗi ngày = 0", /0 ngày liên tiếp/.test(await txt(p, "#sheetRoot .flame")));
     await p.keyboard.press("Escape");
@@ -79,8 +78,13 @@ async function axe(p, label) {
     const dates = await p.$$eval("#hUpcoming .ev", (els) => els.map((e) => e.dataset.date));
     check("Hôm nay: 'Sắp tới' xếp đúng thứ tự ngày", dates.length === 2 && dates[0] < dates[1], dates.join(","));
     check("Hôm nay: không hiện mốc đã qua", !(await txt(p, "#hUpcoming")).includes("Toussaint"));
-    await p.click("#hQuest");
-    check("Hôm nay: nhiệm vụ ôn thẻ có nút 'Ôn'", await vis(p, '#sheetRoot [data-act="review-all"]'));
+    check("Hôm nay: mục tiêu ôn thẻ có nút 'Ôn'", await vis(p, '#hGoals [data-act="review-all"]'));
+    check("Hôm nay: hạn nộp ngày mai thành việc nên làm ngay", /Hạn nộp ngày mai: Compte rendu TP 2/.test(await txt(p, "#hNow")), await txt(p, "#hNow"));
+    await p.click('#hNow [data-act="focus-task"]'); await p.waitForTimeout(150);
+    check("Việc nên làm: Tập trung làm mở đồng hồ với mục tiêu điền sẵn", (await vis(p, "#v-focus")) && (await p.inputValue("#fGoal")) === "Compte rendu TP 2");
+    await p.click('#v-focus [data-go="home"]');
+    await p.click('#hNow [data-act="ev-guide"]'); await p.waitForTimeout(900);
+    check("Việc nên làm: Hướng dẫn chia nhỏ việc", (await sheetOpen(p)) && (await vis(p, "#gdOut")));
     await p.keyboard.press("Escape");
     check("Tab Ôn tập có huy hiệu 1", (await txt(p, "#tabDue")).trim() === "1");
     await tab(p, "agenda");
@@ -211,7 +215,8 @@ async function axe(p, label) {
     await p.click('#sDone [data-go="review"]');
     check("Ôn tập: bộ thẻ môn đã ôn xong", /đã ôn xong/.test(await txt(p, "#rList")));
     await tab(p, "home");
-    await p.click("#hQuest");
+    check("Hôm nay: nút chuỗi ngày hiện 1 ngày", /1 ngày/.test(await txt(p, '#hGoals [data-act="quests"]')));
+    await p.click('#hGoals [data-act="quests"]');
     check("Hôm nay: chuỗi ngày = 1", /1 ngày liên tiếp/.test(await txt(p, "#sheetRoot .flame")));
     // thoát giữa phiên
     await p.click('#sheetRoot [data-act="review-all"]'); await p.click("#sExit");
@@ -317,8 +322,7 @@ async function axe(p, label) {
   {
     const p = await open({ cfg: { noClaude: true } });
     check("Ngoài claude.ai: báo cần đăng nhập", /Đăng nhập claude\.ai/.test(await txt(p, "#notice")));
-    check("Ngoài claude.ai: vẫn chào mừng (chỉ giữ trong phiên)", (await sheetOpen(p)) && /1 000 ✦/.test(await txt(p, "#sheetRoot")));
-    await p.keyboard.press("Escape");
+    check("Ngoài claude.ai: Hôm nay vẫn gợi ý việc nên làm", /Việc nên làm bây giờ/.test(await txt(p, "#hNow")) && !(await sheetOpen(p)));
     await p.click('#hMail [data-act="read-mail"]'); await p.waitForTimeout(200);
     check("Ngoài claude.ai: đọc mail báo rõ ràng", /claude\.ai/.test(await txt(p, "#hMail")));
     await p.click('[data-act="paste-brief"]'); await p.fill("#pbText", "abc"); await p.click("#pbGo");
@@ -326,7 +330,7 @@ async function axe(p, label) {
     await p.close();
     const q = await open({ cfg: { dbFail: true } });
     check("Lỗi dữ liệu: báo không đọc được", /Không đọc được dữ liệu/.test(await txt(q, "#notice")));
-    check("Lỗi dữ liệu: không tặng quà chào mừng (tránh đè dữ liệu thật)", !(await sheetOpen(q)));
+    check("Lỗi dữ liệu: không bật bảng nào", !(await sheetOpen(q)));
     await q.click("#wFocus"); await q.click("#fStart"); await q.waitForTimeout(200);
     check("Lỗi dữ liệu: không ghi gì lên dữ liệu cũ", !(await store(q))["data/users/u1/focus"]);
     await q.close();
@@ -351,7 +355,7 @@ async function axe(p, label) {
     check("Tập trung: mở màn toàn màn hình", await vis(p, "#v-focus") && !(await vis(p, ".tabbar")));
     check("Tập trung: chọn được 3 môn (1 tài liệu + Tiếng Pháp + Tự học)", (await p.$$("#fSubj button")).length === 3);
     await p.click('#fSubj button[data-subj="free"]'); await p.click('#fDur button[data-dur="15"]');
-    check("Tập trung: gợi ý phần thưởng +30 ✦", /\+30 ✦/.test(await txt(p, "#fHint")), await txt(p, "#fHint"));
+    check("Tập trung: nhắc khoá máy vẫn tính giờ, không có ✦", /Khoá máy/.test(await txt(p, "#fHint")) && !/✦/.test(await txt(p, "#fHint")), await txt(p, "#fHint"));
     await p.fill("#fGoal", "Làm xong bài 2 TD");
     await p.click("#fStart"); await p.waitForTimeout(1200);
     check("Tập trung: đồng hồ đếm ngược chạy", /^1[45]:\d\d$/.test((await txt(p, "#fTime")).trim()), await txt(p, "#fTime"));
@@ -372,7 +376,7 @@ async function axe(p, label) {
     await setStore(p, { "data/users/u1/focus": { subject: "free", start: now - 26 * 60000, endAt: now - 60000, dur: 25, goal: "Ôn chương 2", notes: ["Mua pin máy tính"] } });
     await p.reload({ waitUntil: "load" }); await p.waitForTimeout(900);
     const sh = await txt(p, "#sheetRoot");
-    check("Hoàn thành: mở lại app thì nhận thưởng +50 ✦", /Hoàn thành phiên tập trung/.test(sh) && /\+50 ✦/.test(sh) && /25 phút/.test(sh), sh.slice(0, 200));
+    check("Hoàn thành: mở lại app thì báo đã xong 25 phút (không có ✦)", /Hoàn thành phiên tập trung/.test(sh) && /25 phút/.test(sh) && !/✦/.test(sh), sh.slice(0, 200));
     check("Hoàn thành: hỏi mục tiêu phiên đã xong chưa", /Ôn chương 2/.test(sh) && (await vis(p, '#sheetRoot [data-goal="done"]')));
     await p.click('#sheetRoot [data-goal="done"]');
     st = await store(p);
@@ -385,8 +389,8 @@ async function axe(p, label) {
     check("Thống kê: 25 phút tập trung hôm nay", st["data/users/u1/stats"].days[today()].f === 25);
     await p.keyboard.press("Escape");
     if (await vis(p, "#v-focus")) await p.click('#v-focus [data-go="home"]');
-    check("Vòng 1 (tập trung 25 phút) đã đóng", /1\/3/.test(await txt(p, "#hQuestTxt")));
-    await p.click('.hero-actions [data-go="stats"]'); await p.click('#v-stats [data-go="prog"]');
+    check("Vòng 1 (tập trung 25 phút) đã đóng", /1\/3/.test(await txt(p, "#hGoalsTxt")));
+    await p.click('.home [data-go="stats"]'); await p.click('#v-stats [data-go="prog"]');
     check("Tiến độ: mở từ Thống kê, che thanh tab", (await vis(p, "#v-prog")) && !(await vis(p, ".tabbar")));
     check("Tiến độ: mỗi môn một thẻ có chậu cây", (await p.$$("#pgList .pg-card .plant")).length === 3);
     check("Tiến độ: 3 vòng hôm nay ở đầu bảng", (await vis(p, "#pgTop .rings")) && /1\/3 vòng/.test(await txt(p, "#pgTop")));
@@ -400,7 +404,7 @@ async function axe(p, label) {
     const cards = Array.from({ length: 10 }, (_, i) => ({ id: "x" + i, front: "Q" + i, back: "A" + i, mnemonic: "", ef: 2.5, interval: 0, reps: 0, lapses: 0, due: today() }));
     await setStore(q, { "data/users/u1/deck-francais": { cards }, "data/users/u1/stats": { days: { [today()]: { r: 0, m: 0, f: 25 } } } });
     await q.reload({ waitUntil: "load" }); await q.waitForTimeout(700);
-    await q.click("#hQuest"); await q.click('#sheetRoot [data-act="review-all"]');
+    await q.click('#hGoals [data-act="review-all"]');
     for (let i = 0; i < 10; i++) { await q.keyboard.press("Space"); await q.keyboard.press("3"); }
     await q.waitForTimeout(200);
     let s2 = await store(q);
@@ -411,39 +415,37 @@ async function axe(p, label) {
     s2 = await store(q);
     check("Đủ 3 vòng: được đánh dấu vàng", s2["data/users/u1/stats"].days[today()].gold === 1 && s2["data/users/u1/stats"].days[today()].fe === 1);
     await q.click('#v-course [data-go="study"]'); await tab(q, "home");
-    check("Mục tiêu: 3/3", /3\/3/.test(await txt(q, "#hQuestTxt")));
-    await q.click("#hQuest");
+    check("Mục tiêu: 3/3", /3\/3/.test(await txt(q, "#hGoalsTxt")));
+    check("Đủ 3 mục tiêu: việc nên làm chuyển sang nghỉ ngơi", /Xong 3 mục tiêu hôm nay/.test(await txt(q, "#hNow")));
+    await q.click('#hGoals [data-act="quests"]');
     check("Lịch nhiệt: hôm nay có viền vàng", await q.$eval("#sheetRoot .heat i.today", (e) => e.classList.contains("gold")));
-    check("Mục tiêu: cả 3 vòng hiện đã nhận thưởng", (await q.$$("#sheetRoot .q-reward.done")).length === 3);
+    check("Mục tiêu: cả 3 vòng đã xong", (await q.$$("#sheetRoot .qdot.done")).length === 3);
     await q.close();
-    // cấp độ theo phút tập trung; chậu cây lớn theo thẻ đã thuộc
+    // tổng phút tập trung; chậu cây lớn theo thẻ đã thuộc
     const r = await open({ seed: true });
     const mature = Array.from({ length: 10 }, (_, i) => ({ id: "m" + i, front: "Q" + i, back: "A" + i, ef: 2.5, interval: i < 8 ? 30 : 4, reps: 4, lapses: 0, due: "2099-01-01" }));
     await setStore(r, { "data/users/u1/atoms": { list: { free: { min: 60, n: 2 } } }, "data/users/u1/deck-c1": { cards: mature } });
     await r.reload({ waitUntil: "load" }); await r.waitForTimeout(700);
-    await r.click('.hero-actions [data-go="stats"]'); await r.click('#v-stats [data-go="prog"]');
-    check("Cấp độ: 60 phút = cấp 2 'Bạn học chăm'", /Cấp 2 \(Bạn học chăm\)/.test(await txt(r, "#pgLevel")), await txt(r, "#pgLevel"));
+    await r.click('.home [data-go="stats"]'); await r.click('#v-stats [data-go="prog"]');
+    check("Tiến độ: tổng 1 giờ tập trung, không còn cấp độ", /Tổng 1 giờ tập trung/.test(await txt(r, "#pgLevel")) && !/Cấp/.test(await txt(r, "#pgLevel")), await txt(r, "#pgLevel"));
     check("Chậu cây: 8/10 thẻ đã thuộc → Sắp nở", /Sắp nở/.test(await txt(r, "#pgList .pg-card:first-child")) && /8\/10 đã thuộc/.test(await txt(r, "#pgList")), await txt(r, "#pgList .pg-card:first-child"));
     await r.close();
   }
 
 
-  // ---------- 12. Cozy: bé electron, cài đặt, thống kê, tập trung nghiêm ----------
+  // ---------- 12. Cài đặt, thống kê, tập trung nghiêm ----------
   {
     const today = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Paris" }).format(new Date());
     const setStore = (p, kv) => p.evaluate((kv) => { for (const [k, v] of Object.entries(kv)) window.__store.set(k, v); sessionStorage.setItem("__store", JSON.stringify([...window.__store])); }, kv);
     const p = await open({ seed: true });
-    check("Phòng: bé mèo Elec và lời thoại", (await vis(p, "#hRoom .dweller.kit svg")) && (await txt(p, "#hBubble")).length > 10);
-    const b1 = await txt(p, "#hBubble"); await p.click("#hRoom .dweller.kit"); const b2 = await txt(p, "#hBubble");
-    check("Phòng: chạm bé mèo đổi lời thoại", b1 !== b2, b1 + " | " + b2);
-    check("Hero: lời thoại nhắc thẻ cần ôn hoặc hạn nộp", /thẻ đang chờ|Sắp tới hạn|Sắp thi|tập trung/.test(b1 + b2));
-    check("Hero: đồng hồ giờ Paris", /^\d\d:\d\d · /.test(await txt(p, "#hClock")));
-    await p.click('.home .name-pill');
-    await p.fill("#stName", "Mít"); await p.click('#stDur button[data-d="45"]'); await p.click("#stSfx"); await p.click("#stStrict"); await p.click("#stSave");
+    check("Hôm nay: biểu tượng mèo nét mảnh ở đầu trang", await vis(p, "#hMark svg.kitten"));
+    check("Hôm nay: đồng hồ giờ Paris", /^\d\d:\d\d · /.test(await txt(p, "#hClock")));
+    await p.click(".home .gear");
+    check("Cài đặt: không còn ô đặt tên bé mèo", !(await p.$("#stName")));
+    await p.click('#stDur button[data-d="45"]'); await p.click("#stSfx"); await p.click("#stStrict"); await p.click("#stSave");
     let st = await store(p);
-    check("Cài đặt: lưu tên, thời gian, âm thanh, tập trung nghiêm", st["data/users/u1/prefs"]?.name === "Mít" && st["data/users/u1/prefs"].dur === 45 && st["data/users/u1/prefs"].sfx === false && st["data/users/u1/prefs"].strict === true, JSON.stringify(st["data/users/u1/prefs"]));
-    check("Cài đặt: tên mới hiện trên nhãn", (await txt(p, "#buddyName")) === "Mít");
-    check("Cài đặt: nút tập trung theo thời gian mặc định", /45:00 · \+90 ✦/.test(await txt(p, "#wFocus")), await txt(p, "#wFocus"));
+    check("Cài đặt: lưu thời gian, âm thanh, tập trung nghiêm", st["data/users/u1/prefs"]?.dur === 45 && st["data/users/u1/prefs"].sfx === false && st["data/users/u1/prefs"].strict === true, JSON.stringify(st["data/users/u1/prefs"]));
+    check("Cài đặt: nút tập trung theo thời gian mặc định", /45:00/.test(await txt(p, "#wFocus")) && !/✦/.test(await txt(p, "#wFocus")), await txt(p, "#wFocus"));
     await p.click("#wFocus");
     check("Tập trung: chọn sẵn 45 phút", await p.$eval('#fDur button[data-dur="45"]', (b) => b.getAttribute("aria-pressed") === "true"));
     await p.click("#fStart"); await p.waitForTimeout(300);
@@ -460,7 +462,7 @@ async function axe(p, label) {
     check("Tập trung nghiêm: khoá màn hình thì phiên vẫn chạy", !!(await store(p))["data/users/u1/focus"]?.endAt && !(await sheetOpen(p)));
     await leave(); await p.waitForTimeout(200);
     await p.click("#awOther");
-    check("Tập trung nghiêm: mở app khác thì phiên bị huỷ", /chạy mất rồi/.test(await txt(p, "#sheetRoot")) && !(await store(p))["data/users/u1/focus"]?.endAt);
+    check("Tập trung nghiêm: mở app khác thì phiên dừng", /Phiên tập trung đã dừng/.test(await txt(p, "#sheetRoot")) && !(await store(p))["data/users/u1/focus"]?.endAt);
     await p.evaluate(() => { if (window.__realNow) { Date.now = window.__realNow; window.__shift = 0; } });
     await p.keyboard.press("Escape");
     // thống kê sau một phiên đã hoàn thành
@@ -470,7 +472,7 @@ async function axe(p, label) {
     await p.keyboard.press("Escape");
     st = await store(p);
     check("Nhật ký phiên: lưu phiên vừa xong", st["data/users/u1/sessions"]?.list?.length === 1 && st["data/users/u1/sessions"].list[0].m === 25);
-    await p.click('.hero-actions [data-go="stats"]');
+    await p.click('.home [data-go="stats"]');
     check("Thống kê: tổng quan có biểu đồ và kỷ lục", (await vis(p, "#stChart svg .ln")) && /25 phút/.test(await txt(p, "#stRec")), (await vis(p, "#stChart svg .ln")) + " | " + (await txt(p, "#stRec")) + " | " + (await p.$eval("#stChart", (e) => e.innerHTML.slice(0, 300)).catch(() => "no chart")));
     await p.click('#stTabs [data-st="day"]');
     check("Thống kê ngày: 24 cột theo giờ, tổng 25 phút", (await p.$$("#stChart .bar")).length === 24 && /25 phút/.test(await txt(p, "#stMain .big-stat")));
@@ -493,276 +495,9 @@ async function axe(p, label) {
     await p.close();
   }
 
-  // ---------- 13. Phiêu lưu: truyện, trận đấu, cầu nguyện, nhân vật ----------
+  // ---------- 14. Màn chờ, dữ liệu trò chơi cũ, đồng hồ tập trung ----------
   {
     const setStore = (p, kv) => p.evaluate((kv) => { for (const [k, v] of Object.entries(kv)) window.__store.set(k, v); sessionStorage.setItem("__store", JSON.stringify([...window.__store])); }, kv);
-    const advDoc = async (p) => (await store(p))["data/users/u1/adv"] || {};
-    const reopen = async (p, hash) => { await p.goto("https://app.test/" + hash, { waitUntil: "load" }); await p.reload({ waitUntil: "load" }); await p.waitForTimeout(700); };
-    // đọc truyện tới khi gặp lựa chọn / trận đấu / hết
-    async function vnRun(p, max = 90) {
-      const seen = [];
-      for (let i = 0; i < max; i++) {
-        if (!(await vis(p, "#v-vn"))) break;
-        if (await vis(p, "#vnChoices .vn-choice")) break;
-        await p.click("#vnBox"); await p.waitForTimeout(30);
-        seen.push(await txt(p, "#vnText"));
-      }
-      return seen;
-    }
-    async function winBattle(p) {
-      for (let i = 0; i < 20 && (await vis(p, "#v-battle")); i++) {
-        await p.click("#btQ [data-correct]"); await p.waitForTimeout(40);
-        await p.click("#btNext"); await p.waitForTimeout(60);
-      }
-    }
-
-    // A. lần đầu vào: quà khởi đầu, quà mỗi ngày
-    const p = await open({ reduce: true, hash: "#adv", cfg: { welcome: true } });
-    check("Phiêu lưu: mở thẳng #adv", await vis(p, "#v-adv") && !(await vis(p, "#v-home")));
-    check("Phiêu lưu: tab Hôm nay vẫn sáng", (await p.getAttribute('.tab[data-v="home"]', "aria-current")) === "page");
-    check("Phiêu lưu: chào mừng + 1 000 ✦", (await sheetOpen(p)) && /1 000 ✦/.test(await txt(p, "#sheetRoot")));
-    await p.keyboard.press("Escape");
-    await p.evaluate(() => window.__seed()); await p.reload({ waitUntil: "load" }); await p.waitForTimeout(700);
-    check("Phiêu lưu: tải lại không tặng quà khởi đầu lần nữa", !(await sheetOpen(p)));
-    check("Phiêu lưu: ví hiện 1.000 Tinh thể", /1\.000/.test(await txt(p, "#advGem")), await txt(p, "#advGem"));
-    let a = await advDoc(p);
-    check("Phiêu lưu: lưu ví vào dữ liệu riêng", a.gems === 1000 && a.welcome === 1, JSON.stringify(a).slice(0, 120));
-    await p.click("#advGift");
-    a = await advDoc(p);
-    check("Quà hôm nay: +50 ✦ và nút ẩn đi", a.gems === 1050 && !(await vis(p, "#advGift")));
-    await reopen(p, "#adv");
-    check("Quà hôm nay: không nhận lại sau khi tải lại", !(await vis(p, "#advGift")) && !(await sheetOpen(p)));
-    check("Cốt truyện: chương hiện tại là Mở đầu", /Mất điện ở Jussieu/.test(await txt(p, "#advStory .chap-name")) && /Bắt đầu/.test(await txt(p, '#advStory [data-act="adv-play"]')));
-
-    // B. đọc truyện: chữ chạy, lựa chọn, nhân vật gia nhập, lưu chỗ đọc
-    await p.click('#advStory [data-act="adv-play"]');
-    check("Truyện: mở màn đọc truyện toàn màn hình", (await vis(p, "#v-vn")) && !(await vis(p, ".tabbar")));
-    check("Truyện: tiêu đề chương", /Mở đầu · Mất điện ở Jussieu/.test(await txt(p, "#vnTitle")));
-    check("Truyện: lời dẫn không có thẻ tên", !(await vis(p, "#vnName")) && /18:47/.test(await txt(p, "#vnText")));
-    let seen = await vnRun(p);
-    check("Truyện: tên bé electron thay vào lời thoại", seen.some((t) => /Mình là Elec nè/.test(t)), seen.slice(0, 6).join(" | "));
-    check("Truyện: gặp lựa chọn đầu tiên", (await p.$$("#vnChoices .vn-choice")).length === 2);
-    await p.click('#vnChoices [data-k="1"]');
-    check("Truyện: lựa chọn hiện câu trả lời riêng", /biết dỗi/.test(await txt(p, "#vnText")));
-    seen = await vnRun(p);
-    a = await advDoc(p);
-    check("Truyện: Ohmi gia nhập đội khi xuất hiện", a.own?.ohmi === 0 && a.party?.includes("ohmi") && a.comp === "ohmi", JSON.stringify(a.own));
-    check("Truyện: lưu lựa chọn", a.choice?.p1 === 1);
-    // thoát giữa chừng rồi đọc tiếp
-    await p.click("#vnExit");
-    a = await advDoc(p);
-    check("Truyện: thoát thì lưu chỗ đang đọc", a.prog?.ch === "p" && a.prog?.part === "pre" && a.prog.i > 5, JSON.stringify(a.prog));
-    check("Truyện: nút đổi thành Đọc tiếp", /Đọc tiếp/.test(await txt(p, '#advStory [data-act="adv-play"]')));
-    await p.click('#advStory [data-act="adv-play"]');
-    check("Truyện: đọc tiếp đúng lựa chọn đang dừng", (await p.$$("#vnChoices .vn-choice")).length === 2 && /Ohmi, giúp/.test(await txt(p, "#vnChoices")));
-    await p.click('#vnChoices [data-k="1"]');
-    await vnRun(p);
-    check("Truyện: hết phần đầu thì vào trận đấu", await vis(p, "#v-battle"));
-
-    // C. trận đấu kiến thức
-    check("Trận: boss Bé Nhiễu 100/100, 3 tim", /Bé Nhiễu · 100\/100/.test(await txt(p, "#btStage")) && (await p.$$("#btHearts span:not(.lost)")).length === 3);
-    check("Trận: 4 đáp án, đúng 1", (await p.$$("#btOpts .opt")).length === 4 && (await p.$$("#btOpts [data-correct]")).length === 1);
-    check("Trận: Ohmi ở trong đội với kỹ năng", /Lá chắn Ohm/.test(await txt(p, "#btParty")));
-    check("Trận: ảnh đại diện đồng đội là khuôn mặt tối giản", (await p.$$("#btParty .av svg.face-icon")).length >= 1);
-    await p.click("#btOpts .opt:not([data-correct])");
-    check("Trận: sai thì mất 1 tim và có giải thích", (await p.$$("#btHearts span:not(.lost)")).length === 2 && (await vis(p, "#btQ .explain")) && /Chưa đúng/.test(await txt(p, "#btQ .explain")));
-    await p.click("#btNext");
-    await p.click('#btParty [data-skill="ohmi"]');
-    check("Trận: dùng kỹ năng lá chắn", /lá chắn/.test(await txt(p, "#btQ .qn")) && (await p.$eval('#btParty [data-skill="ohmi"]', (b) => b.disabled)));
-    await p.click("#btOpts .opt:not([data-correct])");
-    check("Trận: lá chắn đỡ được câu sai", (await p.$$("#btHearts span:not(.lost)")).length === 2);
-    await p.click("#btNext");
-    await p.click("#btQ [data-correct]");
-    check("Trận: đúng thì trừ 25 máu", /75\/100/.test(await txt(p, "#btStage")) && /Đúng rồi/.test(await txt(p, "#btQ .explain")));
-    await p.click("#btNext"); await p.click("#btQ [data-correct]");
-    check("Trận: combo tăng sát thương (30)", /45\/100/.test(await txt(p, "#btStage")) && /Combo ×2/.test(await txt(p, "#btStage")));
-    await p.click("#btNext"); await p.click("#btQ [data-correct]"); await p.click("#btNext"); await p.click("#btQ [data-correct]");
-    check("Trận: hết máu thì hiện nút Chiến thắng", /Chiến thắng/.test(await txt(p, "#btNext")));
-    await p.click("#btNext");
-    check("Trận: thắng thì sang phần truyện sau", (await vis(p, "#v-vn")) && /rè/.test(await txt(p, "#vnText")));
-    seen = await vnRun(p);
-    check("Truyện: câu thoại theo lựa chọn trước đó (p2 = 1)", seen.some((t) => /Một cái điện trở làm được nhiều thứ/.test(t)), seen.join(" | ").slice(0, 300));
-    await p.waitForTimeout(100);
-    check("Truyện: hoàn thành chương có thưởng 300 ✦", (await sheetOpen(p)) && /Hoàn thành Mở đầu/.test(await txt(p, "#sheetRoot")) && /\+300 ✦/.test(await txt(p, "#sheetRoot")));
-    a = await advDoc(p);
-    check("Truyện: lưu chương đã xong, xoá chỗ đọc dở", a.done?.includes("p") && a.prog === null && a.gems === 1350, JSON.stringify({ d: a.done, g: a.gems, p: a.prog }));
-    await p.click('#sheetRoot [data-act="adv-play"]');
-    check("Chương 1: mở ngay từ màn thưởng", /Chương 1/.test(await txt(p, "#vnTitle")));
-    await p.click("#vnSkip");
-    check("Bỏ qua: dừng ở lựa chọn kế tiếp", (await p.$$("#vnChoices .vn-choice")).length === 2);
-    await p.click('#vnChoices [data-k="0"]'); await p.click("#vnSkip"); await p.waitForTimeout(50);
-    check("Bỏ qua: tới trận đấu, Kirch đã vào đội", (await vis(p, "#v-battle")) && /Định luật nút/.test(await txt(p, "#btParty")) && /Nút Rối · 120\/120/.test(await txt(p, "#btStage")));
-    // thua: hết tim
-    for (let i = 0; i < 3; i++) { await p.click("#btOpts .opt:not([data-correct])"); await p.click("#btNext"); }
-    check("Trận: hết tim thì thua, có nút thử lại", (await sheetOpen(p)) && /Thua mất rồi/.test(await txt(p, "#sheetRoot")) && (await vis(p, "#btRetry")));
-    a = await advDoc(p);
-    check("Trận: thua vẫn giữ chỗ ở trận đấu", a.prog?.ch === "c1" && a.prog?.part === "battle");
-    await p.click("#btRetry");
-    check("Trận: thử lại đủ máu và tim", /120\/120/.test(await txt(p, "#btStage")) && (await p.$$("#btHearts span:not(.lost)")).length === 3);
-    await p.click('#btParty [data-skill="kirch"]');
-    check("Kỹ năng hồi tim không vượt quá 3", (await p.$$("#btHearts span:not(.lost)")).length === 3);
-    await winBattle(p);
-    await vnRun(p);
-    a = await advDoc(p);
-    check("Chương 1 xong: +300 ✦", a.done?.includes("c1") && a.gems === 1650, JSON.stringify({ d: a.done, g: a.gems }));
-    await p.keyboard.press("Escape");
-    check("Chương 2: khoá theo cấp, có nút tập trung", /Cần Cấp 2/.test(await txt(p, "#advStory .lock-note")) && (await vis(p, '#advStory [data-act="focus-open"]')));
-
-    // D. cầu nguyện
-    await p.click('#advSeg [data-seg="wish"]');
-    check("Cầu nguyện: banner + bảo hiểm 50", /Ánh Đèn Một Chiều/.test(await txt(p, "#advWish")) && /Còn tối đa 50 lượt/.test(await txt(p, "#advWish")) && /#wish$/.test(p.url()));
-    await p.click('#advWish [data-n="10"]');
-    check("Cầu nguyện ×10: hiện lưới 10 thẻ", (await p.$$(".gacha-ov .gcard")).length === 10 || (await vis(p, ".gacha-ov .g-splash")));
-    for (let i = 0; i < 12 && (await vis(p, ".gacha-ov")); i++) { await p.click(".gacha-ov"); await p.waitForTimeout(40); }
-    a = await advDoc(p);
-    check("Cầu nguyện ×10: trừ 1000 ✦, ghi 10 lượt", a.pulls === 10 && a.hist?.length === 10 && a.gems >= 650 && a.gems <= 650 + 200, JSON.stringify({ g: a.gems, n: a.pulls }));
-    check("Cầu nguyện ×10: chắc chắn có ít nhất một 4★", a.hist.some((h) => h.r >= 4));
-    check("Cầu nguyện: lớp phủ đã đóng", !(await vis(p, ".gacha-ov")) && !(await p.evaluate(() => document.body.classList.contains("noscroll"))));
-    // bảo hiểm: lượt thứ 50 chắc chắn 5★; đã thua 50/50 thì lần sau là Lumi
-    await setStore(p, { "data/users/u1/adv": { ...a, gems: 100, p5: 49, guar: 1 } });
-    await reopen(p, "#wish");
-    check("Bảo hiểm: còn 1 lượt, báo chắc chắn Lumi", /Còn tối đa 1 lượt/.test(await txt(p, "#advWish")) && /chắc chắn là Lumi/.test(await txt(p, "#advWish")));
-    await p.click('#advWish [data-n="1"]');
-    check("Bảo hiểm: màn giới thiệu nhân vật 5★", /Lumi/.test(await txt(p, ".gacha-ov .g-splash .g-name")));
-    for (let i = 0; i < 6 && (await vis(p, ".gacha-ov")); i++) { await p.click(".gacha-ov"); await p.waitForTimeout(40); }
-    a = await advDoc(p);
-    check("Bảo hiểm: nhận Lumi, đặt lại đếm", a.own?.lumi !== undefined && a.p5 === 0 && a.guar === 0 && a.gems === 0, JSON.stringify({ own: a.own, p5: a.p5, g: a.guar }));
-    await p.click('#advWish [data-n="1"]');
-    check("Thiếu ✦: báo cần tập trung bao lâu", (await sheetOpen(p)) && /Còn thiếu/.test(await txt(p, "#sheetRoot")) && /Tập trung 50 phút/.test(await txt(p, "#sheetRoot")));
-    await p.keyboard.press("Escape");
-    await p.click('[data-act="wish-rates"]');
-    check("Tỉ lệ: công khai 1,6% và bảo hiểm 50", /1,6%/.test(await txt(p, "#sheetRoot")) && /lượt thứ 50/.test(await txt(p, "#sheetRoot")));
-    await p.keyboard.press("Escape");
-    await p.click('[data-act="wish-hist"]');
-    check("Lịch sử cầu nguyện: 11 dòng", (await p.$$("#sheetRoot .list > .row")).length === 11);
-    await p.keyboard.press("Escape");
-
-    // E. nhân vật, đội, bạn đồng hành, trang trí
-    await p.click('#advSeg [data-seg="team"]');
-    check("Nhân vật: 8 thẻ trong bộ sưu tập + 3 ô đội", (await p.$$("#advTeam .roster")).length === 2 && (await p.$$("#advTeam .roster:nth-of-type(2) .ccard, #advTeam .roster")).length >= 2);
-    const locked = await p.$$("#advTeam .ccard.locked");
-    const total = await p.$$eval("#advTeam .roster", (rs) => rs[1].querySelectorAll(".ccard").length);
-    check("Nhân vật: đủ 8, ai chưa có thì bị ẩn", total === 8 && locked.length === 8 - Object.keys(a.own).length, `${total} / ${locked.length}`);
-    await p.click('#advTeam .roster:nth-of-type(2) [data-id="lumi"], #advTeam [data-act="char"][data-id="lumi"]');
-    check("Hồ sơ: kỹ năng và lời thoại", /Ánh sáng một chiều/.test(await txt(p, "#sheetRoot")) && (await vis(p, "#sheetRoot .quote")));
-    check("Hồ sơ: chân dung tối giản, không còn bộ lọc nét run", (await vis(p, "#sheetRoot .prof-art svg.portrait")) && !(await p.$("#sheetRoot .prof-art feTurbulence")));
-    const artN = await p.evaluate(() => { const out = []; for (const id of Object.keys(CHARS)) for (const m of ["happy", "joy", "wow", "sad", "angry", "wink", "sleep", "shock", "cat"]) out.push(chibi(id, { mood: m }), portrait(id, { mood: m }), faceIcon(id, m)); for (const b of ["nhieu", "roi", "xa", "dm", "fuzo"]) out.push(bossArt(b)); for (const m of ["happy", "think", "party", "sleep"]) out.push(kitten(m)); return out.every((x) => x.startsWith("<svg") && !/NaN|undefined/.test(x)) ? out.length : -1; });
-    check("Nhân vật tối giản: 8 Linh Kiện × 9 nét mặt, 5 quái vật, 4 dáng mèo đều vẽ đúng", artN === 8 * 9 * 3 + 5 + 4, String(artN));
-    await p.click('#sheetRoot [data-act="comp"]');
-    a = await advDoc(p);
-    check("Bạn đồng hành: đổi sang Lumi", a.comp === "lumi");
-    const party0 = a.party.slice();
-    await p.click('#advTeam [data-act="char"][data-id="lumi"]');
-    await p.click('#sheetRoot [data-act="party"]');
-    a = await advDoc(p);
-    check("Đội: thêm/bớt thành viên (tối đa 3)", a.party.length <= 3 && (party0.includes("lumi") ? !a.party.includes("lumi") : a.party.includes("lumi") || party0.length >= 3), JSON.stringify({ party0, now: a.party }));
-    if (await sheetOpen(p)) { check("Đội đủ 3: báo cho người dùng", /đủ 3 người/.test(await txt(p, "#toast"))); await p.keyboard.press("Escape"); }
-    check("Nhân vật: có lối tắt sang trang trí phòng", await vis(p, '#advTeam [data-act="decor"]'));
-    check("Cầu nguyện 3★: ra đồ nội thất cho căn phòng", Object.keys(a.furni || {}).length >= 2, JSON.stringify(a.furni));
-    await tab(p, "home");
-    check("Hôm nay: chương 2 khoá theo cấp nên nút Truyện không có dấu !", !(await vis(p, "#hudStory .dot-new")));
-    check("Hôm nay: bạn đồng hành Lumi ở trong phòng", await vis(p, "#hRoom .dweller.comp"));
-    await p.click("#hRoom .dweller.comp");
-    check("Bạn đồng hành: chạm thì nói chuyện", /^Lumi:/.test(await txt(p, "#hBubble")));
-    check("Khách ghé thăm: một bạn khác trong đội, có quà", (await vis(p, "#hRoom .dweller.visit")) && (await vis(p, "#hRoom .dweller.visit .gift")));
-    const gV = (await advDoc(p)).gems; await p.click("#hRoom .dweller.visit");
-    check("Khách ghé thăm: tặng 20 ✦ một lần", (await advDoc(p)).gems === gV + 20 && /tặng bạn 20 ✦/.test(await txt(p, "#hBubble")), await txt(p, "#hBubble"));
-    await p.click("#hRoom .dweller.visit");
-    check("Khách ghé thăm: chạm lần nữa không tặng thêm", (await advDoc(p)).gems === gV + 20);
-    await p.click("#hudWish");
-    check("Hôm nay: nút Cầu nguyện mở đúng mục", (await vis(p, "#advWish")) && !(await vis(p, "#advStory")));
-
-    // F. kiếm ✦ khi học
-    a = await advDoc(p);
-    const g0 = a.gems;
-    await tab(p, "review"); await p.click('#rList [data-act="review-all"]'); await p.click("#flash"); await p.click("#sGrades .g4");
-    a = await advDoc(p);
-    check("Ôn 1 thẻ: +1 ✦, hết thẻ đến hạn thì +30 ✦ nhiệm vụ", a.gems === g0 + 1 + 30, `${g0} → ${a.gems}`);
-    const now = Date.now();
-    await setStore(p, { "data/users/u1/focus": { subject: "c1", start: now - 26 * 60000, endAt: now - 60000, dur: 25 } });
-    await reopen(p, "#home");
-    a = await advDoc(p);
-    check("Tập trung 25 phút: +50 ✦ và +30 ✦ nhiệm vụ", a.gems === g0 + 1 + 50 + 30 + 30, `${g0} → ${a.gems} (q=${JSON.stringify(a.day)})`);
-    check("Tập trung: bảng thưởng hiện Tinh thể", /\+50 ✦/.test(await txt(p, "#sheetRoot")));
-    check("Tập trung cùng bạn đồng hành: tăng thân thiết", (a.aff?.lumi || 0) >= 1);
-    await p.keyboard.press("Escape");
-
-    // G. đấu tập
-    await p.click("#hudStory");
-    await p.click('#advStory [data-act="train"]');
-    check("Đấu tập: có câu hỏi có sẵn và tài liệu", /Điện học L1 có sẵn/.test(await txt(p, "#sheetRoot")) && /Électronique/.test(await txt(p, "#sheetRoot")));
-    await p.click('#sheetRoot [data-train="mix"]');
-    check("Đấu tập: vào trận với Bé Nhiễu", (await vis(p, "#v-battle")) && /Đấu tập · Điện học/.test(await txt(p, "#btTitle")));
-    a = await advDoc(p); const g1 = a.gems;
-    await winBattle(p);
-    a = await advDoc(p);
-    check("Đấu tập: thắng +100 ✦", a.gems === g1 + 100 && a.day?.tr === 1 && (await sheetOpen(p)) && /\+100 ✦/.test(await txt(p, "#sheetRoot")), `${g1} → ${a.gems}`);
-    await p.click('#sheetRoot [data-act="train"]');
-    await p.click('#sheetRoot [data-train^="course:"]');
-    await p.waitForTimeout(400);
-    check("Đấu tập từ tài liệu: Claude soạn câu hỏi", (await vis(p, "#v-battle")) && /QCM du cours/.test(await txt(p, "#btQ .qt")));
-    const cl = (await calls(p)).filter((c) => c.kind === "json" && /mini-jeu/.test(c.head));
-    check("Đấu tập từ tài liệu: gọi Claude một lần", cl.length === 1);
-    check("Đấu tập từ tài liệu: công thức được hiển thị", (await p.$$("#btQ .qt mjx-container, #btQ .qt .MathJax")).length >= 0);
-    await p.click("#btExit"); await p.click("#cfYes");
-    check("Rời trận: về Phiêu lưu", await vis(p, "#v-adv"));
-    await p.close();
-  }
-  {
-    // H. hoạt ảnh cầu nguyện thật (không giảm chuyển động) + Claude lỗi khi soạn câu hỏi
-    const p = await open({ seed: true, hash: "#wish", cfg: { jsonFail: "rate_limited", welcome: true } });
-    await p.keyboard.press("Escape");
-    await p.click('#advWish [data-n="1"]');
-    check("Hoạt ảnh: sao băng trước khi lộ kết quả", await vis(p, ".gacha-ov .shoot"));
-    await p.waitForTimeout(1500);
-    check("Hoạt ảnh: tự lộ kết quả", (await vis(p, ".gacha-ov .gcard")) || (await vis(p, ".gacha-ov .g-splash")));
-    await p.keyboard.press("Escape");
-    check("Hoạt ảnh: Esc đóng lớp phủ", !(await vis(p, ".gacha-ov")));
-    await p.click('#advSeg [data-seg="story"]');
-    await p.click('#advStory [data-act="train"]');
-    await p.click('#sheetRoot [data-train^="course:"]'); await p.waitForTimeout(300);
-    check("Đấu tập: Claude lỗi thì báo rõ và bật lại nút", /giới hạn/.test(await txt(p, "#trMsg")) && !(await p.$eval('#sheetRoot [data-train="mix"]', (b) => b.disabled)));
-    await p.close();
-  }
-  {
-    // I. chưa đăng nhập: không tặng quà khởi đầu hai lần khi dữ liệu chưa tải
-    const p = await open({ hash: "#adv", cfg: { noDb: true } });
-    check("Không lưu được: vẫn chơi được trong phiên", (await vis(p, "#v-adv")) && /1\.000/.test(await txt(p, "#advGem")));
-    await p.close();
-  }
-
-  {
-    // J. chơi lại chương cũ không đè tiến độ chương mới; phím Enter; kỹ năng lặp đòn của Indu
-    const setStore = (p, kv) => p.evaluate((kv) => { for (const [k, v] of Object.entries(kv)) window.__store.set(k, v); sessionStorage.setItem("__store", JSON.stringify([...window.__store])); }, kv);
-    const advDoc = async (p) => (await store(p))["data/users/u1/adv"] || {};
-    const p = await open({ reduce: true, hash: "#adv" });
-    await p.keyboard.press("Escape");
-    await setStore(p, { "data/users/u1/adv": { gems: 0, welcome: 1, pulls: 0, p5: 0, p4: 0, guar: 0, own: { ohmi: 0, indu: 0 }, party: ["indu", "ohmi"], comp: "ohmi", done: ["p"], choice: {}, aff: {}, prog: { ch: "c1", part: "pre", i: 6 }, day: {}, hist: [] } });
-    await p.reload({ waitUntil: "load" }); await p.waitForTimeout(700);
-    check("Tiến độ: chương 1 đang đọc dở", /Đọc tiếp/.test(await txt(p, '#advStory [data-act="adv-play"]')));
-    await p.click('#advStory [data-act="chapters"]');
-    await p.click('#sheetRoot [data-act="adv-play"][data-id="p"]');
-    check("Chơi lại: mở Mở đầu từ danh sách chương", /Mở đầu/.test(await txt(p, "#vnTitle")) && /18:47/.test(await txt(p, "#vnText")));
-    await p.focus("#vnBox"); await p.keyboard.press("Enter");
-    check("Phím Enter: sang đúng một dòng", /Không một bóng đèn/.test(await txt(p, "#vnText")), await txt(p, "#vnText"));
-    await p.keyboard.press("Enter"); await p.keyboard.press("Enter");
-    await p.click("#vnExit");
-    let a = await advDoc(p);
-    check("Chơi lại chương cũ: không đè chỗ đọc dở của chương 1", a.prog?.ch === "c1" && a.prog?.i === 6, JSON.stringify(a.prog));
-    await p.click('#advStory [data-act="adv-play"]');
-    check("Đọc tiếp chương 1 đúng chỗ (lựa chọn với Kirch)", (await p.$$("#vnChoices .vn-choice")).length === 2 && /Ngầu ghê/.test(await txt(p, "#vnChoices")));
-    await p.click("#vnExit");
-    await p.click('#advStory [data-act="train"]'); await p.click('#sheetRoot [data-train="mix"]');
-    check("Indu: chưa có đòn nào thì chưa dùng được", await p.$eval('#btParty [data-skill="indu"]', (b) => b.disabled));
-    await p.click("#btQ [data-correct]");
-    await p.click('#btParty [data-skill="indu"]');
-    check("Indu: lặp lại đòn 25 sát thương", /50\/100/.test(await txt(p, "#btStage")), await txt(p, "#btStage"));
-    await p.close();
-  }
-  // ---------- 14. Căn phòng: màn chờ, chào mừng, trang trí, quà, khách, mạch khi tập trung ----------
-  {
-    const setStore = (p, kv) => p.evaluate((kv) => { for (const [k, v] of Object.entries(kv)) window.__store.set(k, v); sessionStorage.setItem("__store", JSON.stringify([...window.__store])); }, kv);
-    const advDoc = async (p) => (await store(p))["data/users/u1/adv"] || {};
     const reopen = async (p, hash) => { await p.goto("https://app.test/" + hash, { waitUntil: "load" }); await p.reload({ waitUntil: "load" }); await p.waitForTimeout(700); };
     // màn chờ: hiện khi dữ liệu đang tải, tự tắt khi xong
     const s0 = await open({ cfg: { slowDb: 1600 } });
@@ -770,57 +505,23 @@ async function axe(p, label) {
     await s0.waitForTimeout(1500);
     check("Màn chờ: tự tắt khi dữ liệu đã tải", !(await vis(s0, "#splash")) || (await s0.$eval("#splash", (e) => e.classList.contains("out"))));
     await s0.close();
-    // chào mừng ở màn Hôm nay
-    const w = await open({ cfg: { welcome: true } });
-    check("Chào mừng: hiện ở Hôm nay, +1 000 ✦ và 3 bước", (await sheetOpen(w)) && /1 000 ✦/.test(await txt(w, "#sheetRoot")) && (await w.$$("#sheetRoot ol.loop li")).length === 3);
-    await w.click('#sheetRoot [data-act="decor"]');
-    check("Chào mừng: nút Trang trí mở bảng trang trí", /Trang trí phòng/.test(await txt(w, "#sheetRoot h3")));
+    // người dùng cũ có dữ liệu trò chơi: app bỏ qua, link cũ về Hôm nay, dữ liệu không bị xoá
+    const w = await open({});
+    await setStore(w, { "data/users/u1/adv": { gems: 400, welcome: 1, own: { lumi: 0 } } });
+    await reopen(w, "#adv");
+    check("Link #adv cũ: về Hôm nay, không có ✦, không bật bảng nào", (await vis(w, "#v-home")) && !/✦/.test(await w.innerText("#main")) && !(await sheetOpen(w)));
+    check("Dữ liệu trò chơi cũ: để nguyên, không bị xoá", (await store(w))["data/users/u1/adv"]?.gems === 400);
     await w.close();
-    // trang trí
+    // tập trung: vòng thời gian theo thời gian đã chạy; Hôm nay không lặp lại
     const p = await open({ seed: true, reduce: true });
-    await setStore(p, { "data/users/u1/adv": { gems: 400, welcome: 1, own: {}, furni: { rug: 1, books: 1 }, equip: { rug: "rug", corner: "books" }, party: [], comp: "", done: [], choice: {}, aff: {}, prog: null, day: {}, hist: [] } });
-    await reopen(p, "#home");
-    check("Phòng: có thảm và chồng sách tặng sẵn", (await p.$$('#hRoom [data-f="rug"], #hRoom [data-f="books"]')).length === 2);
-    check("Phòng: ví ✦ hiện 400", /400/.test(await txt(p, "#hGems")));
-    await p.click('.hero-actions [data-act="decor"]');
-    check("Trang trí: xem trước căn phòng + đủ 20 món", (await vis(p, "#sheetRoot .decor-prev svg")) && (await p.$$("#sheetRoot .fcard")).length === 20, String((await p.$$("#sheetRoot .fcard")).length));
-    await p.click('#dcTabs [data-slot="desk"]');
-    check("Trang trí: lọc theo chỗ (Góc học có 2 món)", (await p.$$("#sheetRoot .fcard")).length === 2);
-    await p.click('#dcGrid [data-buy="deskpc"]');
-    check("Trang trí: thiếu ✦ thì báo cần tập trung bao lâu", /Còn thiếu 200 ✦/.test(await txt(p, "#toast")) && /100 phút/.test(await txt(p, "#toast")), await txt(p, "#toast"));
-    await p.click('#dcGrid [data-buy="desk"]');
-    check("Trang trí: chạm lần đầu chỉ hỏi lại", /Mua\?/.test(await txt(p, '#dcGrid [data-buy="desk"]')) && (await advDoc(p)).gems === 400);
-    await p.click('#dcGrid [data-buy="desk"]');
-    let a = await advDoc(p);
-    check("Trang trí: mua xong trừ ✦ và đặt ngay vào phòng", a.gems === 0 && a.furni.desk === 1 && a.equip.desk === "desk" && (await p.$$('#hRoom [data-f="desk"]')).length === 1, JSON.stringify(a.equip));
-    await p.click('#dcTabs [data-slot="rug"]'); await p.click('#dcGrid [data-equip="rug"]');
-    a = await advDoc(p);
-    check("Trang trí: chạm món đang dùng thì cất đi", !a.equip.rug && (await p.$$('#hRoom [data-f="rug"]')).length === 0);
-    await p.keyboard.press("Escape");
-    // nhiệm vụ & quà mỗi ngày
-    await p.click("#hQuest");
-    await p.click('#sheetRoot [data-act="gift"]');
-    a = await advDoc(p);
-    check("Quà mỗi ngày: +50 ✦, nút chuyển Đã nhận", a.gems === 50 && a.day.gift === 1 && /Đã nhận/.test(await txt(p, '#sheetRoot [data-act="gift"]')));
-    await p.keyboard.press("Escape");
-    check("Nhãn nhiệm vụ: hết chấm đỏ sau khi nhận quà", !(await vis(p, "#hQuest .dot-new")));
-    await p.click("#hGems");
-    check("Tinh thể: bảng cách kiếm", /1 phút = 2 ✦/.test(await txt(p, "#sheetRoot")) && /Không có tiền thật/.test(await txt(p, "#sheetRoot")));
-    await p.keyboard.press("Escape");
-    // cầu nguyện 3★ ra đồ nội thất nhỏ chưa có
-    await setStore(p, { "data/users/u1/adv": { ...(await advDoc(p)), gems: 100 } });
-    await reopen(p, "#wish");
-    await p.evaluate(() => { Math.random = () => 0.99; });
-    await p.click('#advWish [data-n="1"]');
-    for (let i = 0; i < 4 && (await vis(p, ".gacha-ov")); i++) { await p.click(".gacha-ov"); await p.waitForTimeout(40); }
-    a = await advDoc(p);
-    check("Cầu nguyện 3★: ra món nội thất nhỏ chưa có (tháp Eiffel mini)", a.hist?.[0]?.r === 3 && a.hist[0].id === "eiffel" && a.furni.eiffel === 1 && a.equip.sill === "eiffel", JSON.stringify(a.hist?.[0]));
-    // tập trung: mạch sáng dần theo thời gian
     const now = Date.now();
     await setStore(p, { "data/users/u1/focus": { subject: "free", start: now - 10 * 60000, endAt: now + 15 * 60000, dur: 25 } });
     await reopen(p, "#focus"); await p.waitForTimeout(1200);
-    check("Tập trung: Elec trong phòng học cùng bạn", (await vis(p, "#fRoom .dweller.kit")) && /đang học cùng bạn/.test(await txt(p, "#fElem")));
+    check("Tập trung: biểu tượng mèo và lời nhắc ghi việc chợt nhớ", (await vis(p, "#fRoom svg.kitten")) && /ghi vào sổ/.test(await txt(p, "#fElem")));
     check("Tập trung: vòng thời gian đã chạy khoảng 40%", await p.$eval("#fRing .fr-on", (c) => { const [on, all] = c.getAttribute("stroke-dasharray").split(" ").map(Number); return on / all > 0.35 && on / all < 0.45; }));
+    await p.click('#v-focus [data-go="home"]'); await p.waitForTimeout(300);
+    check("Hôm nay khi đang tập trung: ẩn thẻ việc nên làm, nút lớn hiện giờ còn lại", !(await vis(p, "#hNow")) && /Đang tập trung/.test(await txt(p, "#wFocus")));
+    check("Hôm nay khi đang tập trung: mục tiêu tập trung có nút Mở", /Mở/.test(await txt(p, '#hGoals [data-act="focus-open"]')));
     await p.close();
   }
 
@@ -854,7 +555,7 @@ async function axe(p, label) {
     st = await store(p);
     const att = st["data/users/u1/drill"]?.list?.slice(-1)[0];
     check("Luyện đề: lưu lần luyện (điểm, môn)", att?.score === 13.5 && att.total === 20 && att.subj === ex.subj, JSON.stringify(att));
-    check("Luyện đề: đóng vòng Luyện và cộng ✦", st["data/users/u1/stats"]?.days?.[today()]?.p === 1 && (st["data/users/u1/adv"]?.gems || 0) >= 30);
+    check("Luyện đề: đóng vòng Luyện", st["data/users/u1/stats"]?.days?.[today()]?.p === 1);
     await p.click("#drCards");
     st = await store(p);
     check("Luyện đề: lỗi trình bày thành flashcards", st["data/users/u1/deck-redac"]?.cards?.length === 2);
@@ -892,7 +593,7 @@ async function axe(p, label) {
     for (const width of [320, 390, 820]) {
       const p = await open({ seed: true, scheme, width, mobile: width < 700 });
       for (const v of ["home", "study", "review", "agenda", "inbox", "stats", "prog"]) {
-        if (v === "stats") { await tab(p, "home"); await p.click('.hero-actions [data-go="stats"]'); }
+        if (v === "stats") { await tab(p, "home"); await p.click('.home [data-go="stats"]'); }
         else if (v === "prog") { await p.click('#v-stats [data-go="prog"]'); }
         else await tab(p, v);
         await p.waitForTimeout(80);
@@ -914,37 +615,6 @@ async function axe(p, label) {
       check(`Bố cục ${scheme} ${width}px session: không tràn ngang`, (await overflow(p)) <= 0);
       if (width === 390) await axe(p, `${scheme} session`);
       if (width === 320) await p.screenshot({ path: `${SHOTS}/${scheme}-${width}-session.png` });
-      await p.close();
-    }
-  }
-
-  // ---------- bố cục các màn phiêu lưu ----------
-  for (const scheme of ["light", "dark"]) {
-    for (const width of [320, 390, 820]) {
-      const p = await open({ seed: true, scheme, width, mobile: width < 700, reduce: true, hash: "#adv", cfg: { welcome: true } });
-      await p.keyboard.press("Escape");
-      for (const v of ["adv", "wish", "team", "home"]) {
-        if (v === "home") await tab(p, "home"); else if (v !== "adv") await p.click(`#advSeg [data-seg="${v}"]`);
-        await p.waitForTimeout(80);
-        check(`Bố cục ${scheme} ${width}px ${v}: không tràn ngang`, (await overflow(p)) <= 0, `tràn ${await overflow(p)}px`);
-        if (width === 390) await axe(p, `${scheme} ${v}`);
-        await p.screenshot({ path: `${SHOTS}/adv-${scheme}-${width}-${v}.png`, fullPage: true });
-      }
-      await p.click("#hudStory"); await p.click('#advStory [data-act="adv-play"]'); await p.waitForTimeout(100);
-      for (let i = 0; i < 5; i++) { await p.click("#vnBox"); await p.waitForTimeout(30); }
-      check(`Bố cục ${scheme} ${width}px vn: không tràn ngang`, (await overflow(p)) <= 0);
-      if (width === 390) await axe(p, `${scheme} vn`);
-      await p.screenshot({ path: `${SHOTS}/adv-${scheme}-${width}-vn.png` });
-      await p.click("#vnSkip"); await p.click('#vnChoices [data-k="0"]'); await p.click("#vnSkip"); await p.click('#vnChoices [data-k="0"]'); await p.click("#vnSkip"); await p.waitForTimeout(100);
-      await p.click("#btOpts .opt:not([data-correct])"); await p.waitForTimeout(60);
-      check(`Bố cục ${scheme} ${width}px battle: không tràn ngang`, (await overflow(p)) <= 0);
-      if (width === 390) await axe(p, `${scheme} battle`);
-      await p.screenshot({ path: `${SHOTS}/adv-${scheme}-${width}-battle.png`, fullPage: true });
-      await p.click("#btExit"); await p.click("#cfYes"); await p.click('#advSeg [data-seg="wish"]'); await p.click('#advWish [data-n="10"]'); await p.waitForTimeout(100);
-      await p.screenshot({ path: `${SHOTS}/adv-${scheme}-${width}-gacha1.png` });
-      for (let i = 0; i < 12 && await p.isVisible(".gacha-ov .g-splash").catch(() => false); i++) { await p.click(".gacha-ov"); await p.waitForTimeout(40); }
-      check(`Bố cục ${scheme} ${width}px gacha: không tràn ngang`, (await overflow(p)) <= 0);
-      await p.screenshot({ path: `${SHOTS}/adv-${scheme}-${width}-gacha2.png` });
       await p.close();
     }
   }

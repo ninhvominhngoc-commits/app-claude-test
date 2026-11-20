@@ -1,5 +1,5 @@
 
-// ================= cozy: bé mèo biết nói, cài đặt, âm thanh, thống kê =================
+// ================= cài đặt, âm thanh, tập trung nghiêm, thống kê =================
 const PREF_DEFAULT = { name: "Elec", sfx: true, wake: true, strict: false, dur: 25 };
 const prefs = () => ({ ...PREF_DEFAULT, ...(state.prefs || {}) });
 
@@ -28,62 +28,23 @@ function sfx(kind) {
   } catch {}
 }
 
-// --- cảnh trời ở Hôm nay ---
-let lineIdx = 0;
-function buddyLines() {
-  const h = parisHour(), due = totalDue(), d = state.stats.days[todayISO()] || {};
-  const soon = upcoming(3).filter((a) => a.type === "exam" || a.type === "deadline")[0];
-  const L = [];
-  if (state.focus?.endAt) L.push("Đang tập trung nè, cố lên! Mình ngồi học cùng bạn đây.");
-  if (h >= 23 || h < 5) L.push("Khuya rồi đó… ngủ sớm, mai mình học tiếp nha.");
-  if (d.gold) L.push("Hôm nay hoàn hảo luôn! Tự hào về bạn ghê.");
-  if (soon) L.push(`${soon.type === "exam" ? "Sắp thi" : "Sắp tới hạn"} “${soon.title}” (${countdown(soon.date)}). Mình ôn cùng nhau nha!`);
-  if (due) L.push(`Có ${due} thẻ đang chờ bạn ôn đó~`);
-  if (!d.f) L.push(h < 11 ? "Bắt đầu ngày mới bằng 25 phút tập trung nhé? Ghi mục tiêu phiên là làm nhanh hơn đó!" : "Hôm nay mình chưa học phiên nào… tập trung 25 phút không?");
-  L.push("Mỗi phút tập trung là 2 Tinh thể ✦ để trang trí phòng đó!", "Học kiểu Feynman: giảng lại cho mình nghe đi, meo!", "Nhớ uống nước nha.", "Viết tiếng Pháp sai cũng không sao, mình sửa cho!");
-  const g = greeting();
-  if (g.mood !== "sleep") L[0] = `${g.pre} ${g.word}! ${L[0]}`;
-  return L;
-}
-function updateClock() {
-  const el = $("#hClock"); if (!el) return;
-  const t = todayISO();
-  el.textContent = `${hhmm(Date.now())} · ${wdOf(t)} ${+t.slice(8)}/${+t.slice(5, 7)}`;
-}
-function renderHero() {
-  const p = prefs(), g = greeting();
-  $("#buddyName").textContent = p.name;
-  updateClock();
-  const L = buddyLines();
-  $("#hBubble").textContent = L[lineIdx % L.length];
-  void g;
-  const f = state.focus?.endAt ? state.focus : null;
-  $("#wFocus").classList.toggle("on", !!f);
-  $("#wFocusLabel").textContent = f ? "Đang tập trung" : "Tập trung";
-  $("#wFocus [data-left]").textContent = f ? fmtLeft(f.endAt - Date.now()) : `${p.dur}:00 · +${p.dur * 2} ✦`;
-  renderRoom();
-}
-setInterval(updateClock, 20000);
-
 // --- cài đặt ---
 function openSettings() {
   const p = prefs();
   openSheet({ title: "Cài đặt", html: `
-    <label class="field"><span>Tên bé mèo</span><input type="text" id="stName" maxlength="20" autocomplete="off"></label>
     <div class="set-grid">
       <label class="set-card">${icon("volume")}Âm thanh<input type="checkbox" class="switch" role="switch" id="stSfx" ${p.sfx ? "checked" : ""}></label>
       <label class="set-card peach">${icon("sun")}Giữ màn hình sáng<input type="checkbox" class="switch" role="switch" id="stWake" ${p.wake ? "checked" : ""}></label>
       <label class="set-card sky">${icon("lock")}Tập trung nghiêm<input type="checkbox" class="switch" role="switch" id="stStrict" ${p.strict ? "checked" : ""}></label>
     </div>
-    <p class="small muted">Âm thanh chỉ là tiếng “ting” nhỏ khi lật thẻ, xong phiên, mở khoá nguyên tố. Tập trung nghiêm: khoá màn hình thì không sao; nếu rời app quá 15 giây, khi quay lại bé mèo sẽ hỏi bạn vừa khoá màn hình hay mở app khác (mở app khác thì phiên bị huỷ).</p>
+    <p class="small muted">Âm thanh chỉ là tiếng “ting” nhỏ khi lật thẻ và xong phiên. Tập trung nghiêm: khoá màn hình thì không sao; nếu rời app quá 15 giây, khi quay lại app sẽ hỏi bạn vừa khoá màn hình hay mở app khác (mở app khác thì phiên dừng).</p>
     <div class="field"><span>Thời gian tập trung mặc định</span><div class="pills" id="stDur">${DURS.map((d) => `<button type="button" data-d="${d}" aria-pressed="${d === p.dur}">${d} phút</button>`).join("")}</div></div>
     <button class="btn primary block" id="stSave">Lưu</button>`,
     onMount: (el) => {
-      $("#stName", el).value = p.name;
       let dur = p.dur;
       $$("#stDur button", el).forEach((b) => b.addEventListener("click", () => { dur = +b.dataset.d; $$("#stDur button", el).forEach((x) => x.setAttribute("aria-pressed", String(x === b))); }));
       $("#stSave", el).addEventListener("click", () => {
-        state.prefs = { name: $("#stName", el).value.trim().slice(0, 20) || PREF_DEFAULT.name, sfx: $("#stSfx", el).checked, wake: $("#stWake", el).checked, strict: $("#stStrict", el).checked, dur };
+        state.prefs = { ...(state.prefs || {}), sfx: $("#stSfx", el).checked, wake: $("#stWake", el).checked, strict: $("#stStrict", el).checked, dur };
         save("prefs", state.prefs);
         focusPick.dur = dur;
         if (state.prefs.sfx) { audioCtx(); sfx("pop"); }
@@ -104,12 +65,12 @@ document.addEventListener("visibilitychange", () => {
 // Trên iPhone, trang web không phân biệt được "khoá màn hình" với "mở app khác", nên hỏi thẳng bạn
 function askAway(sec) {
   sfx("tick");
-  openSheet({ title: "Bạn vừa đi đâu thế?", html: `<div class="reward"><div style="width:110px">${kitten("think")}</div>
+  openSheet({ title: "Bạn vừa đi đâu thế?", html: `<div class="reward"><div style="width:88px">${kitten("think")}</div>
     <p>Bạn rời app <b>${sec} giây</b>. Khoá màn hình để làm bài trên giấy thì vẫn tính là đang tập trung.</p>
     <p class="muted small">Nếu lỡ mở app khác (mạng xã hội, game…), hãy thành thật nhé: phiên này sẽ dừng lại.</p>
     <div class="two" style="width:100%"><button class="btn" id="awOther">Mình mở app khác</button><button class="btn primary" id="awLock">Mình chỉ khoá màn hình</button></div></div>`,
     onMount: (el) => {
-      $("#awLock", el).addEventListener("click", () => { closeSheet(); toast(`${prefs().name} vẫn đang làm việc cùng bạn!`); });
+      $("#awLock", el).addEventListener("click", () => { closeSheet(); toast("Phiên tập trung vẫn đang chạy"); });
       $("#awOther", el).addEventListener("click", () => { closeSheet(); failFocus(sec); });
     } });
 }
@@ -118,8 +79,8 @@ function failFocus(sec) {
   try { wakeLock?.release?.(); } catch {} wakeLock = null;
   sfx("fail");
   if (state.view === "focus") renderFocus(); else render();
-  openSheet({ title: `${prefs().name} chạy mất rồi!`, html: `<div class="reward">${mascot("lg", "sleep")}
-    <p>Bạn rời app ${sec} giây nên phiên tập trung bị huỷ (đang bật chế độ Tập trung nghiêm).</p>
+  openSheet({ title: "Phiên tập trung đã dừng", html: `<div class="reward">${mascot("lg", "sleep")}
+    <p>Bạn rời app ${sec} giây để mở app khác nên phiên dừng lại (đang bật chế độ Tập trung nghiêm).</p>
     <p class="muted small">Không sao cả, thử lại một phiên ngắn 15 phút nhé?</p>
     <div class="two" style="width:100%"><button class="btn" data-close>Để sau</button><button class="btn primary" data-act="focus-open">Thử lại</button></div></div>` });
 }

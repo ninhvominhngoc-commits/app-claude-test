@@ -2,7 +2,7 @@
 // Dựa trên cách học có bằng chứng: tập trung theo phiên (Pomodoro), ôn ngắt quãng, luyện truy hồi (làm đề, tự giảng lại),
 // ghi rõ mục tiêu phiên (implementation intention) và ghi lại việc chợt nhớ thay vì bỏ dở để làm ngay.
 
-// --- môn học & thời gian theo môn (dữ liệu "atoms" cũ vẫn dùng: min = phút, n = số phiên) ---
+// --- môn học & thời gian theo môn (tên dữ liệu "atoms" giữ nguyên để không mất số liệu cũ: min = phút, n = số phiên) ---
 const FREE = "free";
 function subjects() {
   return [...state.courses.map((c) => ({ id: c.id, name: c.title, tint: tintOf(c.id) })), { id: FR, name: "Tiếng Pháp", tint: "sky" }, { id: FREE, name: "Tự học khác", tint: "butter" }];
@@ -11,14 +11,6 @@ const subjOf = (id) => subjects().find((s) => s.id === id) || { id, name: "Môn 
 const statOf = (id) => (state.atoms[id] ||= { min: 0, n: 0 });
 const saveSubjStats = () => save("atoms", { list: state.atoms });
 const totalMin = () => Object.values(state.atoms).reduce((n, a) => n + (a.min || 0), 0);
-// cấp chỉ dùng để mở chương truyện; tính theo tổng phút tập trung
-const LEVELS = [[0, "Tân binh L1"], [50, "Bạn học chăm"], [150, "Người giữ nhịp"], [300, "Thợ ôn bài"], [500, "Kỹ sư tập sự"], [800, "Thợ mạch điện"], [1200, "Nhà vật lý trẻ"], [1700, "Giáo sư Jussieu"], [2300, "Huyền thoại Sorbonne"]];
-function levelInfo() {
-  const t = totalMin(); let i = 0;
-  while (i + 1 < LEVELS.length && t >= LEVELS[i + 1][0]) i++;
-  const next = LEVELS[i + 1];
-  return { i, n: i + 1, title: LEVELS[i][1], t, base: LEVELS[i][0], next: next ? next[0] : null, pct: next ? (t - LEVELS[i][0]) / (next[0] - LEVELS[i][0]) : 1 };
-}
 function lastSubject() {
   const id = lsGet("focusSubj"), list = subjects();
   return list.find((s) => s.id === id) || list.slice().sort((a, b) => (state.atoms[b.id]?.min || 0) - (state.atoms[a.id]?.min || 0))[0];
@@ -28,15 +20,14 @@ function lastSubject() {
 function quests() {
   const d = state.stats.days[todayISO()] || {}, f = d.f || 0, r = d.r || 0, fe = d.fe || 0, pr = d.p || 0;
   return [
-    { k: "focus", t: "Tập trung 25 phút", v: f >= 25 ? `${f} phút` : `${f}/25 phút`, p: Math.min(1, f / 25), act: f < 25 ? ["focus-open", "Bắt đầu"] : null, col: "#ec7a98" },
+    { k: "focus", t: "Tập trung 25 phút", v: f >= 25 ? `${f} phút` : `${f}/25 phút`, p: Math.min(1, f / 25), act: f < 25 ? ["focus-open", state.focus?.endAt ? "Mở" : "Bắt đầu"] : null, col: "#ec7a98" },
     { k: "review", t: "Ôn 10 thẻ hoặc hết thẻ đến hạn", v: `${r} thẻ`, p: r >= 10 || (r > 0 && totalDue() === 0) ? 1 : Math.min(1, r / 10), act: totalDue() ? ["review-all", "Ôn"] : null, col: "#72ab4a" },
     { k: "practice", t: "Luyện 1 bài: làm đề hoặc tự giảng", v: fe || pr ? "Xong" : "Luyện đề hoặc Feynman", p: fe || pr ? 1 : 0, act: fe || pr ? null : ["go-drill", "Luyện"], col: "#5a99d0" },
   ];
 }
 function checkGold() {
   const d = state.stats.days[todayISO()];
-  if (d && !d.gold && quests().every((q) => q.p >= 1)) { d.gold = 1; saveStats(); confetti(); sfx("unlock"); toast("Đóng đủ 3 vòng hôm nay! Giỏi quá đi", 4000); }
-  advQuests(); // thưởng Tinh thể cho mục tiêu & ngày đủ vòng
+  if (d && !d.gold && quests().every((q) => q.p >= 1)) { d.gold = 1; saveStats(); confetti(); sfx("unlock"); toast("Xong cả 3 mục tiêu hôm nay!", 4000); }
 }
 function ringsSvg(q, size = 120, center = "") {
   const R = [46, 35, 24], sw = 9.5, done = q.filter((x) => x.p >= 1).length;
@@ -83,7 +74,7 @@ function nextAction(s, p) {
   return { t: "Tập trung thêm một phiên", act: `data-act="focus-subj" data-id="${esc(s.id)}"` };
 }
 function renderProgress() {
-  const q = quests(), done = q.filter((x) => x.p >= 1).length, lv = levelInfo();
+  const q = quests(), done = q.filter((x) => x.p >= 1).length;
   const wkAll = subjects().reduce((n, s) => n + subjProgress(s).wk, 0);
   const soon = upcoming(30).find((a) => a.type === "exam");
   $("#pgTop").innerHTML = `${ringsSvg(q, 112)}<div class="pg-sum"><p class="w-title">Hôm nay ${done}/3 vòng</p>
@@ -100,7 +91,7 @@ function renderProgress() {
         <p class="pg-row"><span>Luyện đề</span><b>${p.avg != null ? `${p.avg.toFixed(1)}/20` : "chưa làm"}</b>${p.tries ? `<small>trung bình ${p.tries} bài gần nhất</small>` : ""}</p>
         <button class="btn sm soft" ${na.act}>${icon("arrow")} ${esc(na.t)}</button></div></article>`;
   }).join("");
-  $("#pgLevel").textContent = `Tổng ${fmtMin(lv.t)} tập trung · Cấp ${lv.n} (${lv.title}) dùng để mở chương truyện.`;
+  $("#pgLevel").textContent = `Tổng ${fmtMin(totalMin())} tập trung từ trước tới nay.`;
 }
 
 // --- phiên tập trung: mục tiêu phiên, vòng thời gian, sổ ghi việc chợt nhớ ---
@@ -118,18 +109,18 @@ function renderFocus() {
   const subj = subjOf(f ? f.subject : focusPick.subject);
   $("#fLevel").textContent = subj.name;
   $("#fSetup").hidden = !!f; $("#fRun").hidden = !f;
-  $("#fRoom").innerHTML = roomHtml({ focus: true, mood: f ? "think" : "happy" });
-  $("#fElem").textContent = f ? `${prefs().name} đang học cùng bạn…` : `Chọn môn, ghi mục tiêu, rồi bắt đầu. ${prefs().name} sẽ ngồi học cùng bạn.`;
+  $("#fRoom").innerHTML = kitten(f ? "think" : "happy");
+  $("#fElem").textContent = f ? "Chợt nhớ việc khác thì ghi vào sổ bên dưới, đừng bỏ dở để làm ngay." : "Chọn môn, ghi một mục tiêu cụ thể, rồi bắt đầu.";
   if (!f) {
     $("#fSubj").innerHTML = subjects().map((s) => `<button data-subj="${esc(s.id)}" aria-pressed="${s.id === focusPick.subject}">${esc(s.name)}</button>`).join("");
     $("#fDur").innerHTML = DURS.map((d) => `<button data-dur="${d}" aria-pressed="${d === focusPick.dur}">${d} phút</button>`).join("");
     if ($("#fGoal").value !== focusPick.goal) $("#fGoal").value = focusPick.goal;
-    $("#fHint").textContent = `Xong phiên: +${focusPick.dur * 2} ✦. Màn hình được giữ sáng; khoá máy để làm bài trên giấy thì đồng hồ vẫn chạy.`;
+    $("#fHint").textContent = "Màn hình được giữ sáng. Khoá máy để làm bài trên giấy thì đồng hồ vẫn chạy.";
   } else {
     $("#fGoalShow").innerHTML = f.goal ? `${icon("target")} <span>${esc(f.goal)}</span>` : "";
     $("#fGoalShow").hidden = !f.goal;
     paintNotes();
-    $("#fRunHint").textContent = `Mỗi phút = 2 ✦. Dừng sớm vẫn giữ phần đã học.`;
+    $("#fRunHint").textContent = "Dừng sớm vẫn ghi lại phần đã học.";
     tickFocus();
   }
 }
@@ -165,7 +156,6 @@ function tickFocus() {
 function finishFocus(complete) {
   const f = state.focus; if (!f?.endAt) return;
   const minutes = complete ? f.dur : Math.min(f.dur, Math.floor((Date.now() - f.start) / 60000));
-  const lv0 = levelInfo().i;
   state.focus = {}; save("focus", {});
   try { wakeLock?.release?.(); } catch {} wakeLock = null;
   const st = statOf(f.subject); st.min = (st.min || 0) + minutes; st.n = (st.n || 0) + (minutes >= 5 ? 1 : 0);
@@ -177,19 +167,17 @@ function finishFocus(complete) {
     if (state.sessions.length > 3000) state.sessions.splice(0, state.sessions.length - 3000);
     save("sessions", { list: state.sessions });
   }
-  const gems = advFocus(minutes), lv = levelInfo(), up = lv.i > lv0 ? lv : null;
   if (complete) sfx("chime");
   const subj = subjOf(f.subject), notes = f.notes || [];
   if (state.view === "focus") renderFocus(); else render();
   if (minutes >= 5) {
     confetti();
     openSheet({ title: complete ? "Hoàn thành phiên tập trung!" : "Đã dừng phiên tập trung", html: `<div class="reward">
-      <div style="width:110px">${kitten("party")}</div>
-      <p class="gain gems">+${gems} ✦</p>
-      <p>Bạn đã tập trung <b>${minutes} phút</b> cho ${esc(subj.name)}.</p>
+      <div style="width:88px">${kitten("party")}</div>
+      <p class="gain">${minutes} phút</p>
+      <p>tập trung cho ${esc(subj.name)}.</p>
       ${f.goal ? `<div class="goal-check"><p class="small"><b>Mục tiêu phiên:</b> ${esc(f.goal)}</p><div class="two"><button class="btn sm" data-goal="half">Còn dở</button><button class="btn sm primary" data-goal="done">Xong rồi!</button></div></div>` : ""}
       ${notes.length ? `<div class="notes-after"><p class="small"><b>Việc bạn chợt nhớ trong phiên:</b></p><ul>${notes.map((x) => `<li>${esc(x)}</li>`).join("")}</ul><button class="btn sm" id="notesToAgenda">${icon("calendar")} Thêm vào lịch để làm sau</button></div>` : ""}
-      ${up ? `<p class="tag c-holiday">Lên cấp ${up.n}: ${esc(up.title)}!</p>` : ""}
       <p class="muted small">Nghỉ 5 phút: đứng dậy, uống nước, nhìn ra xa 20 giây cho mắt nghỉ.</p>
       <div class="two" style="width:100%"><button class="btn" data-close>Nghỉ đã</button><button class="btn primary" data-act="focus-open">Phiên mới</button></div></div>`,
       onMount: (el) => el.addEventListener("click", (e) => {
@@ -197,7 +185,7 @@ function finishFocus(complete) {
         if (g) { entry.done = g.dataset.goal === "done"; save("sessions", { list: state.sessions }); g.parentElement.innerHTML = `<p class="small">${entry.done ? "Tuyệt vời! Đã ghi là xong." : "Không sao, phiên sau làm tiếp nhé."}</p>`; sfx(entry.done ? "chime" : "pop"); if (!entry.done) focusPick.goal = f.goal; return; }
         if (e.target.closest("#notesToAgenda")) { const n = mergeEvents(notes.map((x) => ({ type: "other", title: x, date: "" })), "tập trung"); e.target.closest("#notesToAgenda").replaceWith(Object.assign(document.createElement("p"), { className: "small", textContent: n ? `Đã thêm ${n} việc vào Lịch (mục Chưa rõ ngày).` : "Các việc này đã có trong Lịch." })); }
       }) });
-  } else toast(minutes ? `Đã ghi ${minutes} phút (+${gems} ✦).` : "Đã dừng phiên tập trung");
+  } else toast(minutes ? `Đã ghi ${minutes} phút.` : "Đã dừng phiên tập trung");
   checkGold();
 }
 function openFocus() { closeSheet(); show("focus"); }

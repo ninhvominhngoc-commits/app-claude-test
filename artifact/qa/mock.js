@@ -6,7 +6,6 @@
   const load = () => new Map(JSON.parse(sessionStorage.getItem("__store") || "[]"));
   const store = load();
   const persist = () => sessionStorage.setItem("__store", JSON.stringify([...store]));
-  if (!cfg.welcome && !cfg.noDb && !store.has("data/users/u1/adv")) { store.set("data/users/u1/adv", { welcome: 1 }); persist(); }
   window.__store = store;
   window.__calls = [];
   const clone = (x) => JSON.parse(JSON.stringify(x));

@@ -14,7 +14,7 @@ const icon = (n, cls = "") => `<svg class="i ${cls}" aria-hidden="true"><use hre
 const thinking = (label = "") => `<span class="typing" role="status"><i></i><i></i><i></i>${label ? `<span>${esc(label)}</span>` : ""}</span>`;
 function lsGet(k, d = "") { try { const v = localStorage.getItem(k); return v === null ? d : v; } catch { return d; } }
 function lsSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
-function mascot(cls = "", mood = "happy") { return kitten(mood, cls); } // bé mèo Elec (vẽ ở 9-adv-art.js)
+function mascot(cls = "", mood = "happy") { return kitten(mood, cls); } // biểu tượng mèo nét mảnh (vẽ ở 9-art.js)
 
 // ================= ngày giờ (giờ Paris) =================
 const TZ = "Europe/Paris";
@@ -106,7 +106,7 @@ async function copyText(text, label) {
 }
 
 // ================= dữ liệu (riêng tư theo người dùng) =================
-const state = { agenda: [], courses: [], decks: {}, chats: {}, mail: { seen: [], recent: [], lastRun: "" }, status: null, stats: { days: {} }, atoms: {}, focus: {}, facts: {}, prefs: {}, sessions: [], adv: null, drill: { list: [] }, exams: [], cur: null, view: "home", seg: "mail", mailMsg: null };
+const state = { agenda: [], courses: [], decks: {}, chats: {}, mail: { seen: [], recent: [], lastRun: "" }, status: null, stats: { days: {} }, atoms: {}, focus: {}, facts: {}, prefs: {}, sessions: [], drill: { list: [] }, exams: [], cur: null, view: "home", seg: "mail", mailMsg: null };
 let base = null, dataReady = false, loadFailed = false;
 const writeQueue = new Map();
 function queue(docId, op) {
@@ -171,7 +171,6 @@ async function loadData() {
       else if (d.id === "sessions") state.sessions = Array.isArray(v.list) ? v.list : [];
       else if (d.id === "drill") state.drill = { list: Array.isArray(v.list) ? v.list : [] };
       else if (d.id === "exams") state.exams = Array.isArray(v.list) ? v.list : [];
-      else if (d.id === "adv") { const z = ADV0(); state.adv = { ...z, ...v, own: v.own || {}, choice: v.choice || {}, aff: v.aff || {}, day: v.day || {}, furni: v.furni || z.furni, equip: v.equip || z.equip }; }
     }
     showNotice("");
   } catch (e) {

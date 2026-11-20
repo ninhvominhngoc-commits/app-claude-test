@@ -187,7 +187,7 @@ Réponds UNIQUEMENT avec un JSON : {"score": 0, "total": ${p.total}, "criteria":
     dr.result = result; dr.phase = "done";
     state.drill.list.push({ id: uid8(), examId: dr.examId, subj: e.subj, n: dr.n, date: todayISO(), score: result.score, total, nErr: result.errors.length });
     delete state.drill.cur; saveDrill();
-    bump("p"); const dd = advDay(); if ((dd.pr || 0) < 5) { dd.pr = (dd.pr || 0) + 1; earn(30); }
+    bump("p");
     sfx("chime"); checkGold();
   } catch (err) { dr.phase = "work"; toast(sampleErr(err), 4000); }
   if (state.view === "drill") renderDrill();
