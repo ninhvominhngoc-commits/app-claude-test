@@ -1,10 +1,5 @@
 // ================= Hôm nay: một việc nên làm ngay, 3 mục tiêu ngày, nút Tập trung =================
 // Không có trò chơi: app chỉ chọn giúp bạn việc quan trọng nhất lúc này và cho thấy hôm nay đã làm được gì.
-function hideSplash() {
-  const s = $("#splash"); if (!s || s.classList.contains("out")) return;
-  s.classList.add("out"); setTimeout(() => { s.hidden = true; }, 380);
-}
-setTimeout(hideSplash, 4500); // phòng khi dữ liệu tải quá lâu
 
 // việc quan trọng nhất lúc này: phiên đang chạy → thi/hạn nộp trong 3 ngày → thẻ đến hạn → tập trung → luyện
 function nowAction() {

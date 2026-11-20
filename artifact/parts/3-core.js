@@ -181,7 +181,6 @@ async function loadData() {
   } finally {
     clearTimeout(timer);
     dataReady = true;
-    hideSplash();
     const cur = lsGet("cur");
     if (cur && state.courses.some((c) => c.id === cur)) state.cur = cur;
     if (state.focus?.endAt && state.focus.endAt <= Date.now()) finishFocus(true);

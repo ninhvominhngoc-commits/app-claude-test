@@ -645,16 +645,6 @@ button.widget:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--chu
 .switch:checked::before { content: "BẬT"; left: 8px; right: auto; color: var(--accent-ink); }
 .switch:checked::after { transform: translateX(34px); }
 
-/* ===== màn chờ ===== */
-#splash { position: fixed; inset: 0; z-index: 100; display: grid; justify-items: center; align-content: center; gap: 10px; padding: 24px; text-align: center; background: repeating-linear-gradient(90deg, transparent 0 58px, rgba(232, 168, 120, .28) 58px 60px), linear-gradient(180deg, #fdf1d9, #fbe2c2); color: #6b4a3a; transition: opacity .35s ease; }
-#splash.out { opacity: 0; pointer-events: none; }
-.sp-sub { font: 800 16px var(--font); color: #6b4a3a; margin: 0; }
-.sp-logo { font: 800 clamp(40px, 12vw, 64px)/.95 var(--display); color: #6b4a3a; letter-spacing: -.02em; margin: 0; }
-.sp-bar { position: relative; width: min(80vw, 340px); height: 34px; border-radius: 999px; background: #fff7e8; border: 4px solid #fff7e8; box-shadow: 0 0 0 2px #ecd8bb; overflow: hidden; display: grid; place-items: center; }
-.sp-bar i { position: absolute; left: 0; top: 0; bottom: 0; width: 8%; border-radius: 999px; background: #b6c65e; animation: load 2.4s cubic-bezier(.2, .7, .3, 1) forwards; }
-.sp-bar span { position: relative; font: 800 15px var(--font); color: #44501b; }
-.sp-foot { font: 700 12.5px var(--font); color: #7d6253; margin: 6px 0 0; }
-@keyframes load { to { width: 92%; } }
 
 /* ===== bảng mục tiêu ===== */
 .empty-ic { width: 64px; height: 64px; flex: none; border-radius: 22px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); border: 1px solid var(--outline); }
@@ -797,14 +787,6 @@ body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-event
 .set-card .i, .set-card.peach .i, .set-card.sky .i { color: var(--accent); }
 .switch { background: rgba(255, 255, 255, .14); }
 .switch:checked { background: #a9cdf5; }
-/* màn chờ */
-#splash { background: radial-gradient(120% 60% at 50% 0%, rgba(150, 182, 222, .4), rgba(150, 182, 222, 0) 65%), #080b10; color: var(--ink); }
-.sp-sub { color: var(--ink-3); font: 600 12px var(--font); letter-spacing: .14em; text-transform: uppercase; }
-.sp-logo { color: var(--ink); font: 700 clamp(40px, 12vw, 58px)/1 var(--display); letter-spacing: -.03em; }
-.sp-bar { width: min(52vw, 200px); height: 5px; background: rgba(255, 255, 255, .12); border: 0; box-shadow: none; }
-.sp-bar i { background: var(--gloss); }
-.sp-bar span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-.sp-foot { color: var(--ink-3); }
 /* Hôm nay: đồng hồ LCD, − / +, Bắt đầu, hàng số liệu */
 #hHello { font: 700 26px/1.1 var(--display); letter-spacing: -.02em; }
 .home .clock { color: var(--ink-3); }
@@ -887,13 +869,6 @@ body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-event
   <symbol id="i-atom" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><ellipse cx="12" cy="12" rx="9.5" ry="3.8"/><ellipse cx="12" cy="12" rx="9.5" ry="3.8" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9.5" ry="3.8" transform="rotate(120 12 12)"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></symbol>
   <symbol id="i-map" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5 4 7v12l5-2 6 2 5-2V5l-5 2z"/><path d="M9 5v12M15 7v12"/></symbol>
 </svg>
-
-<div id="splash" role="status" aria-label="Đang tải app">
-  <p class="sp-sub">Trợ lý học tập</p>
-  <p class="sp-logo">Sorbonne<br>Copilot</p>
-  <div class="sp-bar"><i></i><span>Đang tải…</span></div>
-  <p class="sp-foot">L1 EEA · campus Jussieu</p>
-</div>
 
 <main class="wrap" id="main">
   <div id="notice" class="notice" hidden></div>
@@ -1306,7 +1281,6 @@ async function loadData() {
   } finally {
     clearTimeout(timer);
     dataReady = true;
-    hideSplash();
     const cur = lsGet("cur");
     if (cur && state.courses.some((c) => c.id === cur)) state.cur = cur;
     if (state.focus?.endAt && state.focus.endAt <= Date.now()) finishFocus(true);
@@ -2670,11 +2644,6 @@ function showTip(target) {
 }
 // ================= Hôm nay: một việc nên làm ngay, 3 mục tiêu ngày, nút Tập trung =================
 // Không có trò chơi: app chỉ chọn giúp bạn việc quan trọng nhất lúc này và cho thấy hôm nay đã làm được gì.
-function hideSplash() {
-  const s = $("#splash"); if (!s || s.classList.contains("out")) return;
-  s.classList.add("out"); setTimeout(() => { s.hidden = true; }, 380);
-}
-setTimeout(hideSplash, 4500); // phòng khi dữ liệu tải quá lâu
 
 // việc quan trọng nhất lúc này: phiên đang chạy → thi/hạn nộp trong 3 ngày → thẻ đến hạn → tập trung → luyện
 function nowAction() {
