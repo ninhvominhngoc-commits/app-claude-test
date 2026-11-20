@@ -2,6 +2,8 @@
 // Dựa trên cách học có bằng chứng: tập trung theo phiên (Pomodoro), ôn ngắt quãng, luyện truy hồi (làm đề, tự giảng lại),
 // ghi rõ mục tiêu phiên (implementation intention) và ghi lại việc chợt nhớ thay vì bỏ dở để làm ngay.
 
+const SB_INK = "#6b4e42"; // màu nét chậu cây
+
 // --- môn học & thời gian theo môn (tên dữ liệu "atoms" giữ nguyên để không mất số liệu cũ: min = phút, n = số phiên) ---
 const FREE = "free";
 function subjects() {
@@ -109,7 +111,7 @@ function renderFocus() {
   const subj = subjOf(f ? f.subject : focusPick.subject);
   $("#fLevel").textContent = subj.name;
   $("#fSetup").hidden = !!f; $("#fRun").hidden = !f;
-  $("#fRoom").innerHTML = kitten(f ? "think" : "happy");
+  $("#fRoom").innerHTML = emptyIc("target");
   $("#fElem").textContent = f ? "Chợt nhớ việc khác thì ghi vào sổ bên dưới, đừng bỏ dở để làm ngay." : "Chọn môn, ghi một mục tiêu cụ thể, rồi bắt đầu.";
   if (!f) {
     $("#fSubj").innerHTML = subjects().map((s) => `<button data-subj="${esc(s.id)}" aria-pressed="${s.id === focusPick.subject}">${esc(s.name)}</button>`).join("");
@@ -173,7 +175,7 @@ function finishFocus(complete) {
   if (minutes >= 5) {
     confetti();
     openSheet({ title: complete ? "Hoàn thành phiên tập trung!" : "Đã dừng phiên tập trung", html: `<div class="reward">
-      <div style="width:88px">${kitten("party")}</div>
+      ${emptyIc("check")}
       <p class="gain">${minutes} phút</p>
       <p>tập trung cho ${esc(subj.name)}.</p>
       ${f.goal ? `<div class="goal-check"><p class="small"><b>Mục tiêu phiên:</b> ${esc(f.goal)}</p><div class="two"><button class="btn sm" data-goal="half">Còn dở</button><button class="btn sm primary" data-goal="done">Xong rồi!</button></div></div>` : ""}

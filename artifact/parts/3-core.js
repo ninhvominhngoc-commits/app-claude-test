@@ -14,7 +14,8 @@ const icon = (n, cls = "") => `<svg class="i ${cls}" aria-hidden="true"><use hre
 const thinking = (label = "") => `<span class="typing" role="status"><i></i><i></i><i></i>${label ? `<span>${esc(label)}</span>` : ""}</span>`;
 function lsGet(k, d = "") { try { const v = localStorage.getItem(k); return v === null ? d : v; } catch { return d; } }
 function lsSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
-function mascot(cls = "", mood = "happy") { return kitten(mood, cls); } // biểu tượng mèo nét mảnh (vẽ ở 9-art.js)
+// biểu tượng to trong ô tròn mềm cho màn trống và bảng thông báo (không dùng nhân vật)
+const emptyIc = (n) => `<span class="empty-ic" aria-hidden="true">${icon(n)}</span>`;
 
 // ================= ngày giờ (giờ Paris) =================
 const TZ = "Europe/Paris";

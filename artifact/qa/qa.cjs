@@ -62,7 +62,7 @@ async function axe(p, label) {
     check("Mới: chuỗi ngày = 0", /0 ngày liên tiếp/.test(await txt(p, "#sheetRoot .flame")));
     await p.keyboard.press("Escape");
     check("Mới: mail 'Chưa đọc lần nào'", /Chưa đọc lần nào/.test(await txt(p, "#hMail")));
-    for (const v of ["study", "review", "agenda", "inbox"]) { await tab(p, v); check(`Mới: tab ${v} có màn trống thân thiện`, await vis(p, `#v-${v} .empty`)); }
+    for (const v of ["study", "review", "agenda", "inbox"]) { await tab(p, v); check(`Mới: tab ${v} có màn trống thân thiện (biểu tượng, không có mèo)`, (await vis(p, `#v-${v} .empty .empty-ic`)) && !(await p.$(`#v-${v} .kitten`))); }
     await tab(p, "home");
     await p.click('[data-act="add-event"]').catch(() => {});
     await tab(p, "agenda"); await p.click('#v-agenda [data-act="add-event"]');
@@ -441,7 +441,7 @@ async function axe(p, label) {
     const today = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Paris" }).format(new Date());
     const setStore = (p, kv) => p.evaluate((kv) => { for (const [k, v] of Object.entries(kv)) window.__store.set(k, v); sessionStorage.setItem("__store", JSON.stringify([...window.__store])); }, kv);
     const p = await open({ seed: true });
-    check("Hôm nay: biểu tượng mèo nét mảnh ở đầu trang", await vis(p, "#hMark svg.kitten"));
+    check("Hôm nay: không còn hình mèo nào", !(await p.$(".kitten, .mascot")));
     check("Hôm nay: đồng hồ giờ Paris", /^\d\d:\d\d · /.test(await txt(p, "#hClock")));
     await p.click(".home .gear");
     check("Cài đặt: không còn ô đặt tên bé mèo", !(await p.$("#stName")));
@@ -504,7 +504,7 @@ async function axe(p, label) {
     const reopen = async (p, hash) => { await p.goto("https://app.test/" + hash, { waitUntil: "load" }); await p.reload({ waitUntil: "load" }); await p.waitForTimeout(700); };
     // màn chờ: hiện khi dữ liệu đang tải, tự tắt khi xong
     const s0 = await open({ cfg: { slowDb: 1600 } });
-    check("Màn chờ: hiện trong lúc tải dữ liệu", (await vis(s0, "#splash")) && !(await s0.$eval("#splash", (e) => e.classList.contains("out"))) && (await vis(s0, "#spArt svg")));
+    check("Màn chờ: hiện trong lúc tải dữ liệu", (await vis(s0, "#splash")) && !(await s0.$eval("#splash", (e) => e.classList.contains("out"))) && (await vis(s0, "#splash .sp-logo")));
     await s0.waitForTimeout(1500);
     check("Màn chờ: tự tắt khi dữ liệu đã tải", !(await vis(s0, "#splash")) || (await s0.$eval("#splash", (e) => e.classList.contains("out"))));
     await s0.close();
@@ -520,7 +520,7 @@ async function axe(p, label) {
     const now = Date.now();
     await setStore(p, { "data/users/u1/focus": { subject: "free", start: now - 10 * 60000, endAt: now + 15 * 60000, dur: 25 } });
     await reopen(p, "#focus"); await p.waitForTimeout(1200);
-    check("Tập trung: biểu tượng mèo và lời nhắc ghi việc chợt nhớ", (await vis(p, "#fRoom svg.kitten")) && /ghi vào sổ/.test(await txt(p, "#fElem")));
+    check("Tập trung: biểu tượng đích và lời nhắc ghi việc chợt nhớ", (await vis(p, "#fRoom .empty-ic")) && /ghi vào sổ/.test(await txt(p, "#fElem")));
     check("Tập trung: vòng thời gian đã chạy khoảng 40%", await p.$eval("#fRing .fr-on", (c) => { const [on, all] = c.getAttribute("stroke-dasharray").split(" ").map(Number); return on / all > 0.35 && on / all < 0.45; }));
     await p.click('#v-focus [data-go="home"]'); await p.waitForTimeout(300);
     check("Hôm nay khi đang tập trung: ẩn thẻ việc nên làm, nút lớn hiện giờ còn lại", !(await vis(p, "#hNow")) && /Đang tập trung/.test(await txt(p, "#wFocus")));

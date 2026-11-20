@@ -178,13 +178,13 @@ function userHtml(content, fix) {
   const feyn = content.startsWith(FEYN);
   return `<div class="msg u">${feyn ? `<span class="mode">${icon("speak")} Tự giảng lại</span>` : ""}<div class="bubble">${esc(feyn ? content.slice(FEYN.length) : content)}</div>${fix ? fixHtml(fix) : ""}</div>`;
 }
-const tutorHtml = (inner, mood = "happy") => `<div class="msg a"><div class="who">${mascot("xs", mood)} Gia sư</div><div class="md">${inner}</div></div>`;
+const tutorHtml = (inner, mood = "happy") => `<div class="msg a"><div class="who">${icon("sparkle")} Gia sư</div><div class="md">${inner}</div></div>`;
 function renderThread() {
   const c = curCourse(), box = $("#thread");
   const turns = chatOf(c.id).turns;
   if (!turns.length) {
     const [f, t] = rangeOf(c);
-    box.innerHTML = `<div class="starter">${mascot("lg", "happy")}<h2>Học “${esc(c.title)}”</h2><p class="muted small">Đang chọn trang ${f}–${t}. Bắt đầu từ một gợi ý, hoặc tự hỏi. Viết bằng tiếng Pháp thì gia sư sửa ngữ pháp giúp bạn.</p>
+    box.innerHTML = `<div class="starter">${emptyIc("book")}<h2>Học “${esc(c.title)}”</h2><p class="muted small">Đang chọn trang ${f}–${t}. Bắt đầu từ một gợi ý, hoặc tự hỏi. Viết bằng tiếng Pháp thì gia sư sửa ngữ pháp giúp bạn.</p>
       <div class="starter-grid">${STARTERS.map((s, i) => `<button data-act="starter" data-i="${i}"><span class="badge-ic" style="${tint(s.tn)}">${icon(s.ic)}</span><strong>${s.t}</strong><span>${s.d}</span></button>`).join("")}</div></div>`;
   } else {
     // bản cũ lưu phần sửa ngữ pháp ở lượt gia sư: vẫn hiện dưới tin nhắn của bạn

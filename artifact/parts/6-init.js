@@ -149,7 +149,6 @@ $("#ckGo").addEventListener("click", (e) => runCheck(e.currentTarget));
 getLimits().then((l) => { if (!l?.images) { $("#ckDrop").hidden = true; } else $("#ckFiles").accept = l.images.mediaTypes.join(","); });
 
 document.documentElement.lang = "vi";
-$("#spArt").innerHTML = kitten("party");
 show(START || "home");
 loadData();
 })();

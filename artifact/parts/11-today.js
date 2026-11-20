@@ -29,7 +29,6 @@ setInterval(updateClock, 20000);
 function renderHero() {
   const g = greeting(), p = prefs();
   $("#hHello").textContent = g.mood === "sleep" ? "Khuya rồi, ngủ sớm nha" : `${g.pre} ${g.word}!`;
-  $("#hMark").innerHTML = kitten(state.focus?.endAt ? "think" : g.mood === "sleep" ? "sleep" : "happy");
   updateClock();
   const n = nowAction(), box = $("#hNow");
   box.hidden = !n;

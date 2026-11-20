@@ -21,7 +21,7 @@ function renderExams() {
   const el = $("#sList");
   const intro = `<p class="muted small">Tải đề thi cũ (PDF hoặc ảnh chụp). Claude soạn bài <b>tương tự</b> (khác số liệu, cùng dạng), bạn làm bài rồi được chấm như giám khảo, nhất là <b>cách trình bày</b>: định luật, biểu thức chữ trước khi thay số, đơn vị, kết luận.</p>`;
   if (!state.exams.length) {
-    el.innerHTML = `<div class="empty">${mascot("lg", "think")}<h3>Chưa có đề thi nào</h3>${intro}<button class="btn primary" data-act="add-exam">${icon("upload")} Thêm đề thi</button></div>`;
+    el.innerHTML = `<div class="empty">${emptyIc("upload")}<h3>Chưa có đề thi nào</h3>${intro}<button class="btn primary" data-act="add-exam">${icon("upload")} Thêm đề thi</button></div>`;
     return;
   }
   el.innerHTML = intro + state.exams.map((e) => {
@@ -130,7 +130,7 @@ function renderDrill() {
   $("#drTitle").textContent = e.title;
   $("#drSub").textContent = `Bài tương tự · bài ${(examData[e.id]?.exercises[dr.n]?.n) || dr.n + 1}`;
   $("#drNew").disabled = dr.phase === "gen" || dr.phase === "grading";
-  if (dr.phase === "gen") { body.innerHTML = `<div class="card center">${mascot("lg", "think")}${thinking("Claude đang soạn bài tương tự…")}</div>`; return; }
+  if (dr.phase === "gen") { body.innerHTML = `<div class="card center">${emptyIc("pencil")}${thinking("Claude đang soạn bài tương tự…")}</div>`; return; }
   if (dr.phase === "err") { body.innerHTML = `<div class="card"><p class="err">${esc(dr.err)}</p><button class="btn primary" id="drRetryGen">Thử lại</button></div>`; return; }
   const p = dr.problem;
   const prob = `<article class="card dr-prob"><span class="label">Đề luyện</span><div class="md" id="drStatement">${md(p.statement)}</div></article>

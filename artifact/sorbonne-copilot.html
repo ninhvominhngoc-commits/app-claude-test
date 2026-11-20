@@ -578,8 +578,6 @@ button.widget:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--chu
 .home { gap: 12px; }
 .home-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 2px; }
 .ht-left { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1 1 auto; }
-.h-mark { width: 46px; height: 46px; flex: none; }
-.h-mark .mascot { width: 100%; height: 100%; }
 .h-hello { display: grid; gap: 2px; min-width: 0; }
 #hHello { margin: 0; font: 800 20px/1.15 var(--display); color: var(--ink); }
 .home .clock { color: var(--ink-3); font-size: 12.5px; margin: 0; white-space: normal; }
@@ -655,8 +653,6 @@ button.widget:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--chu
 #splash.out { opacity: 0; pointer-events: none; }
 .sp-sub { font: 800 16px var(--font); color: #6b4a3a; margin: 0; }
 .sp-logo { font: 800 clamp(40px, 12vw, 64px)/.95 var(--display); color: #6b4a3a; letter-spacing: -.02em; margin: 0; }
-.sp-art { width: min(58vw, 230px); margin: 8px 0 14px; }
-.sp-art .mascot { width: 100%; height: auto; animation: hop 1.4s ease-in-out infinite; }
 .sp-bar { position: relative; width: min(80vw, 340px); height: 34px; border-radius: 999px; background: #fff7e8; border: 4px solid #fff7e8; box-shadow: 0 0 0 2px #ecd8bb; overflow: hidden; display: grid; place-items: center; }
 .sp-bar i { position: absolute; left: 0; top: 0; bottom: 0; width: 8%; border-radius: 999px; background: #b6c65e; animation: load 2.4s cubic-bezier(.2, .7, .3, 1) forwards; }
 .sp-bar span { position: relative; font: 800 15px var(--font); color: #44501b; }
@@ -664,14 +660,15 @@ button.widget:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--chu
 @keyframes load { to { width: 92%; } }
 
 /* ===== bảng mục tiêu ===== */
-.reward .mascot.kitten, .reward > div > .mascot.kitten { width: 100%; height: auto; }
+.empty-ic { width: 64px; height: 64px; flex: none; border-radius: 22px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); border: 2px solid var(--outline); }
+.empty-ic .i { width: 30px; height: 30px; }
+.msg.a .who .i { width: 15px; height: 15px; color: var(--accent); }
 .qpanel .heat { width: 100%; max-width: 300px; justify-self: center; gap: 4px; }
 .qpanel .heat i { border-radius: 6px; }
 .qpanel { --sp-ink: var(--ink); --sp-ink-2: var(--ink-2); --sp-ink-3: var(--ink-3); --sp-fill: var(--surface-2); display: grid; gap: 14px; }
 
 /* ===== màn tập trung ===== */
-.f-room { width: 96px; margin: 0 auto; }
-.f-room .mascot { width: 100%; height: auto; }
+.f-room { display: grid; justify-items: center; }
 .f-cap { font: 800 14px/1.35 var(--font); color: var(--sp-ink-2); margin-top: -6px; }
 /* ===== 3 vòng mục tiêu, tiến độ môn, phiên tập trung có mục tiêu ===== */
 .rings { display: block; color: var(--ink); }
@@ -774,7 +771,6 @@ button.widget:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--chu
 <div id="splash" role="status" aria-label="Đang tải app">
   <p class="sp-sub">Trợ lý học tập</p>
   <p class="sp-logo">Sorbonne<br>Copilot</p>
-  <div class="sp-art" id="spArt"></div>
   <div class="sp-bar"><i></i><span>Đang tải…</span></div>
   <p class="sp-foot">L1 EEA · campus Jussieu</p>
 </div>
@@ -786,7 +782,6 @@ button.widget:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--chu
   <section id="v-home" class="view home">
     <div class="home-top">
       <div class="ht-left">
-        <span class="h-mark" id="hMark" aria-hidden="true"></span>
         <div class="h-hello"><p id="hHello"></p><span class="clock" id="hClock"></span></div>
       </div>
       <div class="ht-right">
@@ -1017,7 +1012,8 @@ const icon = (n, cls = "") => `<svg class="i ${cls}" aria-hidden="true"><use hre
 const thinking = (label = "") => `<span class="typing" role="status"><i></i><i></i><i></i>${label ? `<span>${esc(label)}</span>` : ""}</span>`;
 function lsGet(k, d = "") { try { const v = localStorage.getItem(k); return v === null ? d : v; } catch { return d; } }
 function lsSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
-function mascot(cls = "", mood = "happy") { return kitten(mood, cls); } // biểu tượng mèo nét mảnh (vẽ ở 9-art.js)
+// biểu tượng to trong ô tròn mềm cho màn trống và bảng thông báo (không dùng nhân vật)
+const emptyIc = (n) => `<span class="empty-ic" aria-hidden="true">${icon(n)}</span>`;
 
 // ================= ngày giờ (giờ Paris) =================
 const TZ = "Europe/Paris";
@@ -1590,13 +1586,13 @@ function userHtml(content, fix) {
   const feyn = content.startsWith(FEYN);
   return `<div class="msg u">${feyn ? `<span class="mode">${icon("speak")} Tự giảng lại</span>` : ""}<div class="bubble">${esc(feyn ? content.slice(FEYN.length) : content)}</div>${fix ? fixHtml(fix) : ""}</div>`;
 }
-const tutorHtml = (inner, mood = "happy") => `<div class="msg a"><div class="who">${mascot("xs", mood)} Gia sư</div><div class="md">${inner}</div></div>`;
+const tutorHtml = (inner, mood = "happy") => `<div class="msg a"><div class="who">${icon("sparkle")} Gia sư</div><div class="md">${inner}</div></div>`;
 function renderThread() {
   const c = curCourse(), box = $("#thread");
   const turns = chatOf(c.id).turns;
   if (!turns.length) {
     const [f, t] = rangeOf(c);
-    box.innerHTML = `<div class="starter">${mascot("lg", "happy")}<h2>Học “${esc(c.title)}”</h2><p class="muted small">Đang chọn trang ${f}–${t}. Bắt đầu từ một gợi ý, hoặc tự hỏi. Viết bằng tiếng Pháp thì gia sư sửa ngữ pháp giúp bạn.</p>
+    box.innerHTML = `<div class="starter">${emptyIc("book")}<h2>Học “${esc(c.title)}”</h2><p class="muted small">Đang chọn trang ${f}–${t}. Bắt đầu từ một gợi ý, hoặc tự hỏi. Viết bằng tiếng Pháp thì gia sư sửa ngữ pháp giúp bạn.</p>
       <div class="starter-grid">${STARTERS.map((s, i) => `<button data-act="starter" data-i="${i}"><span class="badge-ic" style="${tint(s.tn)}">${icon(s.ic)}</span><strong>${s.t}</strong><span>${s.d}</span></button>`).join("")}</div></div>`;
   } else {
     // bản cũ lưu phần sửa ngữ pháp ở lượt gia sư: vẫn hiện dưới tin nhắn của bạn
@@ -1832,7 +1828,7 @@ function nextCard() {
   $("#sCount").textContent = `${Math.min(sess.done + 1, sess.total)}/${sess.total}`;
   if (!sess.cur) {
     $("#sCardWrap").hidden = true; $("#sDone").hidden = false;
-    $("#sDoneMascot").innerHTML = mascot("lg", "party");
+    $("#sDoneMascot").innerHTML = emptyIc("check");
     confetti();
     $("#sDoneText").textContent = `Bạn đã ôn ${sess.total} thẻ. Những thẻ khó sẽ quay lại sớm hơn. Hẹn gặp lại ngày mai nhé.`;
     $("#sCount").textContent = `${sess.total}/${sess.total}`;
@@ -1883,7 +1879,7 @@ function renderReview() {
   const decks = deckList(), total = decks.reduce((n, d) => n + d.total, 0), due = decks.reduce((n, d) => n + d.due, 0);
   $("#rSub").textContent = total ? (due ? `Hôm nay có ${due} thẻ cần ôn` : "Hôm nay ôn xong rồi, giỏi quá!") : "Lặp lại ngắt quãng giúp nhớ lâu";
   if (!total) {
-    $("#rList").innerHTML = `<div class="empty">${mascot("lg", "happy")}<h3>Chưa có thẻ nào</h3><p>Trong màn Học, bấm ⋯ → “Tạo flashcards”. Khi bạn viết tiếng Pháp sai, lỗi cũng tự thành thẻ ở đây.</p><button class="btn soft" data-go="study">Đi tới Học</button></div>`;
+    $("#rList").innerHTML = `<div class="empty">${emptyIc("cards")}<h3>Chưa có thẻ nào</h3><p>Trong màn Học, bấm ⋯ → “Tạo flashcards”. Khi bạn viết tiếng Pháp sai, lỗi cũng tự thành thẻ ở đây.</p><button class="btn soft" data-go="study">Đi tới Học</button></div>`;
     return;
   }
   $("#rList").innerHTML = (due ? `<button class="btn primary block lg" data-act="review-all">${icon("cards")} Ôn tất cả · ${due} thẻ</button>` : "")
@@ -1969,7 +1965,7 @@ function renderAgenda() {
   }
   const names = { today: "Hôm nay", tomorrow: "Ngày mai", week: "7 ngày tới", later: "Sau đó", nodate: "Chưa rõ ngày" };
   let html = Object.keys(names).filter((k) => groups[k].length).map((k) => `<p class="label group-h">${names[k]}</p>${groups[k].map((a) => evRow(a)).join("")}`).join("");
-  if (!state.agenda.some((a) => !a.date || a.date >= t)) html = `<div class="empty">${mascot("lg")}<h3>Lịch còn trống</h3><p>Đọc mail trường hoặc dán một thông báo vào Hộp thư: app tự lấy ngày thi, hạn nộp. Bạn cũng có thể bấm + để thêm tay.</p></div>`;
+  if (!state.agenda.some((a) => !a.date || a.date >= t)) html = `<div class="empty">${emptyIc("calendar")}<h3>Lịch còn trống</h3><p>Đọc mail trường hoặc dán một thông báo vào Hộp thư: app tự lấy ngày thi, hạn nộp. Bạn cũng có thể bấm + để thêm tay.</p></div>`;
   if (groups.past.length) html += `<details class="card"><summary class="label">Đã qua (${groups.past.length})</summary><div class="list" style="margin-top:10px">${groups.past.reverse().map((a) => evRow(a)).join("")}</div></details>`;
   $("#aList").innerHTML = html;
 }
@@ -2029,7 +2025,7 @@ function renderStudy() {
   if (studySeg === "exams") return renderExams();
   const el = $("#sList");
   if (!state.courses.length) {
-    el.innerHTML = `<div class="empty">${mascot("lg")}<h3>Chưa có tài liệu nào</h3><p>Thêm slide hoặc giáo trình (PDF, ảnh). Gia sư giảng từng ý bằng ví dụ vui, rồi để bạn tự giảng lại.</p><button class="btn primary" data-act="add-course">${icon("upload")} Thêm tài liệu</button></div>`;
+    el.innerHTML = `<div class="empty">${emptyIc("book")}<h3>Chưa có tài liệu nào</h3><p>Thêm slide hoặc giáo trình (PDF, ảnh). Gia sư giảng từng ý bằng ví dụ vui, rồi để bạn tự giảng lại.</p><button class="btn primary" data-act="add-course">${icon("upload")} Thêm tài liệu</button></div>`;
     return;
   }
   const sorted = [...state.courses].sort((a, b) => (b.lastStudied || b.createdAt || "").localeCompare(a.lastStudied || a.createdAt || ""));
@@ -2055,7 +2051,7 @@ function renderInbox() {
   const days = lsGet("mailDays", "7");
   $$("#mDays button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.d === days)));
   $("#mList").innerHTML = state.mail.recent.length ? state.mail.recent.map(mailHtml).join("")
-    : `<div class="empty">${mascot()}<h3>Chưa có mail nào</h3><p>Bấm “Đọc mail mới”: app đọc mail trường đã chuyển sang Gmail, tóm tắt và tìm ngày thi, hạn nộp.</p></div>`;
+    : `<div class="empty">${emptyIc("mail")}<h3>Chưa có mail nào</h3><p>Bấm “Đọc mail mới”: app đọc mail trường đã chuyển sang Gmail, tóm tắt và tìm ngày thi, hạn nộp.</p></div>`;
   paintMailMsg();
 }
 let ckFiles = [], ckUrls = [], lastCheck = { prompt: "", events: [] };
@@ -2107,6 +2103,8 @@ ${text || "(voir images)"}`, { images: files.length ? files : undefined, cache: 
 // ================= tiến độ học: 3 mục tiêu mỗi ngày, tiến độ từng môn, phiên tập trung =================
 // Dựa trên cách học có bằng chứng: tập trung theo phiên (Pomodoro), ôn ngắt quãng, luyện truy hồi (làm đề, tự giảng lại),
 // ghi rõ mục tiêu phiên (implementation intention) và ghi lại việc chợt nhớ thay vì bỏ dở để làm ngay.
+
+const SB_INK = "#6b4e42"; // màu nét chậu cây
 
 // --- môn học & thời gian theo môn (tên dữ liệu "atoms" giữ nguyên để không mất số liệu cũ: min = phút, n = số phiên) ---
 const FREE = "free";
@@ -2215,7 +2213,7 @@ function renderFocus() {
   const subj = subjOf(f ? f.subject : focusPick.subject);
   $("#fLevel").textContent = subj.name;
   $("#fSetup").hidden = !!f; $("#fRun").hidden = !f;
-  $("#fRoom").innerHTML = kitten(f ? "think" : "happy");
+  $("#fRoom").innerHTML = emptyIc("target");
   $("#fElem").textContent = f ? "Chợt nhớ việc khác thì ghi vào sổ bên dưới, đừng bỏ dở để làm ngay." : "Chọn môn, ghi một mục tiêu cụ thể, rồi bắt đầu.";
   if (!f) {
     $("#fSubj").innerHTML = subjects().map((s) => `<button data-subj="${esc(s.id)}" aria-pressed="${s.id === focusPick.subject}">${esc(s.name)}</button>`).join("");
@@ -2279,7 +2277,7 @@ function finishFocus(complete) {
   if (minutes >= 5) {
     confetti();
     openSheet({ title: complete ? "Hoàn thành phiên tập trung!" : "Đã dừng phiên tập trung", html: `<div class="reward">
-      <div style="width:88px">${kitten("party")}</div>
+      ${emptyIc("check")}
       <p class="gain">${minutes} phút</p>
       <p>tập trung cho ${esc(subj.name)}.</p>
       ${f.goal ? `<div class="goal-check"><p class="small"><b>Mục tiêu phiên:</b> ${esc(f.goal)}</p><div class="two"><button class="btn sm" data-goal="half">Còn dở</button><button class="btn sm primary" data-goal="done">Xong rồi!</button></div></div>` : ""}
@@ -2368,7 +2366,7 @@ document.addEventListener("visibilitychange", () => {
 // Trên iPhone, trang web không phân biệt được "khoá màn hình" với "mở app khác", nên hỏi thẳng bạn
 function askAway(sec) {
   sfx("tick");
-  openSheet({ title: "Bạn vừa đi đâu thế?", html: `<div class="reward"><div style="width:88px">${kitten("think")}</div>
+  openSheet({ title: "Bạn vừa đi đâu thế?", html: `<div class="reward">${emptyIc("lock")}
     <p>Bạn rời app <b>${sec} giây</b>. Khoá màn hình để làm bài trên giấy thì vẫn tính là đang tập trung.</p>
     <p class="muted small">Nếu lỡ mở app khác (mạng xã hội, game…), hãy thành thật nhé: phiên này sẽ dừng lại.</p>
     <div class="two" style="width:100%"><button class="btn" id="awOther">Mình mở app khác</button><button class="btn primary" id="awLock">Mình chỉ khoá màn hình</button></div></div>`,
@@ -2382,7 +2380,7 @@ function failFocus(sec) {
   try { wakeLock?.release?.(); } catch {} wakeLock = null;
   sfx("fail");
   if (state.view === "focus") renderFocus(); else render();
-  openSheet({ title: "Phiên tập trung đã dừng", html: `<div class="reward">${mascot("lg", "sleep")}
+  openSheet({ title: "Phiên tập trung đã dừng", html: `<div class="reward">${emptyIc("x")}
     <p>Bạn rời app ${sec} giây để mở app khác nên phiên dừng lại (đang bật chế độ Tập trung nghiêm).</p>
     <p class="muted small">Không sao cả, thử lại một phiên ngắn 15 phút nhé?</p>
     <div class="two" style="width:100%"><button class="btn" data-close>Để sau</button><button class="btn primary" data-act="focus-open">Thử lại</button></div></div>` });
@@ -2526,23 +2524,6 @@ function showTip(target) {
   tip.textContent = `${p.label}: ${p.text}`;
   tip.style.left = clamp(r.left - c.left + r.width / 2, 50, c.width - 50) + "px"; tip.style.top = "0px";
 }
-// ================= biểu tượng tối giản: bé mèo Elec nét mảnh =================
-// Không vẽ mặt: một nét mèo và tia chớp trên nền tròn nhạt, thêm dấu nhỏ theo tâm trạng (nghĩ, vui, ngủ).
-const SB_INK = "#6b4e42";
-const glyphLine = (d, c, w = 4.2) => `<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
-const spark = (x, y, r, c) => { const q = r * 0.22; return `<path d="M${x} ${y - r}Q${x + q} ${y - q} ${x + r} ${y}Q${x + q} ${y + q} ${x} ${y + r}Q${x - q} ${y + q} ${x - r} ${y}Q${x - q} ${y - q} ${x} ${y - r}Z" fill="${c}"/>`; };
-function moodMark(mood, c) {
-  if (mood === "sleep") return `<text x="90" y="30" font-family="Nunito, sans-serif" font-weight="800" font-size="15" fill="${c}">z</text><text x="101" y="19" font-family="Nunito, sans-serif" font-weight="800" font-size="11" fill="${c}">z</text>`;
-  if (mood === "party") return spark(20, 22, 7, "#e9b949") + spark(102, 18, 5, c);
-  if (mood === "think") return `<circle cx="94" cy="24" r="3" fill="${c}"/><circle cx="103" cy="15" r="4.2" fill="${c}"/>`;
-  return "";
-}
-function kitten(mood = "happy", cls = "") {
-  const c = "#cf6f45";
-  return `<svg class="mascot kitten ${cls}" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="#fbe7dc"/>`
-    + glyphLine("M38 62L35 31L55 45Q60 44 65 45L85 31L82 62Q88 72 84 81Q76 95 60 95Q44 95 36 81Q32 72 38 62Z", c)
-    + `<path d="M62 55l-8 13h7l-4 11 12-15h-7l4-9z" fill="${c}"/>${moodMark(mood, c)}</svg>`;
-}
 // ================= Hôm nay: một việc nên làm ngay, 3 mục tiêu ngày, nút Tập trung =================
 // Không có trò chơi: app chỉ chọn giúp bạn việc quan trọng nhất lúc này và cho thấy hôm nay đã làm được gì.
 function hideSplash() {
@@ -2574,7 +2555,6 @@ setInterval(updateClock, 20000);
 function renderHero() {
   const g = greeting(), p = prefs();
   $("#hHello").textContent = g.mood === "sleep" ? "Khuya rồi, ngủ sớm nha" : `${g.pre} ${g.word}!`;
-  $("#hMark").innerHTML = kitten(state.focus?.endAt ? "think" : g.mood === "sleep" ? "sleep" : "happy");
   updateClock();
   const n = nowAction(), box = $("#hNow");
   box.hidden = !n;
@@ -2633,7 +2613,7 @@ function renderExams() {
   const el = $("#sList");
   const intro = `<p class="muted small">Tải đề thi cũ (PDF hoặc ảnh chụp). Claude soạn bài <b>tương tự</b> (khác số liệu, cùng dạng), bạn làm bài rồi được chấm như giám khảo, nhất là <b>cách trình bày</b>: định luật, biểu thức chữ trước khi thay số, đơn vị, kết luận.</p>`;
   if (!state.exams.length) {
-    el.innerHTML = `<div class="empty">${mascot("lg", "think")}<h3>Chưa có đề thi nào</h3>${intro}<button class="btn primary" data-act="add-exam">${icon("upload")} Thêm đề thi</button></div>`;
+    el.innerHTML = `<div class="empty">${emptyIc("upload")}<h3>Chưa có đề thi nào</h3>${intro}<button class="btn primary" data-act="add-exam">${icon("upload")} Thêm đề thi</button></div>`;
     return;
   }
   el.innerHTML = intro + state.exams.map((e) => {
@@ -2742,7 +2722,7 @@ function renderDrill() {
   $("#drTitle").textContent = e.title;
   $("#drSub").textContent = `Bài tương tự · bài ${(examData[e.id]?.exercises[dr.n]?.n) || dr.n + 1}`;
   $("#drNew").disabled = dr.phase === "gen" || dr.phase === "grading";
-  if (dr.phase === "gen") { body.innerHTML = `<div class="card center">${mascot("lg", "think")}${thinking("Claude đang soạn bài tương tự…")}</div>`; return; }
+  if (dr.phase === "gen") { body.innerHTML = `<div class="card center">${emptyIc("pencil")}${thinking("Claude đang soạn bài tương tự…")}</div>`; return; }
   if (dr.phase === "err") { body.innerHTML = `<div class="card"><p class="err">${esc(dr.err)}</p><button class="btn primary" id="drRetryGen">Thử lại</button></div>`; return; }
   const p = dr.problem;
   const prob = `<article class="card dr-prob"><span class="label">Đề luyện</span><div class="md" id="drStatement">${md(p.statement)}</div></article>
@@ -3038,7 +3018,6 @@ $("#ckGo").addEventListener("click", (e) => runCheck(e.currentTarget));
 getLimits().then((l) => { if (!l?.images) { $("#ckDrop").hidden = true; } else $("#ckFiles").accept = l.images.mediaTypes.join(","); });
 
 document.documentElement.lang = "vi";
-$("#spArt").innerHTML = kitten("party");
 show(START || "home");
 loadData();
 })();

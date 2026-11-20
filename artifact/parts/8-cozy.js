@@ -65,7 +65,7 @@ document.addEventListener("visibilitychange", () => {
 // Trên iPhone, trang web không phân biệt được "khoá màn hình" với "mở app khác", nên hỏi thẳng bạn
 function askAway(sec) {
   sfx("tick");
-  openSheet({ title: "Bạn vừa đi đâu thế?", html: `<div class="reward"><div style="width:88px">${kitten("think")}</div>
+  openSheet({ title: "Bạn vừa đi đâu thế?", html: `<div class="reward">${emptyIc("lock")}
     <p>Bạn rời app <b>${sec} giây</b>. Khoá màn hình để làm bài trên giấy thì vẫn tính là đang tập trung.</p>
     <p class="muted small">Nếu lỡ mở app khác (mạng xã hội, game…), hãy thành thật nhé: phiên này sẽ dừng lại.</p>
     <div class="two" style="width:100%"><button class="btn" id="awOther">Mình mở app khác</button><button class="btn primary" id="awLock">Mình chỉ khoá màn hình</button></div></div>`,
@@ -79,7 +79,7 @@ function failFocus(sec) {
   try { wakeLock?.release?.(); } catch {} wakeLock = null;
   sfx("fail");
   if (state.view === "focus") renderFocus(); else render();
-  openSheet({ title: "Phiên tập trung đã dừng", html: `<div class="reward">${mascot("lg", "sleep")}
+  openSheet({ title: "Phiên tập trung đã dừng", html: `<div class="reward">${emptyIc("x")}
     <p>Bạn rời app ${sec} giây để mở app khác nên phiên dừng lại (đang bật chế độ Tập trung nghiêm).</p>
     <p class="muted small">Không sao cả, thử lại một phiên ngắn 15 phút nhé?</p>
     <div class="two" style="width:100%"><button class="btn" data-close>Để sau</button><button class="btn primary" data-act="focus-open">Thử lại</button></div></div>` });

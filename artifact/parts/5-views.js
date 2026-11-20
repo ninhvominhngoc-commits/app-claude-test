@@ -45,7 +45,7 @@ function nextCard() {
   $("#sCount").textContent = `${Math.min(sess.done + 1, sess.total)}/${sess.total}`;
   if (!sess.cur) {
     $("#sCardWrap").hidden = true; $("#sDone").hidden = false;
-    $("#sDoneMascot").innerHTML = mascot("lg", "party");
+    $("#sDoneMascot").innerHTML = emptyIc("check");
     confetti();
     $("#sDoneText").textContent = `Bạn đã ôn ${sess.total} thẻ. Những thẻ khó sẽ quay lại sớm hơn. Hẹn gặp lại ngày mai nhé.`;
     $("#sCount").textContent = `${sess.total}/${sess.total}`;
@@ -96,7 +96,7 @@ function renderReview() {
   const decks = deckList(), total = decks.reduce((n, d) => n + d.total, 0), due = decks.reduce((n, d) => n + d.due, 0);
   $("#rSub").textContent = total ? (due ? `Hôm nay có ${due} thẻ cần ôn` : "Hôm nay ôn xong rồi, giỏi quá!") : "Lặp lại ngắt quãng giúp nhớ lâu";
   if (!total) {
-    $("#rList").innerHTML = `<div class="empty">${mascot("lg", "happy")}<h3>Chưa có thẻ nào</h3><p>Trong màn Học, bấm ⋯ → “Tạo flashcards”. Khi bạn viết tiếng Pháp sai, lỗi cũng tự thành thẻ ở đây.</p><button class="btn soft" data-go="study">Đi tới Học</button></div>`;
+    $("#rList").innerHTML = `<div class="empty">${emptyIc("cards")}<h3>Chưa có thẻ nào</h3><p>Trong màn Học, bấm ⋯ → “Tạo flashcards”. Khi bạn viết tiếng Pháp sai, lỗi cũng tự thành thẻ ở đây.</p><button class="btn soft" data-go="study">Đi tới Học</button></div>`;
     return;
   }
   $("#rList").innerHTML = (due ? `<button class="btn primary block lg" data-act="review-all">${icon("cards")} Ôn tất cả · ${due} thẻ</button>` : "")
@@ -182,7 +182,7 @@ function renderAgenda() {
   }
   const names = { today: "Hôm nay", tomorrow: "Ngày mai", week: "7 ngày tới", later: "Sau đó", nodate: "Chưa rõ ngày" };
   let html = Object.keys(names).filter((k) => groups[k].length).map((k) => `<p class="label group-h">${names[k]}</p>${groups[k].map((a) => evRow(a)).join("")}`).join("");
-  if (!state.agenda.some((a) => !a.date || a.date >= t)) html = `<div class="empty">${mascot("lg")}<h3>Lịch còn trống</h3><p>Đọc mail trường hoặc dán một thông báo vào Hộp thư: app tự lấy ngày thi, hạn nộp. Bạn cũng có thể bấm + để thêm tay.</p></div>`;
+  if (!state.agenda.some((a) => !a.date || a.date >= t)) html = `<div class="empty">${emptyIc("calendar")}<h3>Lịch còn trống</h3><p>Đọc mail trường hoặc dán một thông báo vào Hộp thư: app tự lấy ngày thi, hạn nộp. Bạn cũng có thể bấm + để thêm tay.</p></div>`;
   if (groups.past.length) html += `<details class="card"><summary class="label">Đã qua (${groups.past.length})</summary><div class="list" style="margin-top:10px">${groups.past.reverse().map((a) => evRow(a)).join("")}</div></details>`;
   $("#aList").innerHTML = html;
 }
@@ -242,7 +242,7 @@ function renderStudy() {
   if (studySeg === "exams") return renderExams();
   const el = $("#sList");
   if (!state.courses.length) {
-    el.innerHTML = `<div class="empty">${mascot("lg")}<h3>Chưa có tài liệu nào</h3><p>Thêm slide hoặc giáo trình (PDF, ảnh). Gia sư giảng từng ý bằng ví dụ vui, rồi để bạn tự giảng lại.</p><button class="btn primary" data-act="add-course">${icon("upload")} Thêm tài liệu</button></div>`;
+    el.innerHTML = `<div class="empty">${emptyIc("book")}<h3>Chưa có tài liệu nào</h3><p>Thêm slide hoặc giáo trình (PDF, ảnh). Gia sư giảng từng ý bằng ví dụ vui, rồi để bạn tự giảng lại.</p><button class="btn primary" data-act="add-course">${icon("upload")} Thêm tài liệu</button></div>`;
     return;
   }
   const sorted = [...state.courses].sort((a, b) => (b.lastStudied || b.createdAt || "").localeCompare(a.lastStudied || a.createdAt || ""));
@@ -268,7 +268,7 @@ function renderInbox() {
   const days = lsGet("mailDays", "7");
   $$("#mDays button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.d === days)));
   $("#mList").innerHTML = state.mail.recent.length ? state.mail.recent.map(mailHtml).join("")
-    : `<div class="empty">${mascot()}<h3>Chưa có mail nào</h3><p>Bấm “Đọc mail mới”: app đọc mail trường đã chuyển sang Gmail, tóm tắt và tìm ngày thi, hạn nộp.</p></div>`;
+    : `<div class="empty">${emptyIc("mail")}<h3>Chưa có mail nào</h3><p>Bấm “Đọc mail mới”: app đọc mail trường đã chuyển sang Gmail, tóm tắt và tìm ngày thi, hạn nộp.</p></div>`;
   paintMailMsg();
 }
 let ckFiles = [], ckUrls = [], lastCheck = { prompt: "", events: [] };
