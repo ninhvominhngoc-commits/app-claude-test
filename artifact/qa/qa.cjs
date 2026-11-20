@@ -416,7 +416,10 @@ async function axe(p, label) {
     check("Đủ 3 vòng: được đánh dấu vàng", s2["data/users/u1/stats"].days[today()].gold === 1 && s2["data/users/u1/stats"].days[today()].fe === 1);
     await q.click('#v-course [data-go="study"]'); await tab(q, "home");
     check("Mục tiêu: 3/3", /3\/3/.test(await txt(q, "#hGoalsTxt")));
-    check("Đủ 3 mục tiêu: việc nên làm chuyển sang nghỉ ngơi", /Xong 3 mục tiêu hôm nay/.test(await txt(q, "#hNow")));
+    check("Đủ 3 mục tiêu: hạn nộp ngày mai vẫn được nhắc trước", /Hạn nộp ngày mai/.test(await txt(q, "#hNow")), await txt(q, "#hNow"));
+    await q.evaluate(() => { const k = "data/users/u1/agenda", a = window.__store.get(k); a.items.forEach((x) => (x.done = true)); window.__store.set(k, a); sessionStorage.setItem("__store", JSON.stringify([...window.__store])); });
+    await q.reload({ waitUntil: "load" }); await q.waitForTimeout(700);
+    check("Đủ 3 mục tiêu, hết hạn gần: việc nên làm là nghỉ ngơi", /Xong 3 mục tiêu hôm nay/.test(await txt(q, "#hNow")) && !(await q.$("#hNow .now-acts")), await txt(q, "#hNow"));
     await q.click('#hGoals [data-act="quests"]');
     check("Lịch nhiệt: hôm nay có viền vàng", await q.$eval("#sheetRoot .heat i.today", (e) => e.classList.contains("gold")));
     check("Mục tiêu: cả 3 vòng đã xong", (await q.$$("#sheetRoot .qdot.done")).length === 3);
