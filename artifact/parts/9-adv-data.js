@@ -2,16 +2,16 @@
 const ELEM = { nhiet: ["Nhiệt", "#ffd8c2"], ap: ["Điện áp", "#d4e9fa"], dong: ["Dòng điện", "#d5f0d0"], tu: ["Từ trường", "#e6dcfb"], logic: ["Logic", "#fff0b8"], sang: ["Ánh sáng", "#ffd6e3"], tin: ["Tín hiệu", "#d3f1ec"] };
 const CHARS = {
   ohmi: { name: "Ohmi", r: 4, el: "nhiet", role: "Điện trở 220 Ω", bg: "#ffe3d3", k: "shield", skill: ["Lá chắn Ohm", "Câu sai kế tiếp không bị mất tim."],
-    bio: "Điện trở nhỏ màu cam, hay ngủ gật trong breadboard. Hơi kiêu một chút nhưng luôn đứng chắn trước bạn bè.",
+    bio: "Điện trở nhỏ màu be, đeo ba vạch đỏ, đỏ, nâu như vòng tay. Hay ngủ gật trong breadboard, hơi kiêu một chút nhưng luôn đứng chắn trước bạn bè.",
     quotes: ["Không có mình thì đèn LED của bạn cháy rụi đó nha!", "U = R·I. Thuộc chưa? Thuộc chưa?", "Mình cản dòng điện chứ đâu có cản bạn học~"] },
   capa: { name: "Capa", r: 4, el: "ap", role: "Tụ điện 100 µF", bg: "#dcedfa", k: "x2", skill: ["Tích điện", "Câu đúng kế tiếp gây sát thương ×2."],
     bio: "Tụ điện mê ngủ. Tích năng lượng thật chậm, rồi xả ra một lần thật đã.",
     quotes: ["Mới 63%… thêm một τ nữa thôi…", "Ôn đúng lúc thì nhớ lâu, như nạp lại tụ vậy!", "Đừng xả hết pin trước kỳ thi nha~"] },
   kirch: { name: "Kirch", r: 4, el: "dong", role: "Người giữ nút giao", bg: "#ddf3de", k: "heal", skill: ["Định luật nút", "Hồi lại 1 tim."],
-    bio: "Cậu bé giữ ga dưới lòng đất. Khó tính, nói một là một, nhưng thật ra rất biết quan tâm.",
+    bio: "Nút mạch tròn xoe giữ ga dưới lòng đất: tay trái đón dòng vào, tay phải tiễn dòng ra. Khó tính, nói một là một, nhưng thật ra rất biết quan tâm.",
     quotes: ["Dòng vào bao nhiêu, dòng ra bấy nhiêu. Đơn giản vậy thôi.", "…Không phải tôi lo cho bạn đâu. Chỉ là mạch cần bạn.", "Đi hết một vòng kín, tổng điện áp bằng 0. Nhớ chưa?"] },
   indu: { name: "Indu", r: 4, el: "tu", role: "Cuộn cảm mèo", bg: "#ece4fc", k: "echo", skill: ["Cảm ứng", "Lặp lại sát thương của đòn đánh trước."],
-    bio: "Cuộn cảm có tai mèo và cái đuôi lò xo. Ghét thay đổi đột ngột, thích nằm sưởi nắng bên cửa sổ.",
+    bio: "Cuộn cảm tròn như ổ bánh mì, quấn dây đồng, có tai mèo và cái đuôi lò xo. Ghét thay đổi đột ngột, thích nằm sưởi nắng bên cửa sổ.",
     quotes: ["Meo~ dòng điện đổi nhanh quá là mình phản đối đó.", "u = L·di/dt. Nhớ chưa, meo?", "Cho mình một con cá… à không, một câu trả lời đúng!"] },
   bobo: { name: "Bobo", r: 4, el: "logic", role: "Cổng logic AND", bg: "#fff1c4", k: "cut1", skill: ["Loại trừ", "Xoá 1 đáp án sai."],
     bio: "Cổng AND đeo kính tròn. Chỉ nói “1” khi mọi điều kiện đều đúng, nên rất hiếm khi nói “1”.",
@@ -23,7 +23,7 @@ const CHARS = {
     bio: "Transistor kiêu kỳ: chỉ cần một dòng nhỏ ở cực gốc là cô ấy mở toang cả kênh.",
     quotes: ["Một chút cố gắng nhỏ, mình khuếch đại thành chiến thắng lớn.", "Bão hoà hay ngắt? Mình chọn… thắng.", "Ba chân, một trái tim."] },
   ope: { name: "Ope", r: 5, el: "tin", role: "Khuếch đại thuật toán", bg: "#dcf3ef", k: "full", skill: ["Phản hồi âm", "Hồi đầy tim."],
-    bio: "Op-amp điềm tĩnh. Nhờ phản hồi âm (contre-réaction), cô ấy chẳng bao giờ mất bình tĩnh.",
+    bio: "Op-amp hình tam giác, lúc nào cũng lơ lửng. Nhờ phản hồi âm (contre-réaction), cô ấy chẳng bao giờ mất bình tĩnh.",
     quotes: ["V+ bằng V−. Bình tĩnh nào.", "Sai cũng là một tín hiệu phản hồi, dùng nó để sửa.", "Khuếch đại cái hay, triệt tiêu cái nhiễu."] },
 };
 const BOSS = { nhieu: { name: "Bé Nhiễu", hp: 100 }, roi: { name: "Nút Rối", hp: 120 }, xa: { name: "Bóng Xả", hp: 120 }, dm: { name: "Ngài Đoản Mạch", hp: 150 } };
@@ -84,7 +84,7 @@ const STORY = [
       { s: "night", t: "Thứ Ba, 18:47. Bạn vừa bước ra khỏi giảng đường thì cả campus Jussieu tắt phụt." },
       { t: "Không một bóng đèn. Tháp Zamansky chìm vào bóng tối. Điện thoại còn đúng 1% pin." },
       { c: "elec", m: "happy", t: "Này! Này!! Bạn có nghe thấy mình không?" },
-      { t: "Một bé mèo con tí hon chui ra từ màn hình điện thoại, trên trán có vệt tia chớp nhỏ. Là bé Elec trong app học của bạn." },
+      { t: "Một bé mèo cam tí hon chui ra từ màn hình điện thoại, trên trán có vệt tia chớp nhỏ. Là bé Elec trong app học của bạn." },
       { c: "elec", m: "party", t: "Mình là {name} nè, meo! Đừng hỏi sao mình ra được ngoài này, chính mình cũng không biết luôn~" },
       { c: "elec", m: "think", t: "Có thứ gì đó đang hút sạch điện của trường. Mình gọi nó là… Nhiễu Trắng." },
       { id: "p1", ch: [
@@ -93,7 +93,7 @@ const STORY = [
       { fx: "shake", t: "Rè… rè… Một đám mây lốm đốm như TV mất sóng lăn ra từ phòng máy." },
       { c: "nhieu", t: "Rè rè! Điện của Jussieu giờ là của ta! Đèn đóm, wifi, máy chiếu… ăn hết! Rè!" },
       { c: "elec", m: "think", t: "Nó đang ăn dòng điện thật kìa! Mình cần một Linh Kiện để chống lại nó…" },
-      { t: "Dưới chân bạn, một chiếc điện trở nhỏ màu cam khẽ phát sáng. Ba vạch màu nhấp nháy như đang thở… rồi hai cái tai mèo màu cam vểnh lên." },
+      { t: "Dưới chân bạn, một chiếc điện trở nhỏ màu be khẽ phát sáng. Ba vạch màu nhấp nháy như đang thở… rồi hai con mắt tròn xoe mở ra." },
       { fx: "flash", join: "ohmi", c: "ohmi", m: "sleep", t: "Ư… ai đánh thức mình vậy? Mình đang ngủ ngon trong cái breadboard mà…" },
       { c: "ohmi", m: "happy", t: "Mình là Ohmi, điện trở 220 Ω! Việc của mình là cản dòng điện… và cản luôn mấy đứa phá hoại!" },
       { id: "p2", ch: [
@@ -118,7 +118,7 @@ const STORY = [
       { s: "metro", t: "Ga Jussieu, tuyến 7 và 10. Tàu đứng im giữa sân ga. Đèn khẩn cấp nhấp nháy đỏ." },
       { c: "ohmi", m: "shock", t: "Ghê quá… dây điện ở đây rối như mì spaghetti." },
       { c: "elec", m: "think", t: "Không phải rối bình thường đâu. Dòng điện đang chạy lung tung, chẳng theo quy luật nào hết!" },
-      { t: "Từ dưới đường ray, một cậu bé tai mèo, tóc xanh bạc hà bật lên sân ga. Ngón tay chỉ thẳng về phía bạn, như một mũi tên." },
+      { t: "Từ dưới đường ray, một nút mạch tròn xoe màu xanh bạc hà bật lên sân ga. Hai cánh tay là hai mũi tên, một cái chỉ thẳng về phía bạn." },
       { c: "kirch", m: "angry", t: "Đứng lại! Ai cho mấy người vào nút giao của tôi?" },
       { c: "kirch", m: "happy", t: "Tôi là Kirch. Ở đây tôi giữ một luật duy nhất: dòng vào bao nhiêu thì dòng ra bấy nhiêu. Không một electron nào được thất lạc." },
       { id: "c1a", ch: [
@@ -148,7 +148,7 @@ const STORY = [
     pre: [
       { s: "lab", t: "Phòng thực hành điện tử. Máy dao động ký vẫn đang chạy, vẽ một đường cong cứ lên rồi lại xuống." },
       { c: "elec", m: "think", t: "Lạ ghê… mất điện mà máy vẫn chạy. Năng lượng lấy từ đâu ra vậy?" },
-      { t: "Trên bàn thí nghiệm, một cô bé tai mèo tóc xanh đang ngủ gục cạnh chiếc tụ điện. Trên đầu nổi bong bóng “z z z”." },
+      { t: "Trên bàn thí nghiệm, một chiếc tụ hoá xanh da trời đang ngủ gục, sọc trắng bên hông khẽ phập phồng. Trên đầu nổi bong bóng “z z z”." },
       { c: "capa", m: "sleep", t: "Ưm… năm phút nữa thôi… mình mới nạp được 63% à…" },
       { c: "kirch", m: "angry", t: "Dậy! Cả campus đang mất điện mà cậu ngủ được à?" },
       { c: "capa", m: "wow", t: "Ơ… Mình là Capa. Mình tích điện rồi xả ra khi mọi người cần. Nhưng có ai đó cứ hút cạn năng lượng của mình…" },
@@ -187,7 +187,7 @@ const STORY = [
       { fx: "shake", t: "Ông ta giơ tay. Mọi dây điện trên sân thượng chập vào nhau, toé lửa tím rực." },
       { c: "kirch", m: "shock", t: "Ông ta nối tắt hết rồi! Dòng điện sẽ chạy loạn, không gì cản nổi!" },
       { c: "ohmi", m: "sad", t: "Mình… mình cản không xuể…" },
-      { fx: "flash", t: "Giữa những tia lửa, một ánh hồng dịu dàng bật lên. Một cô gái tai mèo tóc hồng, đội vương miện hình diode bước ra." },
+      { fx: "flash", t: "Giữa những tia lửa, một ánh hồng dịu dàng bật lên. Một chiếc đèn LED hồng nhỏ xíu bước ra, hai mũi tên ánh sáng lấp lánh trên đầu." },
       { join: "lumi", c: "lumi", m: "happy", t: "Đừng sợ. Mình là Lumi, một chiếc đèn LED. Mình chỉ cho dòng điện đi theo một chiều." },
       { c: "lumi", m: "joy", t: "Giống như thời gian vậy. Không quay lại được… nhưng luôn có thể đi tiếp, và toả sáng." },
       { c: "lumi", m: "happy", t: "Cho mình mượn kiến thức của bạn nhé. Diode, ngưỡng, chiều dòng điện… mình tin bạn!" },

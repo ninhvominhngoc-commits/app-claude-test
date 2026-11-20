@@ -14,7 +14,7 @@ function maybeWelcome() {
   setTimeout(() => openSheet({ title: `Chào mừng tới phòng của ${prefs().name}!`, html: `<div class="reward">
     <div style="width:130px">${kitten("party")}</div>
     <p class="gain gems">+1 000 ✦</p>
-    <ol class="loop"><li><span><b>Bấm Tập trung</b>: ${n} lắp mạch cùng bạn.</span></li><li><span><b>Xong phiên nhận Tinh thể ✦</b>: 1 phút = 2 ✦.</span></li><li><span><b>Trang trí phòng</b> hoặc <b>cầu nguyện</b> để gặp các Linh Kiện tai mèo, rồi đọc truyện cùng họ.</span></li></ol>
+    <ol class="loop"><li><span><b>Bấm Tập trung</b>: ${n} lắp mạch cùng bạn.</span></li><li><span><b>Xong phiên nhận Tinh thể ✦</b>: 1 phút = 2 ✦.</span></li><li><span><b>Trang trí phòng</b> hoặc <b>cầu nguyện</b> để gặp các Linh Kiện (điện trở, tụ, LED…), rồi đọc truyện cùng họ.</span></li></ol>
     <div class="two" style="width:100%"><button class="btn" data-act="decor">Trang trí</button><button class="btn primary" data-act="focus-open">Tập trung</button></div></div>` }), 60);
 }
 

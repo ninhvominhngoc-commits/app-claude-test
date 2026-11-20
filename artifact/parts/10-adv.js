@@ -419,7 +419,7 @@ function renderBattle() {
   st.innerHTML = `${sceneArt(bt.scene, { dark: true })}<div class="hp-wrap"><b>${esc(BOSS[bt.boss].name)} · ${Math.max(0, bt.hp)}/${bt.max}</b><span class="hp" role="progressbar" aria-label="Máu của ${esc(BOSS[bt.boss].name)}" aria-valuemin="0" aria-valuemax="${bt.max}" aria-valuenow="${Math.max(0, bt.hp)}"><i style="width:${Math.max(0, (bt.hp / bt.max) * 100)}%"></i></span></div><div class="boss" id="btBoss">${bossArt(bt.boss)}</div>${bt.combo >= 2 ? `<span class="combo">Combo ×${bt.combo}</span>` : ""}`;
   const party = partyOf();
   $("#btParty").innerHTML = party.length ? party.map((id) => { const c = CHARS[id], used = bt.used[id], cutBlocked = (c.k === "cut1" || c.k === "cut2") && bt.answered, echoBlocked = c.k === "echo" && !bt.last;
-    return `<div class="pm"><span class="av" style="--c:${c.bg}">${chibi(id)}</span><button data-skill="${id}" ${used || cutBlocked || echoBlocked || bt.over ? "disabled" : ""} class="${(c.k === "shield" && bt.shield) || ((c.k === "x2" || c.k === "x3") && bt.mult > 1 && bt.used[id]) ? "armed" : ""}" title="${esc(c.skill[1])}">${esc(c.skill[0])}</button></div>`; }).join("")
+    return `<div class="pm"><span class="av" style="--c:${c.bg}">${faceIcon(id)}</span><button data-skill="${id}" ${used || cutBlocked || echoBlocked || bt.over ? "disabled" : ""} class="${(c.k === "shield" && bt.shield) || ((c.k === "x2" || c.k === "x3") && bt.mult > 1 && bt.used[id]) ? "armed" : ""}" title="${esc(c.skill[1])}">${esc(c.skill[0])}</button></div>`; }).join("")
     : `<p class="small center" style="opacity:.85">Chưa có ai trong đội. Đọc truyện hoặc cầu nguyện để có đồng đội.</p>`;
   const q = bt.cur;
   const opt = (o) => (q.md ? md(o) : esc(o));

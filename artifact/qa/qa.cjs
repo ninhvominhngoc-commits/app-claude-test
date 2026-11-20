@@ -563,6 +563,7 @@ async function axe(p, label) {
     check("Trận: boss Bé Nhiễu 100/100, 3 tim", /Bé Nhiễu · 100\/100/.test(await txt(p, "#btStage")) && (await p.$$("#btHearts span:not(.lost)")).length === 3);
     check("Trận: 4 đáp án, đúng 1", (await p.$$("#btOpts .opt")).length === 4 && (await p.$$("#btOpts [data-correct]")).length === 1);
     check("Trận: Ohmi ở trong đội với kỹ năng", /Lá chắn Ohm/.test(await txt(p, "#btParty")));
+    check("Trận: ảnh đại diện đồng đội là khuôn mặt tối giản", (await p.$$("#btParty .av svg.face-icon")).length >= 1);
     await p.click("#btOpts .opt:not([data-correct])");
     check("Trận: sai thì mất 1 tim và có giải thích", (await p.$$("#btHearts span:not(.lost)")).length === 2 && (await vis(p, "#btQ .explain")) && /Chưa đúng/.test(await txt(p, "#btQ .explain")));
     await p.click("#btNext");
@@ -644,6 +645,9 @@ async function axe(p, label) {
     check("Nhân vật: đủ 8, ai chưa có thì bị ẩn", total === 8 && locked.length === 8 - Object.keys(a.own).length, `${total} / ${locked.length}`);
     await p.click('#advTeam .roster:nth-of-type(2) [data-id="lumi"], #advTeam [data-act="char"][data-id="lumi"]');
     check("Hồ sơ: kỹ năng và lời thoại", /Ánh sáng một chiều/.test(await txt(p, "#sheetRoot")) && (await vis(p, "#sheetRoot .quote")));
+    check("Hồ sơ: chân dung tối giản, không còn bộ lọc nét run", (await vis(p, "#sheetRoot .prof-art svg.portrait")) && !(await p.$("#sheetRoot .prof-art feTurbulence")));
+    const artN = await p.evaluate(() => { const out = []; for (const id of Object.keys(CHARS)) for (const m of ["happy", "joy", "wow", "sad", "angry", "wink", "sleep", "shock", "cat"]) out.push(chibi(id, { mood: m }), portrait(id, { mood: m }), faceIcon(id, m)); for (const b of ["nhieu", "roi", "xa", "dm", "fuzo"]) out.push(bossArt(b)); for (const m of ["happy", "think", "party", "sleep"]) out.push(kitten(m)); return out.every((x) => x.startsWith("<svg") && !/NaN|undefined/.test(x)) ? out.length : -1; });
+    check("Nhân vật tối giản: 8 Linh Kiện × 9 nét mặt, 5 quái vật, 4 dáng mèo đều vẽ đúng", artN === 8 * 9 * 3 + 5 + 4, String(artN));
     await p.click('#sheetRoot [data-act="comp"]');
     a = await advDoc(p);
     check("Bạn đồng hành: đổi sang Lumi", a.comp === "lumi");
