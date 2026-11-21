@@ -35,11 +35,13 @@ function renderHero() {
   if (!focusPick.subject || !subjects().some((s) => s.id === focusPick.subject)) focusPick.subject = lastSubject().id;
   const shown = f ? fmtLeft(f.endAt - Date.now()) : `${dur}:00`;
   $("#wFocus").classList.toggle("on", !!f);
-  $("#wFocusLabel").innerHTML = f ? `Đang tập trung · ${esc(subjOf(f.subject).name)}` : `<span class="t-name">${esc(subjOf(focusPick.subject).name)}</span>${icon("down", "xs")}`;
+  $("#wFocusLabel").innerHTML = f ? `<span class="t-name">Đang tập trung</span>` : `<span class="t-name">${esc(subjOf(focusPick.subject).name)}</span>${icon("down", "xs")}`;
   $("#wFocusLabel").setAttribute("aria-label", f ? "Mở đồng hồ tập trung" : `Môn: ${subjOf(focusPick.subject).name}. Đổi môn và ghi mục tiêu phiên`);
   $("#wFocusState").textContent = f ? "Đang tập trung" : "Tập trung";
   $("#wFocus [data-left]").textContent = shown;
   $("#wLcd").innerHTML = lcdSvg(shown);
+  const allDone = quests().every((x) => x.p >= 1), mood = f ? "focus" : g.mood === "sleep" ? "sleep" : allDone ? "done" : "idle";
+  if ($("#hCat").dataset.mood !== mood) { $("#hCat").innerHTML = catChair(mood); $("#hCat").dataset.mood = mood; }
   $("#hStepper").hidden = !!f;
   $("#hDur").textContent = `${dur} phút`;
   $("#hStartTxt").textContent = f ? "Mở đồng hồ" : "Bắt đầu";

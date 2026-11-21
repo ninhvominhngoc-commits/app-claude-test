@@ -375,4 +375,20 @@ body::before { background: #fffaf6; }
 .backdrop { background: rgba(58, 20, 32, .32); }
 .x-btn, .sheet-h .icon-btn[data-close] { background: var(--surface-2); border: 1px solid rgba(58, 20, 32, .14); }
 @media (max-width: 380px) { #hHello { font-size: 22px; } .page-h h1, .pv-title { font-size: 30px; } .ck i { width: 26px; height: 26px; } }
+/* ===== mèo ngồi ghế bành ===== */
+.timer-hero { display: grid; grid-template-columns: minmax(0, 40%) minmax(0, 1fr); align-items: center; gap: 8px 10px; }
+.t-main { display: grid; justify-items: center; gap: 10px; min-width: 0; }
+.t-main .lcd { width: 100%; }
+.t-main .t-ctrl { flex-direction: column; width: 100%; gap: 8px; }
+.t-main .t-ctrl .pill-start { width: 100%; flex: none; }
+.cc-wrap { min-width: 0; }
+.cat-chair { display: block; width: 100%; height: auto; overflow: visible; }
+.cat-chair .cc-tail { transform-box: view-box; transform-origin: 138px 136px; animation: cc-tail 3.4s ease-in-out infinite; }
+.cat-chair .cc-eyes { transform-box: view-box; transform-origin: 110px 85px; animation: cc-blink 5.5s infinite; }
+@keyframes cc-tail { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-10deg); } }
+@keyframes cc-blink { 0%, 93%, 100% { transform: scaleY(1); } 96% { transform: scaleY(.1); } }
+.f-room { width: min(62vw, 210px); margin: 0 auto; }
+.cc-sheet { width: 150px; }
+@media (prefers-reduced-motion: reduce) { .cat-chair .cc-tail, .cat-chair .cc-eyes { animation: none; } }
+@media (max-width: 359px) { .timer-hero { grid-template-columns: 1fr; } .cc-wrap { width: 150px; justify-self: center; } }
 </style>

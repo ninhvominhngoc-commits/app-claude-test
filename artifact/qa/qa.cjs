@@ -444,6 +444,7 @@ async function axe(p, label) {
   {
     const o = await open({ seed: true });
     check("Hôm nay: đồng hồ LCD hiện 25:00 và hàng số liệu", (await vis(o, "#wLcd svg.lcd-svg")) && (await txt(o, "#wFocus [data-left]")) === "25:00" && /1 đến hạn/.test(await txt(o, "#hGoals")) && /phút tập trung/.test(await txt(o, "#hGoals")) && (await vis(o, "#hStreak")));
+    check("Hôm nay: hàng check-in tuần đủ 7 ngày T2→CN, có đánh dấu hôm nay", (await o.$$("#hWeek .ck")).length === 7 && (await o.$$("#hWeek .ck.today")).length === 1 && /ngày có học/.test(await txt(o, "#hWeekTxt")));
     await o.click("#hPlus"); await o.click("#hPlus");
     check("Hôm nay: nút + tăng 5 phút mỗi lần", /35 phút/.test(await txt(o, "#hDur")) && (await txt(o, "#wFocus [data-left]")) === "35:00");
     await o.click("#hMinus");
@@ -461,7 +462,7 @@ async function axe(p, label) {
     const today = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Paris" }).format(new Date());
     const setStore = (p, kv) => p.evaluate((kv) => { for (const [k, v] of Object.entries(kv)) window.__store.set(k, v); sessionStorage.setItem("__store", JSON.stringify([...window.__store])); }, kv);
     const p = await open({ seed: true });
-    check("Hôm nay: không còn hình mèo nào", !(await p.$(".kitten, .mascot")));
+    check("Hôm nay: mèo đen ngồi ghế bành cạnh đồng hồ", await vis(p, "#hCat svg.cat-chair"));
     check("Hôm nay: đồng hồ giờ Paris", /^\d\d:\d\d · /.test(await txt(p, "#hClock")));
     await p.click(".home .gear");
     check("Cài đặt: không còn ô đặt tên bé mèo", !(await p.$("#stName")));
@@ -541,6 +542,7 @@ async function axe(p, label) {
     await setStore(p, { "data/users/u1/focus": { subject: "free", start: now - 10 * 60000, endAt: now + 15 * 60000, dur: 25 } });
     await reopen(p, "#focus"); await p.waitForTimeout(1200);
     check("Tập trung: đồng hồ LCD lớn và lời nhắc ghi việc chợt nhớ", (await vis(p, "#fTime svg.lcd-svg")) && /ghi vào sổ/.test(await txt(p, "#fElem")));
+    check("Tập trung: mèo ngồi ghế bành cùng bạn suốt phiên", await vis(p, "#fRoom svg.cat-chair"));
     check("Tập trung: vòng thời gian đã chạy khoảng 40%", await p.$eval("#fRing .fr-on", (c) => { const [on, all] = c.getAttribute("stroke-dasharray").split(" ").map(Number); return on / all > 0.35 && on / all < 0.45; }));
     await p.click('#v-focus [data-go="home"]'); await p.waitForTimeout(300);
     check("Hôm nay khi đang tập trung: ẩn thẻ việc nên làm, nút lớn hiện giờ còn lại", !(await vis(p, "#hNow")) && /Đang tập trung/.test(await txt(p, "#wFocus")));

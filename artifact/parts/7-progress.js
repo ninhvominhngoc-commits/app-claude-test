@@ -128,7 +128,7 @@ function renderFocus() {
   const subj = subjOf(f ? f.subject : focusPick.subject);
   $("#fLevel").textContent = subj.name;
   $("#fSetup").hidden = !!f; $("#fRun").hidden = !f;
-  $("#fRoom").innerHTML = f ? "" : emptyIc("target");
+  $("#fRoom").innerHTML = catChair(f ? "focus" : "idle");
   $("#fElem").textContent = f ? "Chợt nhớ việc khác thì ghi vào sổ bên dưới, đừng bỏ dở để làm ngay." : "Chọn môn, ghi một mục tiêu cụ thể, rồi bắt đầu.";
   if (!f) {
     $("#fSubj").innerHTML = subjects().map((s) => `<button data-subj="${esc(s.id)}" aria-pressed="${s.id === focusPick.subject}">${esc(s.name)}</button>`).join("");
@@ -192,7 +192,7 @@ function finishFocus(complete) {
   if (minutes >= 5) {
     confetti();
     openSheet({ title: complete ? "Hoàn thành phiên tập trung!" : "Đã dừng phiên tập trung", html: `<div class="reward">
-      ${emptyIc("check")}
+      <div class="cc-sheet">${catChair("done")}</div>
       <p class="gain">${minutes} phút</p>
       <p>tập trung cho ${esc(subj.name)}.</p>
       ${f.goal ? `<div class="goal-check"><p class="small"><b>Mục tiêu phiên:</b> ${esc(f.goal)}</p><div class="two"><button class="btn sm" data-goal="half">Còn dở</button><button class="btn sm primary" data-goal="done">Xong rồi!</button></div></div>` : ""}
