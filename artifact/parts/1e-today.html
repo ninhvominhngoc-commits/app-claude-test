@@ -317,4 +317,62 @@ body.immersive #toast { top: calc(env(safe-area-inset-top, 0px) + 16px); bottom:
 .todo .i { color: var(--accent); }
 .mail a.small { font-size: 12.5px; justify-self: start; }
 @media (max-width: 380px) { .g-tile { padding: 10px; } .g-tile b { font-size: 16px; } .g-tile small { font-size: 10.5px; } #hHello { font-size: 18px; } .streak-chip { padding: 0 10px; } .now-card { grid-template-columns: 1fr; } .now-ic { display: none; } .now-acts { grid-column: 1; } }
+/* ===== Sổ tay: giấy kẻ ô, chữ viết tay, thẻ như trang giấy, gáy sổ, hàng check-in tuần ===== */
+:root, :root:not([data-theme="light"]), :root[data-theme="dark"] {
+  --bg: #fffaf6; --surface: #fffefc; --surface-2: #fdf0ea; --outline: rgba(58, 20, 32, .17); --line: rgba(58, 20, 32, .1);
+  --shadow-card: 2px 3px 0 rgba(58, 20, 32, .05); --glass-blur: none; --gloss: #ff9a7a;
+  --grid-line: rgba(214, 120, 96, .12); --ink-rule: rgba(58, 20, 32, .55);
+  --hand: "Patrick Hand", "Segoe Print", "Comic Sans MS", cursive;
+}
+html { background: #fffaf6; }
+body { background-color: #fffaf6; background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px); background-size: 22px 22px; background-position: -1px -1px; }
+body::after { display: none; }
+body::before { background: #fffaf6; }
+/* thẻ như trang giấy */
+.tile, .card, .now-card, .ev, .deck-row, .course-card, .exam-card, .empty, .mail, .msg.a .md, .pg-top, .g-tile { background-color: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: var(--shadow-card); }
+.tile.tinted { background: var(--tint); }
+/* tiêu đề chữ viết tay, gạch chân mực */
+.page-h h1, .pv-title { font: 400 34px/1.05 var(--hand); letter-spacing: 0; }
+#hHello { font: 400 29px/1.1 var(--hand); letter-spacing: 0; }
+.sheet-h h3 { font: 400 25px/1.15 var(--hand); letter-spacing: 0; }
+.today-h .label { font: 400 22px/1.1 var(--hand); text-transform: none; letter-spacing: 0; color: var(--ink); }
+.today-h { border-bottom: 1.5px solid var(--ink-rule); padding-bottom: 4px; }
+.hand-title { margin: 0; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; font: 400 22px/1.15 var(--hand); color: var(--ink); padding-bottom: 4px; border-bottom: 1.5px solid var(--ink-rule); }
+.hand-title small { font: 600 12px/1 var(--font); color: var(--ink-3); }
+.ev-date .dn { font: 400 27px/1 var(--hand); }
+.g-tile b { font: 400 22px/1 var(--hand); letter-spacing: 0; }
+/* trang sổ ở Hôm nay: gáy sổ giọt nước cam hồng */
+.journal { position: relative; display: grid; gap: 10px; margin-top: 12px; padding: 22px 14px 14px; background: var(--surface); border: 1px solid var(--outline); border-radius: 22px; box-shadow: var(--shadow-card); }
+.bind { position: absolute; top: -13px; left: 30px; right: 30px; height: 26px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 26'%3E%3Cpath d='M9 1C12 7 16 11 16 17a7 7 0 0 1-14 0C2 11 6 7 9 1Z' fill='%23ffb39b' stroke='%233a1420' stroke-opacity='.6' stroke-width='1.2'/%3E%3Cpath d='M5.6 16.5c0-2 .8-3.8 2-5' fill='none' stroke='%23ffffff' stroke-opacity='.85' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") 4% 0 / 18px 26px no-repeat, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 26'%3E%3Cpath d='M9 1C12 7 16 11 16 17a7 7 0 0 1-14 0C2 11 6 7 9 1Z' fill='%23ffb39b' stroke='%233a1420' stroke-opacity='.6' stroke-width='1.2'/%3E%3Cpath d='M5.6 16.5c0-2 .8-3.8 2-5' fill='none' stroke='%23ffffff' stroke-opacity='.85' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") 27% 0 / 18px 26px no-repeat, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 26'%3E%3Cpath d='M9 1C12 7 16 11 16 17a7 7 0 0 1-14 0C2 11 6 7 9 1Z' fill='%23ffb39b' stroke='%233a1420' stroke-opacity='.6' stroke-width='1.2'/%3E%3Cpath d='M5.6 16.5c0-2 .8-3.8 2-5' fill='none' stroke='%23ffffff' stroke-opacity='.85' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") 50% 0 / 18px 26px no-repeat, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 26'%3E%3Cpath d='M9 1C12 7 16 11 16 17a7 7 0 0 1-14 0C2 11 6 7 9 1Z' fill='%23ffb39b' stroke='%233a1420' stroke-opacity='.6' stroke-width='1.2'/%3E%3Cpath d='M5.6 16.5c0-2 .8-3.8 2-5' fill='none' stroke='%23ffffff' stroke-opacity='.85' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") 73% 0 / 18px 26px no-repeat, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 26'%3E%3Cpath d='M9 1C12 7 16 11 16 17a7 7 0 0 1-14 0C2 11 6 7 9 1Z' fill='%23ffb39b' stroke='%233a1420' stroke-opacity='.6' stroke-width='1.2'/%3E%3Cpath d='M5.6 16.5c0-2 .8-3.8 2-5' fill='none' stroke='%23ffffff' stroke-opacity='.85' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") 96% 0 / 18px 26px no-repeat; pointer-events: none; }
+.checkins { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; padding: 2px 0 4px; }
+.ck { display: grid; justify-items: center; gap: 5px; }
+.ck small { font: 600 11px/1 var(--font); color: var(--ink-3); }
+.ck i { width: 30px; height: 30px; border-radius: 50%; border: 1.5px dashed rgba(58, 20, 32, .28); display: grid; place-items: center; color: #3a1420; }
+.ck i .i { width: 15px; height: 15px; }
+.ck.on i { background: #ffb39b; border: 1.5px solid rgba(58, 20, 32, .7); }
+.ck.today small { color: var(--accent); font-weight: 700; }
+.ck.today i { border-style: solid; border-color: #ff7a59; box-shadow: 0 0 0 3px rgba(255, 122, 89, .18); }
+.ck.fut i { opacity: .45; }
+.journal .g-tile { box-shadow: none; }
+/* nút: giấy viền mực; nút chính cam san hô như nhãn dán */
+.btn { background: var(--surface); border: 1px solid rgba(58, 20, 32, .22); }
+.btn.soft { background: var(--surface-2); }
+.btn.ghost { background: transparent; border-color: transparent; }
+.btn.primary, .icon-btn.solid, .pill-start { background: #ff9a7a; color: #2a0b16; border: 1.5px solid rgba(58, 20, 32, .75); box-shadow: 2px 3px 0 rgba(58, 20, 32, .16); }
+.stepper .step, #hDur, .streak-chip, .home .ht-right .icon-btn { background: var(--surface); border: 1px solid rgba(58, 20, 32, .22); -webkit-backdrop-filter: none; backdrop-filter: none; }
+.pills button { background: var(--surface); }
+.segmented, .stats-tabs { background: var(--surface-2); }
+/* đồng hồ LCD kiểu giấy: khung viền mực, màn kem, số màu mực */
+.lcd { background: var(--surface); border: 1.5px solid rgba(58, 20, 32, .6); box-shadow: 3px 4px 0 rgba(58, 20, 32, .1); padding: 9px; border-radius: 22px; }
+.lcd-screen { background: #fff3ec; box-shadow: inset 0 0 0 1px rgba(58, 20, 32, .12); border-radius: 15px; }
+.lcd.on .lcd-screen { background: #ffe6da; }
+.lcd-svg .on { fill: #3a1420; }
+.lcd-svg .off { fill: #3a1420; opacity: .06; }
+/* thanh tab, bảng, thông báo: giấy đục */
+.tabbar .in { background: var(--surface); border: 1px solid rgba(58, 20, 32, .18); box-shadow: 0 8px 24px -14px rgba(58, 20, 32, .35); }
+.tab[aria-current="page"] { background: #ffe3d6; }
+.sheet { background: #fffdfb; -webkit-backdrop-filter: none; backdrop-filter: none; border: 1px solid rgba(58, 20, 32, .18); }
+.backdrop { background: rgba(58, 20, 32, .32); }
+.x-btn, .sheet-h .icon-btn[data-close] { background: var(--surface-2); border: 1px solid rgba(58, 20, 32, .14); }
+@media (max-width: 380px) { #hHello { font-size: 22px; } .page-h h1, .pv-title { font-size: 30px; } .ck i { width: 26px; height: 26px; } }
 </style>

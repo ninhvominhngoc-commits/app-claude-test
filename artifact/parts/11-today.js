@@ -46,6 +46,14 @@ function renderHero() {
   // 3 ô mục tiêu: vòng tiến độ nhỏ, con số, chạm là làm luôn
   const day = state.stats.days[todayISO()] || {}, q = quests(), done = q.filter((x) => x.p >= 1).length, due = totalDue(), sk = streak();
   $("#hGoalsTxt").textContent = `${done}/3`;
+  // hàng check-in tuần: T2 → CN, ngày có học (tập trung, ôn thẻ, luyện) được đánh dấu
+  const t = todayISO(), ws = addDays(t, -((new Date(t + "T12:00:00Z").getUTCDay() + 6) % 7));
+  const studied = (d) => { const x = state.stats.days[d]; return !!x && ((x.f || 0) > 0 || (x.r || 0) > 0 || (x.fe || 0) > 0 || (x.p || 0) > 0 || activeOn(d)); };
+  const week = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"].map((w, i) => { const d = addDays(ws, i); return { w, d, on: studied(d), today: d === t, fut: d > t }; });
+  const had = week.filter((x) => x.on).length;
+  $("#hWeekTxt").textContent = `${had}/7 ngày có học`;
+  $("#hWeek").setAttribute("aria-label", `Tuần này có học ${had} trên 7 ngày: ${week.map((x) => `${x.w} ${x.on ? "có" : x.fut ? "chưa tới" : "không"}`).join(", ")}`);
+  $("#hWeek").innerHTML = week.map((x) => `<span class="ck ${x.on ? "on" : ""} ${x.today ? "today" : ""} ${x.fut ? "fut" : ""}"><small>${x.w}</small><i>${x.on ? icon("check") : ""}</i></span>`).join("");
   $("#hStreak").innerHTML = `${icon("flame")} ${sk}`;
   $("#hStreak").setAttribute("aria-label", `Chuỗi ${sk} ngày học liên tiếp. Xem mục tiêu và lịch học`);
   const tile = (x, val, lab, attrs) => `<button class="g-tile ${x.p >= 1 ? "done" : ""}" ${attrs} style="--c:${x.col}" aria-label="${esc(x.t)}: ${esc(x.v)}"><span class="g-ring" style="--p:${x.p.toFixed(2)}">${x.p >= 1 ? icon("check") : ""}</span><b>${esc(val)}</b><small>${esc(lab)}</small></button>`;

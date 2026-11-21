@@ -64,7 +64,13 @@
       <div class="t-ctrl"><div class="stepper" id="hStepper"><button class="step" id="hMinus" aria-label="Bớt 5 phút">−</button><span id="hDur" aria-live="polite"></span><button class="step" id="hPlus" aria-label="Thêm 5 phút">+</button></div>
       <button class="pill-start" id="hStart"><svg class="i"><use href="#i-play"></use></svg><span id="hStartTxt">Bắt đầu</span></button></div>
     </section>
-    <section class="goals" aria-labelledby="hGoalsH"><p class="label" id="hGoalsH">Mục tiêu hôm nay · <span id="hGoalsTxt">0/3</span></p><div class="g-tiles" id="hGoals"></div></section>
+    <section class="journal" aria-labelledby="hWeekH">
+      <span class="bind" aria-hidden="true"></span>
+      <h2 class="hand-title" id="hWeekH">Tuần này <small id="hWeekTxt"></small></h2>
+      <div class="checkins" id="hWeek" role="img"></div>
+      <h2 class="hand-title" id="hGoalsH">Mục tiêu hôm nay <small id="hGoalsTxt">0/3</small></h2>
+      <div class="g-tiles" id="hGoals"></div>
+    </section>
     <article class="now-card" id="hNow"></article>
     <div class="today-h"><span class="label">Hôm nay ở trường</span><span class="small muted" id="hDate"></span></div>
     <article class="tile tinted" id="hStatus"></article>
