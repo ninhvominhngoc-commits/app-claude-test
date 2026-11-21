@@ -840,6 +840,55 @@ body.immersive #toast { top: calc(env(safe-area-inset-top, 0px) + 16px); bottom:
 .sheet { bottom: auto; top: 50%; left: max(12px, env(safe-area-inset-left, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); max-height: 78vh; max-height: 78dvh; border-radius: 26px; border-bottom: 1px solid var(--outline); opacity: 0; transform: translateY(-46%) scale(.98); transition: transform .22s, opacity .22s; }
 #sheetRoot.open .sheet { transform: translateY(-50%); opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .sheet { transition: none; } }
+/* ===== Gọn gàng: Hôm nay ít thành phần hơn, khoảng cách chặt hơn ===== */
+.view { gap: 14px; }
+.home { gap: 14px; }
+.tile, .card { padding: 14px; gap: 10px; }
+.btn { padding: 10px 14px; font-size: 14px; }
+.btn.sm { padding: 7px 12px; font-size: 13px; }
+.page-h h1, .pv-title { font-size: 27px; }
+.page-h p { font-size: 13.5px; }
+.ev { padding: 10px 12px; gap: 10px; }
+.empty { padding: 20px 16px; gap: 8px; }
+.home-top { align-items: center; }
+#hHello { font-size: 23px; }
+.home .ht-right { gap: 6px; }
+.home .ht-right .icon-btn { width: 38px; height: 38px; }
+.streak-chip { display: inline-flex; align-items: center; gap: 4px; height: 38px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--outline); background: rgba(255, 255, 255, .78); color: var(--ink); font: 700 14px/1 var(--font); font-variant-numeric: tabular-nums; cursor: pointer; -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); }
+.streak-chip .i { width: 16px; height: 16px; color: #ff7a59; }
+.timer-hero { gap: 12px; padding: 2px 0 0; }
+.t-cap { display: inline-flex; align-items: center; gap: 4px; border: 0; background: none; cursor: pointer; padding: 4px 8px; border-radius: 999px; }
+.t-cap .i { width: 12px; height: 12px; flex: none; }
+.t-cap .t-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lcd { width: min(100%, 320px); padding: 10px; border-radius: 26px; }
+.lcd-screen { padding: 12px 16px; border-radius: 18px; }
+.t-ctrl { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; width: min(100%, 380px); }
+.t-ctrl .stepper { gap: 6px; }
+.stepper .step { width: 42px; height: 42px; font-size: 22px; }
+#hDur { min-width: 92px; padding: 11px 12px; font-size: 16px; }
+.t-ctrl .pill-start { flex: 1 1 130px; width: auto; padding: 13px 16px; font-size: 16px; }
+.goals { display: grid; gap: 8px; padding: 0; background: none; border: 0; box-shadow: none; }
+.g-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.g-tile { display: grid; justify-items: start; gap: 2px; padding: 11px 12px; border-radius: 18px; border: 1px solid var(--outline); background: var(--surface); color: var(--ink); text-align: left; cursor: pointer; min-width: 0; -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: var(--shadow-card); }
+.g-tile:active { transform: scale(.97); }
+.g-ring { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; margin-bottom: 4px; background: radial-gradient(closest-side, var(--surface-solid, #fff) 72%, transparent 74%), conic-gradient(var(--c) calc(var(--p) * 1turn), rgba(150, 60, 50, .12) 0); }
+.g-tile.done .g-ring { background: var(--c); color: #fff; }
+.g-ring .i { width: 14px; height: 14px; }
+.g-tile b { font: 700 18px/1.1 var(--display); letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.g-tile small { font: 500 11.5px/1.3 var(--font); color: var(--ink-3); overflow-wrap: anywhere; }
+.now-card { padding: 12px 14px; gap: 4px 12px; grid-template-columns: 40px 1fr; }
+.now-ic { width: 40px; height: 40px; border-radius: 12px; }
+.now-txt strong { font-size: 16.5px; }
+.today-h { margin-top: 2px; }
+.home #hStatus .verdict { font-size: 17px; }
+/* Hộp thư: thẻ mail nhẹ hơn */
+.mail { padding: 12px 14px; gap: 4px; }
+.mail-top strong { font-size: 15px; font-weight: 600; line-height: 1.3; }
+.mail > p:not(.todo):not(.faint) { font-size: 14px; line-height: 1.45; color: var(--ink-2); }
+.todo { font-weight: 500; font-size: 13.5px; line-height: 1.4; background: var(--accent-soft); color: var(--ink); padding: 7px 10px; border-radius: 12px; }
+.todo .i { color: var(--accent); }
+.mail a.small { font-size: 12.5px; justify-self: start; }
+@media (max-width: 380px) { .g-tile { padding: 10px; } .g-tile b { font-size: 16px; } .g-tile small { font-size: 10.5px; } #hHello { font-size: 18px; } .streak-chip { padding: 0 10px; } .now-card { grid-template-columns: 1fr; } .now-ic { display: none; } .now-acts { grid-column: 1; } }
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -904,20 +953,19 @@ body.immersive #toast { top: calc(env(safe-area-inset-top, 0px) + 16px); bottom:
         <div class="h-hello"><p id="hHello"></p><span class="clock" id="hClock"></span></div>
       </div>
       <div class="ht-right">
+        <button class="streak-chip" id="hStreak" data-act="quests"></button>
         <button class="icon-btn" data-go="stats" aria-label="Thống kê"><svg class="i"><use href="#i-chart"></use></svg></button>
         <button class="icon-btn gear" data-act="settings" aria-label="Cài đặt"><svg class="i"><use href="#i-gear"></use></svg></button>
       </div>
     </div>
     <section class="timer-hero" aria-label="Đồng hồ tập trung">
-      <p class="t-cap" id="wFocusLabel">Tập trung</p>
+      <button class="t-cap" id="wFocusLabel" data-act="focus-open">Tập trung</button>
       <button class="lcd" id="wFocus" data-act="focus-open" aria-label="Mở màn tập trung"><span class="lcd-screen" id="wLcd"></span><span class="vh" id="wFocusState"></span><span class="vh" data-left></span></button>
-      <div class="stepper" id="hStepper"><button class="step" id="hMinus" aria-label="Bớt 5 phút">−</button><span id="hDur" aria-live="polite"></span><button class="step" id="hPlus" aria-label="Thêm 5 phút">+</button></div>
-      <button class="pill-start" id="hStart"><svg class="i"><use href="#i-play"></use></svg><span id="hStartTxt">Bắt đầu</span></button>
-      <button class="link" data-act="focus-open" id="hCustom">Chọn môn và mục tiêu phiên</button>
+      <div class="t-ctrl"><div class="stepper" id="hStepper"><button class="step" id="hMinus" aria-label="Bớt 5 phút">−</button><span id="hDur" aria-live="polite"></span><button class="step" id="hPlus" aria-label="Thêm 5 phút">+</button></div>
+      <button class="pill-start" id="hStart"><svg class="i"><use href="#i-play"></use></svg><span id="hStartTxt">Bắt đầu</span></button></div>
     </section>
-    <button class="stat-row" id="hStats" data-go="stats" aria-label="Xem thống kê"></button>
+    <section class="goals" aria-labelledby="hGoalsH"><p class="label" id="hGoalsH">Mục tiêu hôm nay · <span id="hGoalsTxt">0/3</span></p><div class="g-tiles" id="hGoals"></div></section>
     <article class="now-card" id="hNow"></article>
-    <article class="tile goals" id="hGoals"></article>
     <div class="today-h"><span class="label">Hôm nay ở trường</span><span class="small muted" id="hDate"></span></div>
     <article class="tile tinted" id="hStatus"></article>
     <div id="hUpcoming" class="list"></div>
@@ -2696,18 +2744,23 @@ function renderHero() {
   if (!focusPick.subject || !subjects().some((s) => s.id === focusPick.subject)) focusPick.subject = lastSubject().id;
   const shown = f ? fmtLeft(f.endAt - Date.now()) : `${dur}:00`;
   $("#wFocus").classList.toggle("on", !!f);
-  $("#wFocusLabel").textContent = f ? `Đang tập trung · ${subjOf(f.subject).name}` : `Tập trung · ${subjOf(focusPick.subject).name}`;
+  $("#wFocusLabel").innerHTML = f ? `Đang tập trung · ${esc(subjOf(f.subject).name)}` : `<span class="t-name">${esc(subjOf(focusPick.subject).name)}</span>${icon("down", "xs")}`;
+  $("#wFocusLabel").setAttribute("aria-label", f ? "Mở đồng hồ tập trung" : `Môn: ${subjOf(focusPick.subject).name}. Đổi môn và ghi mục tiêu phiên`);
   $("#wFocusState").textContent = f ? "Đang tập trung" : "Tập trung";
   $("#wFocus [data-left]").textContent = shown;
   $("#wLcd").innerHTML = lcdSvg(shown);
-  $("#hStepper").hidden = !!f; $("#hCustom").hidden = !!f;
+  $("#hStepper").hidden = !!f;
   $("#hDur").textContent = `${dur} phút`;
   $("#hStartTxt").textContent = f ? "Mở đồng hồ" : "Bắt đầu";
-  const day = state.stats.days[todayISO()] || {}, fm = day.f || 0;
-  $("#hStats").innerHTML = `<span><small>Tập trung</small><b>${fm < 60 ? `${fm}p` : `${Math.floor(fm / 60)}g${String(fm % 60).padStart(2, "0")}`}</b></span><span><small>Thẻ đến hạn</small><b>${totalDue()}</b></span><span><small>Chuỗi ngày</small><b>${streak()}</b></span>`;
-  const q = quests(), done = q.filter((x) => x.p >= 1).length;
-  $("#hGoals").innerHTML = `<div class="goals-head">${ringsSvg(q, 52)}<div><span class="label">Mục tiêu hôm nay</span><strong id="hGoalsTxt">${done}/3 đã xong</strong></div>
-    <button class="btn sm ghost" data-act="quests" aria-label="Chuỗi ${streak()} ngày, xem lịch học">${icon("flame")} ${streak()} ngày</button></div><ul class="quests">${goalItems(q)}</ul>`;
+  // 3 ô mục tiêu: vòng tiến độ nhỏ, con số, chạm là làm luôn
+  const day = state.stats.days[todayISO()] || {}, q = quests(), done = q.filter((x) => x.p >= 1).length, due = totalDue(), sk = streak();
+  $("#hGoalsTxt").textContent = `${done}/3`;
+  $("#hStreak").innerHTML = `${icon("flame")} ${sk}`;
+  $("#hStreak").setAttribute("aria-label", `Chuỗi ${sk} ngày học liên tiếp. Xem mục tiêu và lịch học`);
+  const tile = (x, val, lab, attrs) => `<button class="g-tile ${x.p >= 1 ? "done" : ""}" ${attrs} style="--c:${x.col}" aria-label="${esc(x.t)}: ${esc(x.v)}"><span class="g-ring" style="--p:${x.p.toFixed(2)}">${x.p >= 1 ? icon("check") : ""}</span><b>${esc(val)}</b><small>${esc(lab)}</small></button>`;
+  $("#hGoals").innerHTML = tile(q[0], `${day.f || 0}/25`, f ? "đang chạy" : "phút tập trung", `data-act="focus-open"`)
+    + tile(q[1], `${day.r || 0}/10`, due ? `thẻ · ${due} đến hạn` : "thẻ đã ôn", due ? `data-act="review-all"` : `data-go="review"`)
+    + tile(q[2], `${(day.fe || day.p) ? 1 : 0}/1`, "bài luyện", `data-act="go-drill"`);
 }
 
 // một chạm là tập trung ngay: môn gần nhất, số phút đang chọn, mục tiêu đã điền (nếu có)

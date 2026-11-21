@@ -35,18 +35,23 @@ function renderHero() {
   if (!focusPick.subject || !subjects().some((s) => s.id === focusPick.subject)) focusPick.subject = lastSubject().id;
   const shown = f ? fmtLeft(f.endAt - Date.now()) : `${dur}:00`;
   $("#wFocus").classList.toggle("on", !!f);
-  $("#wFocusLabel").textContent = f ? `Đang tập trung · ${subjOf(f.subject).name}` : `Tập trung · ${subjOf(focusPick.subject).name}`;
+  $("#wFocusLabel").innerHTML = f ? `Đang tập trung · ${esc(subjOf(f.subject).name)}` : `<span class="t-name">${esc(subjOf(focusPick.subject).name)}</span>${icon("down", "xs")}`;
+  $("#wFocusLabel").setAttribute("aria-label", f ? "Mở đồng hồ tập trung" : `Môn: ${subjOf(focusPick.subject).name}. Đổi môn và ghi mục tiêu phiên`);
   $("#wFocusState").textContent = f ? "Đang tập trung" : "Tập trung";
   $("#wFocus [data-left]").textContent = shown;
   $("#wLcd").innerHTML = lcdSvg(shown);
-  $("#hStepper").hidden = !!f; $("#hCustom").hidden = !!f;
+  $("#hStepper").hidden = !!f;
   $("#hDur").textContent = `${dur} phút`;
   $("#hStartTxt").textContent = f ? "Mở đồng hồ" : "Bắt đầu";
-  const day = state.stats.days[todayISO()] || {}, fm = day.f || 0;
-  $("#hStats").innerHTML = `<span><small>Tập trung</small><b>${fm < 60 ? `${fm}p` : `${Math.floor(fm / 60)}g${String(fm % 60).padStart(2, "0")}`}</b></span><span><small>Thẻ đến hạn</small><b>${totalDue()}</b></span><span><small>Chuỗi ngày</small><b>${streak()}</b></span>`;
-  const q = quests(), done = q.filter((x) => x.p >= 1).length;
-  $("#hGoals").innerHTML = `<div class="goals-head">${ringsSvg(q, 52)}<div><span class="label">Mục tiêu hôm nay</span><strong id="hGoalsTxt">${done}/3 đã xong</strong></div>
-    <button class="btn sm ghost" data-act="quests" aria-label="Chuỗi ${streak()} ngày, xem lịch học">${icon("flame")} ${streak()} ngày</button></div><ul class="quests">${goalItems(q)}</ul>`;
+  // 3 ô mục tiêu: vòng tiến độ nhỏ, con số, chạm là làm luôn
+  const day = state.stats.days[todayISO()] || {}, q = quests(), done = q.filter((x) => x.p >= 1).length, due = totalDue(), sk = streak();
+  $("#hGoalsTxt").textContent = `${done}/3`;
+  $("#hStreak").innerHTML = `${icon("flame")} ${sk}`;
+  $("#hStreak").setAttribute("aria-label", `Chuỗi ${sk} ngày học liên tiếp. Xem mục tiêu và lịch học`);
+  const tile = (x, val, lab, attrs) => `<button class="g-tile ${x.p >= 1 ? "done" : ""}" ${attrs} style="--c:${x.col}" aria-label="${esc(x.t)}: ${esc(x.v)}"><span class="g-ring" style="--p:${x.p.toFixed(2)}">${x.p >= 1 ? icon("check") : ""}</span><b>${esc(val)}</b><small>${esc(lab)}</small></button>`;
+  $("#hGoals").innerHTML = tile(q[0], `${day.f || 0}/25`, f ? "đang chạy" : "phút tập trung", `data-act="focus-open"`)
+    + tile(q[1], `${day.r || 0}/10`, due ? `thẻ · ${due} đến hạn` : "thẻ đã ôn", due ? `data-act="review-all"` : `data-go="review"`)
+    + tile(q[2], `${(day.fe || day.p) ? 1 : 0}/1`, "bài luyện", `data-act="go-drill"`);
 }
 
 // một chạm là tập trung ngay: môn gần nhất, số phút đang chọn, mục tiêu đã điền (nếu có)

@@ -55,9 +55,9 @@ async function axe(p, label) {
     check("Mới: lời chào hiển thị", /Chào buổi|Khuya rồi/.test(await txt(p, "#hHello")), await txt(p, "#hHello"));
     check("Mới: ô campus ở trạng thái chưa rõ", (await p.getAttribute("#hStatus", "class")).includes("v-unknown"));
     check("Mới: việc nên làm bây giờ là một phiên tập trung", /Tập trung 25 phút/.test(await txt(p, "#hNow")) && (await vis(p, '#hNow [data-act="focus-open"]')), await txt(p, "#hNow"));
-    check("Mới: 3 mục tiêu hôm nay ngay trên trang, 0/3", (await p.$$("#hGoals .quests li")).length === 3 && /0\/3/.test(await txt(p, "#hGoalsTxt")));
+    check("Mới: 3 ô mục tiêu hôm nay ngay trên trang, 0/3", (await p.$$("#hGoals .g-tile")).length === 3 && /0\/3/.test(await txt(p, "#hGoalsTxt")));
     check("Mới: không còn trò chơi (phiêu lưu, ví ✦, căn phòng)", !(await p.$("#v-adv")) && !(await p.$("#hGems")) && !(await p.$("#hRoom")) && !/✦/.test(await p.innerText("#main")));
-    await p.click('#hGoals [data-act="quests"]');
+    await p.click("#hStreak");
     check("Mới: 3 nhiệm vụ hôm nay", (await p.$$("#sheetRoot .quests li")).length === 3);
     check("Mới: chuỗi ngày = 0", /0 ngày liên tiếp/.test(await txt(p, "#sheetRoot .flame")));
     await p.keyboard.press("Escape");
@@ -219,8 +219,8 @@ async function axe(p, label) {
     await p.click('#sDone [data-go="review"]');
     check("Ôn tập: bộ thẻ môn đã ôn xong", /đã ôn xong/.test(await txt(p, "#rList")));
     await tab(p, "home");
-    check("Hôm nay: nút chuỗi ngày hiện 1 ngày", /1 ngày/.test(await txt(p, '#hGoals [data-act="quests"]')));
-    await p.click('#hGoals [data-act="quests"]');
+    check("Hôm nay: chip chuỗi ngày hiện 1", (await txt(p, "#hStreak")).trim() === "1" && /Chuỗi 1 ngày/.test(await p.getAttribute("#hStreak", "aria-label")));
+    await p.click("#hStreak");
     check("Hôm nay: chuỗi ngày = 1", /1 ngày liên tiếp/.test(await txt(p, "#sheetRoot .flame")));
     // thoát giữa phiên
     await p.click('#sheetRoot [data-act="review-all"]'); await p.click("#sExit");
@@ -424,7 +424,7 @@ async function axe(p, label) {
     await q.evaluate(() => { const k = "data/users/u1/agenda", a = window.__store.get(k); a.items.forEach((x) => (x.done = true)); window.__store.set(k, a); sessionStorage.setItem("__store", JSON.stringify([...window.__store])); });
     await q.reload({ waitUntil: "load" }); await q.waitForTimeout(700);
     check("Đủ 3 mục tiêu, hết hạn gần: việc nên làm là nghỉ ngơi", /Xong 3 mục tiêu hôm nay/.test(await txt(q, "#hNow")) && !(await q.$("#hNow .now-acts")), await txt(q, "#hNow"));
-    await q.click('#hGoals [data-act="quests"]');
+    await q.click("#hStreak");
     check("Lịch nhiệt: hôm nay có viền vàng", await q.$eval("#sheetRoot .heat i.today", (e) => e.classList.contains("gold")));
     check("Mục tiêu: cả 3 vòng đã xong", (await q.$$("#sheetRoot .qdot.done")).length === 3);
     await q.close();
@@ -443,7 +443,7 @@ async function axe(p, label) {
   // ---------- 11b. Hôm nay: đồng hồ LCD, − / +, một chạm là tập trung ----------
   {
     const o = await open({ seed: true });
-    check("Hôm nay: đồng hồ LCD hiện 25:00 và hàng số liệu", (await vis(o, "#wLcd svg.lcd-svg")) && (await txt(o, "#wFocus [data-left]")) === "25:00" && /Thẻ đến hạn/.test(await txt(o, "#hStats")) && /Chuỗi ngày/.test(await txt(o, "#hStats")));
+    check("Hôm nay: đồng hồ LCD hiện 25:00 và hàng số liệu", (await vis(o, "#wLcd svg.lcd-svg")) && (await txt(o, "#wFocus [data-left]")) === "25:00" && /1 đến hạn/.test(await txt(o, "#hGoals")) && /phút tập trung/.test(await txt(o, "#hGoals")) && (await vis(o, "#hStreak")));
     await o.click("#hPlus"); await o.click("#hPlus");
     check("Hôm nay: nút + tăng 5 phút mỗi lần", /35 phút/.test(await txt(o, "#hDur")) && (await txt(o, "#wFocus [data-left]")) === "35:00");
     await o.click("#hMinus");
@@ -526,7 +526,7 @@ async function axe(p, label) {
     const s0 = await open({ cfg: { slowDb: 1600 } });
     check("Không có màn chờ: vào thẳng Hôm nay khi dữ liệu đang tải", !(await s0.$("#splash")) && (await vis(s0, "#v-home")) && (await vis(s0, "#wLcd svg")));
     await s0.waitForTimeout(1500);
-    check("Dữ liệu tải xong: Hôm nay tự cập nhật", /Việc nên làm bây giờ/.test(await txt(s0, "#hNow")) && (await vis(s0, "#hGoals .quests")));
+    check("Dữ liệu tải xong: Hôm nay tự cập nhật", /Việc nên làm bây giờ/.test(await txt(s0, "#hNow")) && (await vis(s0, "#hGoals .g-tile")));
     await s0.close();
     // người dùng cũ có dữ liệu trò chơi: app bỏ qua, link cũ về Hôm nay, dữ liệu không bị xoá
     const w = await open({});
@@ -544,7 +544,7 @@ async function axe(p, label) {
     check("Tập trung: vòng thời gian đã chạy khoảng 40%", await p.$eval("#fRing .fr-on", (c) => { const [on, all] = c.getAttribute("stroke-dasharray").split(" ").map(Number); return on / all > 0.35 && on / all < 0.45; }));
     await p.click('#v-focus [data-go="home"]'); await p.waitForTimeout(300);
     check("Hôm nay khi đang tập trung: ẩn thẻ việc nên làm, nút lớn hiện giờ còn lại", !(await vis(p, "#hNow")) && /Đang tập trung/.test(await txt(p, "#wFocus")));
-    check("Hôm nay khi đang tập trung: mục tiêu tập trung có nút Mở", /Mở/.test(await txt(p, '#hGoals [data-act="focus-open"]')));
+    check("Hôm nay khi đang tập trung: ô tập trung báo đang chạy", /đang chạy/.test(await txt(p, '#hGoals [data-act="focus-open"]')));
     await p.close();
   }
 

@@ -61,20 +61,19 @@
         <div class="h-hello"><p id="hHello"></p><span class="clock" id="hClock"></span></div>
       </div>
       <div class="ht-right">
+        <button class="streak-chip" id="hStreak" data-act="quests"></button>
         <button class="icon-btn" data-go="stats" aria-label="Thống kê"><svg class="i"><use href="#i-chart"></use></svg></button>
         <button class="icon-btn gear" data-act="settings" aria-label="Cài đặt"><svg class="i"><use href="#i-gear"></use></svg></button>
       </div>
     </div>
     <section class="timer-hero" aria-label="Đồng hồ tập trung">
-      <p class="t-cap" id="wFocusLabel">Tập trung</p>
+      <button class="t-cap" id="wFocusLabel" data-act="focus-open">Tập trung</button>
       <button class="lcd" id="wFocus" data-act="focus-open" aria-label="Mở màn tập trung"><span class="lcd-screen" id="wLcd"></span><span class="vh" id="wFocusState"></span><span class="vh" data-left></span></button>
-      <div class="stepper" id="hStepper"><button class="step" id="hMinus" aria-label="Bớt 5 phút">−</button><span id="hDur" aria-live="polite"></span><button class="step" id="hPlus" aria-label="Thêm 5 phút">+</button></div>
-      <button class="pill-start" id="hStart"><svg class="i"><use href="#i-play"></use></svg><span id="hStartTxt">Bắt đầu</span></button>
-      <button class="link" data-act="focus-open" id="hCustom">Chọn môn và mục tiêu phiên</button>
+      <div class="t-ctrl"><div class="stepper" id="hStepper"><button class="step" id="hMinus" aria-label="Bớt 5 phút">−</button><span id="hDur" aria-live="polite"></span><button class="step" id="hPlus" aria-label="Thêm 5 phút">+</button></div>
+      <button class="pill-start" id="hStart"><svg class="i"><use href="#i-play"></use></svg><span id="hStartTxt">Bắt đầu</span></button></div>
     </section>
-    <button class="stat-row" id="hStats" data-go="stats" aria-label="Xem thống kê"></button>
+    <section class="goals" aria-labelledby="hGoalsH"><p class="label" id="hGoalsH">Mục tiêu hôm nay · <span id="hGoalsTxt">0/3</span></p><div class="g-tiles" id="hGoals"></div></section>
     <article class="now-card" id="hNow"></article>
-    <article class="tile goals" id="hGoals"></article>
     <div class="today-h"><span class="label">Hôm nay ở trường</span><span class="small muted" id="hDate"></span></div>
     <article class="tile tinted" id="hStatus"></article>
     <div id="hUpcoming" class="list"></div>
