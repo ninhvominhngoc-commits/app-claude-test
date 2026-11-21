@@ -22,9 +22,9 @@ function lastSubject() {
 function quests() {
   const d = state.stats.days[todayISO()] || {}, f = d.f || 0, r = d.r || 0, fe = d.fe || 0, pr = d.p || 0;
   return [
-    { k: "focus", t: "Tập trung 25 phút", v: f >= 25 ? `${f} phút` : `${f}/25 phút`, p: Math.min(1, f / 25), act: f < 25 ? ["focus-open", state.focus?.endAt ? "Mở" : "Bắt đầu"] : null, col: "#ff9a7a" },
-    { k: "review", t: "Ôn 10 thẻ hoặc hết thẻ đến hạn", v: `${r} thẻ`, p: r >= 10 || (r > 0 && totalDue() === 0) ? 1 : Math.min(1, r / 10), act: totalDue() ? ["review-all", "Ôn"] : null, col: "#8fd694" },
-    { k: "practice", t: "Luyện 1 bài: làm đề hoặc tự giảng", v: fe || pr ? "Xong" : "Luyện đề hoặc Feynman", p: fe || pr ? 1 : 0, act: fe || pr ? null : ["go-drill", "Luyện"], col: "#e39bff" },
+    { k: "focus", t: "Tập trung 25 phút", v: f >= 25 ? `${f} phút` : `${f}/25 phút`, p: Math.min(1, f / 25), act: f < 25 ? ["focus-open", state.focus?.endAt ? "Mở" : "Bắt đầu"] : null, col: "#ff7a59" },
+    { k: "review", t: "Ôn 10 thẻ hoặc hết thẻ đến hạn", v: `${r} thẻ`, p: r >= 10 || (r > 0 && totalDue() === 0) ? 1 : Math.min(1, r / 10), act: totalDue() ? ["review-all", "Ôn"] : null, col: "#3fa565" },
+    { k: "practice", t: "Luyện 1 bài: làm đề hoặc tự giảng", v: fe || pr ? "Xong" : "Luyện đề hoặc Feynman", p: fe || pr ? 1 : 0, act: fe || pr ? null : ["go-drill", "Luyện"], col: "#a855f7" },
   ];
 }
 function checkGold() {
