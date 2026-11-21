@@ -43,6 +43,14 @@
   <symbol id="i-map" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5 4 7v12l5-2 6 2 5-2V5l-5 2z"/><path d="M9 5v12M15 7v12"/></symbol>
 </svg>
 
+<nav class="tabbar" aria-label="Điều hướng"><div class="in">
+  <button class="tab" data-v="home" aria-current="page"><svg class="i"><use href="#i-home"></use></svg>Hôm nay</button>
+  <button class="tab" data-v="study"><svg class="i"><use href="#i-book"></use></svg>Học</button>
+  <button class="tab" data-v="review"><svg class="i"><use href="#i-cards"></use></svg>Ôn tập<span class="badge" id="tabDue" hidden></span></button>
+  <button class="tab" data-v="agenda"><svg class="i"><use href="#i-calendar"></use></svg>Lịch</button>
+  <button class="tab" data-v="inbox"><svg class="i"><use href="#i-inbox"></use></svg>Hộp thư</button>
+</div></nav>
+
 <main class="wrap" id="main">
   <div id="notice" class="notice" hidden></div>
 
@@ -254,13 +262,6 @@
   <div class="bar-in stack drill-in" id="drBody"></div>
 </section>
 
-<nav class="tabbar" aria-label="Điều hướng"><div class="in">
-  <button class="tab" data-v="home" aria-current="page"><svg class="i"><use href="#i-home"></use></svg>Hôm nay</button>
-  <button class="tab" data-v="study"><svg class="i"><use href="#i-book"></use></svg>Học</button>
-  <button class="tab" data-v="review"><svg class="i"><use href="#i-cards"></use></svg>Ôn tập<span class="badge" id="tabDue" hidden></span></button>
-  <button class="tab" data-v="agenda"><svg class="i"><use href="#i-calendar"></use></svg>Lịch</button>
-  <button class="tab" data-v="inbox"><svg class="i"><use href="#i-inbox"></use></svg>Hộp thư</button>
-</div></nav>
 <div id="sheetRoot" hidden></div>
 <div id="toast" role="status" hidden></div>
 
