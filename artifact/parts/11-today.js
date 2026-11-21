@@ -84,3 +84,18 @@ function openQuests() {
     <div class="heat">${heat}</div>
     <p class="small muted">Ô viền vàng: ngày đủ 3 mục tiêu. Kỷ lục chuỗi ngày: ${best} ngày. Tổng ${esc(fmtMin(totalMin()))} tập trung.</p></div>` });
 }
+
+// thanh tab dưới đáy: nếu vùng nhìn thấy thật ngắn hơn khung trang một chút (thanh của app che mép dưới), đẩy thanh lên cho thấy;
+// chênh lệch lớn là bàn phím đang mở thì để yên như app bình thường
+(() => {
+  const vv = window.visualViewport; if (!vv) return;
+  let raf = 0;
+  const sync = () => {
+    raf = 0;
+    const gap = Math.round(window.innerHeight - (vv.height + vv.offsetTop));
+    document.documentElement.style.setProperty("--vv-shift", gap > 0 && gap <= 140 ? `${-gap}px` : "0px");
+  };
+  const later = () => { if (!raf) raf = requestAnimationFrame(sync); };
+  vv.addEventListener("resize", later); vv.addEventListener("scroll", later); window.addEventListener("scroll", later, { passive: true });
+  sync();
+})();

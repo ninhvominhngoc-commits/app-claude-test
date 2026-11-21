@@ -256,13 +256,13 @@ body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-event
 .heat i.pad { background: none; border: 0; }
 .heat i.l1 { background: #ffd4c4; } .heat i.l2 { background: #ffa98d; } .heat i.l3 { background: #ff7a59; }
 .heat i.today { outline: 2px solid #ff7a59; outline-offset: 1px; }
-/* thanh điều hướng ở đầu trang, dính khi cuộn: luôn nằm ngay dưới thanh của app nên không bị khuất */
-.tabbar { position: sticky; top: env(safe-area-inset-top, 0px); bottom: auto; left: auto; right: auto; z-index: 30; padding: 8px max(12px, env(safe-area-inset-right, 0px)) 4px max(12px, env(safe-area-inset-left, 0px)); pointer-events: auto; }
-.tabbar .in { box-shadow: 0 10px 26px -18px rgba(150, 60, 50, .45); }
-.tab { padding: 6px 0 5px; }
-.tab .i { width: 20px; height: 20px; }
-.wrap { padding-block: 10px calc(96px + env(safe-area-inset-bottom, 0px)); }
-#toast { top: calc(env(safe-area-inset-top, 0px) + 76px); bottom: auto; }
+/* thanh điều hướng dưới đáy: nền gần đục (không kính mờ), lớp vẽ riêng, tự bám vùng nhìn thấy thật (--vv-shift do JS đặt) */
+.tabbar { position: fixed; top: auto; bottom: 0; left: 0; right: 0; z-index: 30; padding: 0 max(12px, env(safe-area-inset-right, 0px)) calc(8px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); pointer-events: none; transform: translate3d(0, var(--vv-shift, 0px), 0); will-change: transform; }
+.tabbar .in { background: rgba(255, 250, 248, .97); -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: 0 10px 30px -14px rgba(150, 60, 50, .5); }
+.tab { padding: 7px 0 6px; }
+.tab .i { width: 21px; height: 21px; }
+.wrap { padding-block: 10px calc(var(--tabbar-h) + 44px + env(safe-area-inset-bottom, 0px)); }
+#toast { top: calc(env(safe-area-inset-top, 0px) + 14px); bottom: auto; }
 body.immersive #toast { top: calc(env(safe-area-inset-top, 0px) + 16px); bottom: auto; }
 /* bảng: hộp thoại giữa màn hình thay vì trượt lên từ mép dưới */
 .sheet { bottom: auto; top: 50%; left: max(12px, env(safe-area-inset-left, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); max-height: 78vh; max-height: 78dvh; border-radius: 26px; border-bottom: 1px solid var(--outline); opacity: 0; transform: translateY(-46%) scale(.98); transition: transform .22s, opacity .22s; }

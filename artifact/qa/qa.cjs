@@ -88,8 +88,8 @@ async function axe(p, label) {
     await p.keyboard.press("Escape");
     check("Tab Ôn tập có huy hiệu 1", (await txt(p, "#tabDue")).trim() === "1");
     await p.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight)); await p.waitForTimeout(150);
-    const navTop = await p.$eval(".tabbar", (e) => e.getBoundingClientRect().top);
-    check("Thanh điều hướng ở đầu trang, vẫn dính trên màn hình khi cuộn xuống cuối", navTop >= -1 && navTop < 30 && (await vis(p, '.tab[data-v="agenda"]')), String(navTop));
+    const nav = await p.$eval(".tabbar .in", (e) => { const r = e.getBoundingClientRect(); return { b: Math.round(r.bottom), h: window.innerHeight }; });
+    check("Thanh điều hướng ở đáy màn hình, vẫn hiện khi cuộn xuống cuối trang", nav.b <= nav.h && nav.b > nav.h - 40 && (await vis(p, '.tab[data-v="agenda"]')), JSON.stringify(nav));
     await p.evaluate(() => window.scrollTo(0, 0));
     await tab(p, "agenda");
     check("Lịch: dải 14 ngày", (await p.$$("#aStrip .day")).length === 14);
