@@ -87,6 +87,10 @@ async function axe(p, label) {
     check("Việc nên làm: Hướng dẫn chia nhỏ việc", (await sheetOpen(p)) && (await vis(p, "#gdOut")));
     await p.keyboard.press("Escape");
     check("Tab Ôn tập có huy hiệu 1", (await txt(p, "#tabDue")).trim() === "1");
+    await p.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight)); await p.waitForTimeout(150);
+    const navTop = await p.$eval(".tabbar", (e) => e.getBoundingClientRect().top);
+    check("Thanh điều hướng ở đầu trang, vẫn dính trên màn hình khi cuộn xuống cuối", navTop >= -1 && navTop < 30 && (await vis(p, '.tab[data-v="agenda"]')), String(navTop));
+    await p.evaluate(() => window.scrollTo(0, 0));
     await tab(p, "agenda");
     check("Lịch: dải 14 ngày", (await p.$$("#aStrip .day")).length === 14);
     check("Lịch: mục 'Đã qua' gom mốc cũ", /Đã qua \(1\)/.test(await txt(p, "#aList")));
